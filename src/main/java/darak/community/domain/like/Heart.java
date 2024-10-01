@@ -8,7 +8,7 @@ import lombok.Getter;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "dtype")
 @Getter
-public class Like {
+public class Heart { // Like는 SQL 예약어랑 겹침..
     @Id @GeneratedValue
     private Long id;
 

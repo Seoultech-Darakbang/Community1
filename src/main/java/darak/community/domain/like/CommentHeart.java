@@ -7,7 +7,7 @@ import lombok.Getter;
 @Entity
 @DiscriminatorValue("C")
 @Getter
-public class CommentLike extends Like {
+public class CommentHeart extends Heart {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "comment_id")
     private Comment comment;
