@@ -15,7 +15,11 @@ public class MemberRepository {
     private final EntityManager em;
 
     public void save(Member member) {
-        em.persist(member);
+        if (member.getId() == null) {
+            em.persist(member);
+        } else {
+            em.merge(member);
+        }
     }
 
     public Member findOne(Long id) {
@@ -32,10 +36,6 @@ public class MemberRepository {
                 .setParameter("birth", birthDay)
                 .setParameter("phone", phoneNumber)
                 .getResultList();
-    }
-
-    public void update(Member member) {
-        em.merge(member);
     }
 
     public void withdraw(Member member) {

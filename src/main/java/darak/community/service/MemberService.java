@@ -52,7 +52,7 @@ public class MemberService {
             validateDuplicateMember(modifiedMember);
         }
         member.updateMember(modifiedMember);
-        memberRepository.update(member);
+        memberRepository.save(member);
     }
 
     // 회원 삭제
