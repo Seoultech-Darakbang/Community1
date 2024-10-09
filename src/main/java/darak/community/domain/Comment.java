@@ -8,14 +8,11 @@ import java.util.List;
 
 @Entity
 @Getter
-public class Comment {
+public class Comment extends BaseEntity {
     @Id @GeneratedValue
     private Long id;
 
     private String content;
-
-    @Embedded
-    private TimeStamp timeStamp;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
@@ -31,6 +28,7 @@ public class Comment {
     @JoinColumn(name = "parent_id")
     private Comment parent;
 
+    // 대댓글(양방향 설계)
     // 부모와 자식은 1대다 관계
     @OneToMany(mappedBy = "parent")
     private List<Comment> child = new ArrayList<>();

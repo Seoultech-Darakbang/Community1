@@ -2,13 +2,13 @@ package darak.community.service;
 
 import darak.community.domain.LoginStatus;
 import darak.community.domain.Member;
+import darak.community.dto.MemberUpdateDTO;
 import darak.community.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
@@ -23,14 +23,14 @@ public class MemberService {
     @Transactional
     public Long join(Member member) {
         // 중복 회원 검사
-        validateDuplicateMember(member);
+        validateDuplicateMember(member.getName());
         memberRepository.save(member);
         return member.getId();
     }
 
     // 중복 회원 검사 메서드
-    private void validateDuplicateMember(Member member) {
-        List<Member> findMembers = memberRepository.findByName(member.getName());
+    private void validateDuplicateMember(String name) {
+        List<Member> findMembers = memberRepository.findByName(name);
         if (!findMembers.isEmpty()) {
             throw new IllegalStateException("이미 존재하는 회원입니다");
         }
@@ -47,12 +47,12 @@ public class MemberService {
     }
 
     // 회원 정보 수정
-    public void updateMember(Member member, Member modifiedMember) {
-        if (!member.getName().equals(modifiedMember.getName())) {
-            validateDuplicateMember(modifiedMember);
+    public void updateMember(MemberUpdateDTO memberUpdateDTO) {
+        Member member = memberRepository.findOne(memberUpdateDTO.getId()); // 영속 객체
+        if (!memberUpdateDTO.getName().equals(member.getName())) { // 이름을 변경한 경우
+            validateDuplicateMember(memberUpdateDTO.getName());
         }
-        member.updateMember(modifiedMember);
-        memberRepository.save(member);
+        member.updateMember(memberUpdateDTO);
     }
 
     // 회원 삭제
@@ -71,6 +71,8 @@ public class MemberService {
         }
     }
 
+
+    // name 찾기
     public List<String> findMemberName(LocalDate birthDay, String phoneNumber) {
         List<Member> members = memberRepository.findByBirthAndPhone(birthDay, phoneNumber);
         if (members.isEmpty()) {
@@ -81,7 +83,5 @@ public class MemberService {
                 .map(Member::getName)
                 .collect(Collectors.toList());
     }
-
-
 
 }

@@ -5,15 +5,13 @@ import lombok.Getter;
 
 @Entity
 @Getter
-public class Attachment {
+public class Attachment extends BaseEntity {
     @Id @GeneratedValue
     private Long id;
 
     private String url;
 
     private Long size;
-
-    private TimeStamp timeStamp;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")

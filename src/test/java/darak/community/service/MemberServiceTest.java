@@ -2,6 +2,7 @@ package darak.community.service;
 
 import darak.community.domain.LoginStatus;
 import darak.community.domain.Member;
+import darak.community.dto.MemberUpdateDTO;
 import darak.community.repository.MemberRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,31 +29,24 @@ class MemberServiceTest {
     @Test
     void 회원가입() throws Exception {
         // given
-        Member member = Member.builder()
-                .name("준서")
-                .email("qwe123@abc.com")
-                .phone("01012345678")
-                .birth(LocalDate.of(2001, 10, 13))
-                .build();
+        Member member = getMember();
         // when
         Long savedId = memberService.join(member);
         // then
         assertEquals(member, memberRepository.findOne(savedId));
+        // 생성일 검사
+        assertEquals(LocalDate.now().getDayOfMonth(), memberRepository.findOne(savedId).getCreatedDate().getDayOfMonth());
     }
 
-    @Test
-    void 회원가입_생성일_검사() throws Exception {
-        // given
+    private Member getMember() {
         Member member = Member.builder()
                 .name("준서")
+                .password("qwe123")
                 .email("qwe123@abc.com")
                 .phone("01012345678")
                 .birth(LocalDate.of(2001, 10, 13))
                 .build();
-        // when
-        Long savedId = memberService.join(member);
-        // then
-        assertEquals(LocalDate.now().getDayOfMonth(), memberRepository.findOne(savedId).getCreatedDate().getDayOfMonth());
+        return member;
     }
 
     @Test
@@ -64,30 +58,22 @@ class MemberServiceTest {
         memberService.join(member1);
         // when
         assertThrows(IllegalStateException.class, () -> memberService.join(member2));
-        // then
     }
 
     @Test
     void 회원_정보_수정() throws Exception {
         // given
-        Member member1 = Member.builder().name("member1").phone("12345678").build();
-        Member member2 = Member.builder().name("member1").phone("11111111").build();
+        Member member1 = Member.builder().name("member1").phone("01012345678").build();
         memberService.join(member1);
         // when
-        memberService.updateMember(member1, member2);
-        // then
-        assertEquals(member1.getPhone(), memberRepository.findOne(member1.getId()).getPhone());
-    }
+        MemberUpdateDTO memberUpdateDTO = new MemberUpdateDTO();
+        memberUpdateDTO.setId(member1.getId());
+        memberUpdateDTO.setName(member1.getName());
+        memberUpdateDTO.setPhone("01098765432");
 
-    @Test
-    void 회원_정보_수정_수정일_검사() throws Exception {
-        // given
-        Member member1 = Member.builder().name("member1").phone("12345678").build();
-        Member member2 = Member.builder().name("member1").phone("11111111").build();
-        memberService.join(member1);
-        // when
-        memberService.updateMember(member1, member2);
+        memberService.updateMember(memberUpdateDTO);
         // then
+        assertEquals(memberUpdateDTO.getPhone(), memberRepository.findOne(member1.getId()).getPhone());
         assertEquals(LocalDateTime.now().getDayOfMonth(), member1.getLastModifiedDate().getDayOfMonth());
     }
 
@@ -99,16 +85,18 @@ class MemberServiceTest {
         memberService.join(member1);
         memberService.join(member2);
 
-        Member mock = Member.builder().name("member2").build();
+        MemberUpdateDTO memberUpdateDTO = new MemberUpdateDTO();
+        memberUpdateDTO.setId(member1.getId());
+        memberUpdateDTO.setName("member2");
         // when
-        assertThrows(IllegalStateException.class, () -> memberService.updateMember(member1, mock));
+        assertThrows(IllegalStateException.class, () -> memberService.updateMember(memberUpdateDTO));
         // then
     }
 
     @Test
     void 회원_삭제() throws Exception {
         // given
-        Member member = Member.builder().name("abc").build();
+        Member member = getMember();
         memberService.join(member);
         // when
         memberService.removeMember(member);

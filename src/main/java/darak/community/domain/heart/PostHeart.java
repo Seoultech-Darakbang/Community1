@@ -1,4 +1,4 @@
-package darak.community.domain.like;
+package darak.community.domain.heart;
 
 import darak.community.domain.Post;
 import jakarta.persistence.*;

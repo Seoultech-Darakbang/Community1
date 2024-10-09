@@ -1,9 +1,12 @@
 package darak.community.domain;
 
+import darak.community.dto.MemberUpdateDTO;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 
 import java.time.LocalDate;
 
@@ -17,6 +20,7 @@ public class Member extends BaseEntity {
 
     private String password;
 
+    @NotEmpty
     private String name;
 
     @Enumerated(EnumType.STRING)
@@ -28,6 +32,8 @@ public class Member extends BaseEntity {
 
     private String email;
 
+    // Builder 패턴의 단점 : 필수값을 놓칠 수 있음
+    // -> NonNull을 붙여준다.
     @Builder
     public Member(String name, String password, String phone, LocalDate birth, String email) {
         this.name = name;
@@ -38,12 +44,12 @@ public class Member extends BaseEntity {
     }
 
     // 회원 정보 수정 메서드
-    public void updateMember(Member modifiedMember) {
-        if (modifiedMember.getName() != null) this.name = modifiedMember.name;
-        if (modifiedMember.getPhone() != null) this.phone = modifiedMember.phone;
-        if (modifiedMember.getBirth() != null) this.birth = modifiedMember.birth;
-        if (modifiedMember.getEmail() != null) this.email = modifiedMember.email;
-        if (modifiedMember.getPassword() != null) this.password = modifiedMember.password;
+    public void updateMember(MemberUpdateDTO memberUpdateDTO) {
+        this.name = memberUpdateDTO.getName();
+        this.password = memberUpdateDTO.getPassword();
+        this.email = memberUpdateDTO.getEmail();
+        this.phone = memberUpdateDTO.getPhone();
+        this.birth = memberUpdateDTO.getBirth();
     }
 
 }

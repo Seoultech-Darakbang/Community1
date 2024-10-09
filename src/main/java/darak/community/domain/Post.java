@@ -6,7 +6,7 @@ import lombok.Getter;
 
 @Entity
 @Getter
-public class Post {
+public class Post extends BaseEntity {
     @Id @GeneratedValue
     private Long id;
 
@@ -16,9 +16,6 @@ public class Post {
 
     @Enumerated(EnumType.STRING)
     private ContentType contentType;
-
-    @Embedded
-    private TimeStamp timeStamp;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
