@@ -12,9 +12,11 @@ import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotEmpty;
 import java.time.LocalDate;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
+@Getter
 @NoArgsConstructor
 public class Member extends BaseEntity {
     @Id
@@ -64,14 +66,6 @@ public class Member extends BaseEntity {
 
     public void changePassword(final String newPassword, final String oldPassword) {
         password.changePassword(newPassword, oldPassword);
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public Long getId() {
-        return id;
     }
 
     public boolean isMatchedPhone(String phone) {
