@@ -1,14 +1,10 @@
 package darak.community.dto;
 
 
-import darak.community.domain.MemberGrade;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+import darak.community.domain.member.Member;
 import jakarta.validation.constraints.NotEmpty;
-import lombok.Builder;
-import lombok.Data;
-
 import java.time.LocalDate;
+import lombok.Data;
 
 @Data
 public class MemberUpdateDTO { // Required for transporting Controller to Service Layer
@@ -24,4 +20,14 @@ public class MemberUpdateDTO { // Required for transporting Controller to Servic
     private LocalDate birth;
 
     private String email;
+
+    public Member toEntity() {
+        return Member.builder()
+                .name(name)
+                .password(password)
+                .phone(phone)
+                .birth(birth)
+                .email(email)
+                .build();
+    }
 }

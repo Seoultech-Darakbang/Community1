@@ -1,12 +1,12 @@
 package darak.community.repository;
 
-import darak.community.domain.Member;
+import darak.community.domain.member.Member;
 import jakarta.persistence.EntityManager;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Repository;
-
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
@@ -22,12 +22,13 @@ public class MemberRepository {
         }
     }
 
-    public Member findOne(Long id) {
-        return em.find(Member.class, id);
+    public Optional<Member> findById(Long id) {
+        return Optional.ofNullable(em.find(Member.class, id));
     }
 
     public List<Member> findByName(String name) {
-        return em.createQuery("select m from Member m where m.name = :name", Member.class).setParameter("name", name).getResultList();
+        return em.createQuery("select m from Member m where m.name = :name", Member.class).setParameter("name", name)
+                .getResultList();
     }
 
     public List<Member> findByBirthAndPhone(LocalDate birthDay, String phoneNumber) {

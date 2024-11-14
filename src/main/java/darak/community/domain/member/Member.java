@@ -1,24 +1,29 @@
-package darak.community.domain;
+package darak.community.domain.member;
 
+import darak.community.domain.BaseEntity;
 import darak.community.dto.MemberUpdateDTO;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotEmpty;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
-
 import java.time.LocalDate;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 
 @Entity
-@Getter
 @NoArgsConstructor
 public class Member extends BaseEntity {
-    @Id @GeneratedValue
+    @Id
+    @GeneratedValue
     @Column(name = "member_id")
     private Long id;
 
-    private String password;
+    @Embedded
+    private MemberPassword password;
 
     @NotEmpty
     private String name;
@@ -38,7 +43,7 @@ public class Member extends BaseEntity {
     @Builder
     public Member(String name, String password, String phone, LocalDate birth, String email) {
         this.name = name;
-        this.password = password;
+        this.password = new MemberPassword(password);
         this.phone = phone;
         this.birth = birth;
         this.email = email;
@@ -47,10 +52,30 @@ public class Member extends BaseEntity {
     // 회원 정보 수정 메서드
     public void updateMember(MemberUpdateDTO memberUpdateDTO) {
         this.name = memberUpdateDTO.getName();
-        this.password = memberUpdateDTO.getPassword();
+        this.password = new MemberPassword(memberUpdateDTO.getPassword());
         this.email = memberUpdateDTO.getEmail();
         this.phone = memberUpdateDTO.getPhone();
         this.birth = memberUpdateDTO.getBirth();
+    }
+
+    public boolean isMatchedPassword(final String rawPassword) {
+        return password.isMatched(rawPassword);
+    }
+
+    public void changePassword(final String newPassword, final String oldPassword) {
+        password.changePassword(newPassword, oldPassword);
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public boolean isMatchedPhone(String phone) {
+        return this.phone.equals(phone);
     }
 
 }

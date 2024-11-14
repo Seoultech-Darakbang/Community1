@@ -1,9 +1,17 @@
 package darak.community.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import darak.community.domain.LoginStatus;
-import darak.community.domain.Member;
+import darak.community.domain.member.Member;
 import darak.community.dto.MemberUpdateDTO;
 import darak.community.repository.MemberRepository;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.NoSuchElementException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,31 +19,26 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.NoSuchElementException;
-
-import static org.junit.jupiter.api.Assertions.*;
-
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 @Transactional
-class MemberServiceTest {
+class MemberServiceImplTest {
     @Autowired
     MemberRepository memberRepository;
     @Autowired
-    MemberService memberService;
+    MemberServiceImpl memberServiceImpl;
+
     @Test
     void 회원가입() throws Exception {
         // given
         Member member = getMember();
         // when
-        Long savedId = memberService.join(member);
+        Long savedId = memberServiceImpl.join(member);
         // then
-        assertEquals(member, memberRepository.findOne(savedId));
+        assertEquals(member, memberRepository.findById(savedId).get());
         // 생성일 검사
-        assertEquals(LocalDate.now().getDayOfMonth(), memberRepository.findOne(savedId).getCreatedDate().getDayOfMonth());
+        assertEquals(LocalDate.now().getDayOfMonth(),
+                memberRepository.findById(savedId).get().getCreatedDate().getDayOfMonth());
     }
 
     private Member getMember() {
@@ -55,25 +58,26 @@ class MemberServiceTest {
         Member member1 = Member.builder().name("member1").build();
         Member member2 = Member.builder().name("member1").build();
 
-        memberService.join(member1);
+        memberServiceImpl.join(member1);
         // when
-        assertThrows(IllegalStateException.class, () -> memberService.join(member2));
+        assertThrows(IllegalStateException.class, () -> memberServiceImpl.join(member2));
     }
 
     @Test
     void 회원_정보_수정() throws Exception {
         // given
         Member member1 = Member.builder().name("member1").phone("01012345678").build();
-        memberService.join(member1);
+        memberServiceImpl.join(member1);
         // when
         MemberUpdateDTO memberUpdateDTO = new MemberUpdateDTO();
         memberUpdateDTO.setId(member1.getId());
         memberUpdateDTO.setName(member1.getName());
         memberUpdateDTO.setPhone("01098765432");
 
-        memberService.updateMember(memberUpdateDTO);
+        memberServiceImpl.update(memberUpdateDTO);
         // then
-        assertEquals(memberUpdateDTO.getPhone(), memberRepository.findOne(member1.getId()).getPhone());
+        assertTrue(memberRepository.findById(member1.getId()).get().isMatchedPhone(memberUpdateDTO.getPhone()));
+
         assertEquals(LocalDateTime.now().getDayOfMonth(), member1.getLastModifiedDate().getDayOfMonth());
     }
 
@@ -82,14 +86,14 @@ class MemberServiceTest {
         // given
         Member member1 = Member.builder().name("member1").phone("12345678").build();
         Member member2 = Member.builder().name("member2").phone("11111111").build();
-        memberService.join(member1);
-        memberService.join(member2);
+        memberServiceImpl.join(member1);
+        memberServiceImpl.join(member2);
 
         MemberUpdateDTO memberUpdateDTO = new MemberUpdateDTO();
         memberUpdateDTO.setId(member1.getId());
         memberUpdateDTO.setName("member2");
         // when
-        assertThrows(IllegalStateException.class, () -> memberService.updateMember(memberUpdateDTO));
+        assertThrows(IllegalStateException.class, () -> memberServiceImpl.update(memberUpdateDTO));
         // then
     }
 
@@ -97,38 +101,38 @@ class MemberServiceTest {
     void 회원_삭제() throws Exception {
         // given
         Member member = getMember();
-        memberService.join(member);
+        memberServiceImpl.join(member);
         // when
-        memberService.removeMember(member);
+        memberServiceImpl.remove(member.getId());
         // then
-        assertNull(memberRepository.findOne(member.getId()));
+        assertTrue(memberRepository.findById(member.getId()).isEmpty());
     }
 
     @Test
     void 로그인_존재하지않는_회원() throws Exception {
         // given
         Member member = Member.builder().name("admin").password("qwe123").build();
-        memberService.join(member);
+        memberServiceImpl.join(member);
         // when
-        assertEquals(memberService.login("admin2", "asdf"), LoginStatus.NONEXIST);
+        assertEquals(memberServiceImpl.login("admin2", "asdf"), LoginStatus.NONEXIST);
     }
 
     @Test
     void 로그인_실패() throws Exception {
         // given
         Member member = Member.builder().name("admin").password("qwe123").build();
-        memberService.join(member);
+        memberServiceImpl.join(member);
         // when
-        assertEquals(memberService.login("admin", "asdf"), LoginStatus.FAILED);
+        assertEquals(memberServiceImpl.login("admin", "asdf"), LoginStatus.FAILED);
     }
 
     @Test
     void 로그인_성공() throws Exception {
         // given
         Member member = Member.builder().name("admin").password("qwe123").build();
-        memberService.join(member);
+        memberServiceImpl.join(member);
         // when
-        assertEquals(memberService.login("admin", "qwe123"), LoginStatus.SUCCESS);
+        assertEquals(memberServiceImpl.login("admin", "qwe123"), LoginStatus.SUCCESS);
 
     }
 
@@ -141,7 +145,7 @@ class MemberServiceTest {
                 .birth(LocalDate.of(2001, 10, 13))
                 .phone("12345678")
                 .build();
-        memberService.join(member1);
+        memberServiceImpl.join(member1);
 
         Member member2 = Member.builder()
                 .name("admin2")
@@ -149,14 +153,16 @@ class MemberServiceTest {
                 .birth(LocalDate.of(2001, 10, 13))
                 .phone("12345678")
                 .build();
-        memberService.join(member2);
+        memberServiceImpl.join(member2);
 
         // when
-        List<String> nameList = memberService.findMemberName(LocalDate.of(2001, 10, 13), "12345678");
+        List<String> nameList = memberServiceImpl.findMemberNames(LocalDate.of(2001, 10, 13), "12345678");
 
         // then
         assertEquals(2, nameList.size());
-        assertThrows(NoSuchElementException.class, () -> memberService.findMemberName(LocalDate.of(2001, 10, 13), "123"));
-        assertThrows(NoSuchElementException.class, () -> memberService.findMemberName(LocalDate.of(2001, 10, 14), "12345678"));
+        assertThrows(NoSuchElementException.class,
+                () -> memberServiceImpl.findMemberNames(LocalDate.of(2001, 10, 13), "123"));
+        assertThrows(NoSuchElementException.class,
+                () -> memberServiceImpl.findMemberNames(LocalDate.of(2001, 10, 14), "12345678"));
     }
 }
