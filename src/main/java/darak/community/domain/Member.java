@@ -30,6 +30,7 @@ public class Member extends BaseEntity {
 
     private LocalDate birth;
 
+    // @Email
     private String email;
 
     // Builder 패턴의 단점 : 필수값을 놓칠 수 있음

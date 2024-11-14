@@ -47,6 +47,7 @@ public class MemberService {
     }
 
     // 회원 정보 수정
+    @Transactional
     public void updateMember(MemberUpdateDTO memberUpdateDTO) {
         Member member = memberRepository.findOne(memberUpdateDTO.getId()); // 영속 객체
         if (!memberUpdateDTO.getName().equals(member.getName())) { // 이름을 변경한 경우
@@ -56,6 +57,7 @@ public class MemberService {
     }
 
     // 회원 삭제
+    @Transactional
     public void removeMember(Member member) {
         memberRepository.withdraw(member);
     }
