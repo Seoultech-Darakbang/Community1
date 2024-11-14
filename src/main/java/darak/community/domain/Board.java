@@ -7,7 +7,7 @@ import lombok.Getter;
 
 @Entity
 @Getter
-public class Category {
+public class Board {
     @Id @GeneratedValue
     private Long id;
 
