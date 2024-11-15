@@ -15,11 +15,13 @@ public class CommentServiceImpl implements CommentService {
     private final CommentRepository commentRepository;
 
     @Override
+    @Transactional
     public void save(Comment comment) {
         commentRepository.save(comment);
     }
 
     @Override
+    @Transactional
     public void delete(Long commentId) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 댓글이 존재하지 않습니다."));

@@ -11,15 +11,17 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class AttachmentServiceImpl implements AttachmentService {
-    
+
     private final AttachmentRepository attachmentRepository;
 
     @Override
+    @Transactional
     public void save(Attachment attachment) {
         attachmentRepository.save(attachment);
     }
 
     @Override
+    @Transactional
     public void delete(Long attachmentId) {
         Attachment attachment = attachmentRepository.findById(attachmentId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 첨부파일입니다."));
