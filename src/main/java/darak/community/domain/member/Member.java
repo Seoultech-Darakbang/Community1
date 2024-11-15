@@ -1,7 +1,6 @@
 package darak.community.domain.member;
 
 import darak.community.domain.BaseEntity;
-import darak.community.dto.MemberUpdateDTO;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -52,12 +51,42 @@ public class Member extends BaseEntity {
     }
 
     // 회원 정보 수정 메서드
-    public void updateMember(MemberUpdateDTO memberUpdateDTO) {
-        this.name = memberUpdateDTO.getName();
-        this.password = new MemberPassword(memberUpdateDTO.getPassword());
-        this.email = memberUpdateDTO.getEmail();
-        this.phone = memberUpdateDTO.getPhone();
-        this.birth = memberUpdateDTO.getBirth();
+    public void updateMember(Member editInfoMember) {
+        updatePassword(editInfoMember);
+        updateName(editInfoMember);
+        updatePhone(editInfoMember);
+        updateBirth(editInfoMember);
+        updateEmail(editInfoMember);
+    }
+
+    private void updateEmail(Member editInfoMember) {
+        if (editInfoMember.email != null) {
+            this.email = editInfoMember.email;
+        }
+    }
+
+    private void updateBirth(Member editInfoMember) {
+        if (editInfoMember.birth != null) {
+            this.birth = editInfoMember.birth;
+        }
+    }
+
+    private void updatePhone(Member editInfoMember) {
+        if (editInfoMember.phone != null) {
+            this.phone = editInfoMember.phone;
+        }
+    }
+
+    private void updateName(Member editInfoMember) {
+        if (editInfoMember.name != null) {
+            this.name = editInfoMember.name;
+        }
+    }
+
+    private void updatePassword(Member editInfoMember) {
+        if (editInfoMember.password != null) {
+            this.password = editInfoMember.password;
+        }
     }
 
     public boolean isMatchedPassword(final String rawPassword) {
