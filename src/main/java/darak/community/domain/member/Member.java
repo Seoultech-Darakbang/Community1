@@ -1,7 +1,6 @@
 package darak.community.domain.member;
 
 import darak.community.domain.BaseEntity;
-import darak.community.dto.MemberUpdateDTO;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -11,6 +10,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotEmpty;
 import java.time.LocalDate;
+import java.util.Objects;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -52,12 +52,25 @@ public class Member extends BaseEntity {
     }
 
     // 회원 정보 수정 메서드
-    public void updateMember(MemberUpdateDTO memberUpdateDTO) {
-        this.name = memberUpdateDTO.getName();
-        this.password = new MemberPassword(memberUpdateDTO.getPassword());
-        this.email = memberUpdateDTO.getEmail();
-        this.phone = memberUpdateDTO.getPhone();
-        this.birth = memberUpdateDTO.getBirth();
+    public void updateMember(Member editInfoMember) {
+        if (!Objects.equals(editInfoMember.id, this.id)) {
+            throw new IllegalArgumentException("회원 정보 수정 실패");
+        }
+        if (editInfoMember.password != null) {
+            this.password = editInfoMember.password;
+        }
+        if (editInfoMember.name != null) {
+            this.name = editInfoMember.name;
+        }
+        if (editInfoMember.phone != null) {
+            this.phone = editInfoMember.phone;
+        }
+        if (editInfoMember.birth != null) {
+            this.birth = editInfoMember.birth;
+        }
+        if (editInfoMember.email != null) {
+            this.email = editInfoMember.email;
+        }
     }
 
     public boolean isMatchedPassword(final String rawPassword) {

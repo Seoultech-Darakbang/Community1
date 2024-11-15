@@ -57,7 +57,7 @@ public class MemberServiceImpl implements MemberService {
         if (!memberUpdateDTO.getName().equals(member.getName())) { // 이름을 변경한 경우
             validateDuplicateMember(memberUpdateDTO.getName());
         }
-        member.updateMember(memberUpdateDTO);
+        member.updateMember(memberUpdateDTO.toEntity());
     }
 
     // 회원 삭제
