@@ -10,7 +10,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.NotEmpty;
 import java.time.LocalDate;
-import java.util.Objects;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -53,9 +52,6 @@ public class Member extends BaseEntity {
 
     // 회원 정보 수정 메서드
     public void updateMember(Member editInfoMember) {
-        if (!Objects.equals(editInfoMember.id, this.id)) {
-            throw new IllegalArgumentException("회원 정보 수정 실패");
-        }
         if (editInfoMember.password != null) {
             this.password = editInfoMember.password;
         }
