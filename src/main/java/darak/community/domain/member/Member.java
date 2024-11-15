@@ -52,20 +52,40 @@ public class Member extends BaseEntity {
 
     // 회원 정보 수정 메서드
     public void updateMember(Member editInfoMember) {
-        if (editInfoMember.password != null) {
-            this.password = editInfoMember.password;
+        updatePassword(editInfoMember);
+        updateName(editInfoMember);
+        updatePhone(editInfoMember);
+        updateBirth(editInfoMember);
+        updateEmail(editInfoMember);
+    }
+
+    private void updateEmail(Member editInfoMember) {
+        if (editInfoMember.email != null) {
+            this.email = editInfoMember.email;
         }
-        if (editInfoMember.name != null) {
-            this.name = editInfoMember.name;
-        }
-        if (editInfoMember.phone != null) {
-            this.phone = editInfoMember.phone;
-        }
+    }
+
+    private void updateBirth(Member editInfoMember) {
         if (editInfoMember.birth != null) {
             this.birth = editInfoMember.birth;
         }
-        if (editInfoMember.email != null) {
-            this.email = editInfoMember.email;
+    }
+
+    private void updatePhone(Member editInfoMember) {
+        if (editInfoMember.phone != null) {
+            this.phone = editInfoMember.phone;
+        }
+    }
+
+    private void updateName(Member editInfoMember) {
+        if (editInfoMember.name != null) {
+            this.name = editInfoMember.name;
+        }
+    }
+
+    private void updatePassword(Member editInfoMember) {
+        if (editInfoMember.password != null) {
+            this.password = editInfoMember.password;
         }
     }
 
