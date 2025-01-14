@@ -1,11 +1,108 @@
 <!DOCTYPE HTML>
-<html xmlns:th="http://www.thymeleaf.org">
+<html>
 <head>
-    <title>Hello</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>다락방 커뮤니티</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link href="./css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* 로고와 텍스트의 수직 정렬을 중앙으로 맞추기 */
+        .logo-text {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-text img {
+            margin-right: 20px; /* 로고와 텍스트 사이의 간격 조정 */
+        }
+
+        .login-buttons {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px; /* 버튼 간의 간격 */
+        }
+
+        .btn-login-default {
+            background-color: #007bff; /* 기본 파란색 */
+        }
+
+        .btn-login-kakao {
+            background-color: #FEE500; /* 카카오 노란색 */
+            color: #3C1E1E; /* 텍스트 색상 변경 */
+        }
+
+        .btn-login-naver {
+            background-color: #1EC800; /* 네이버 초록색 */
+        }
+
+        .btn-login-github {
+            background-color: #333333; /* 깃허브 검은색 */
+            color: white;
+        }
+
+        .btn-login-google {
+            background-color: white; /* 구글 흰색 */
+            /* 테두리와 텍스트 색상 변경 */
+            border: 1px solid #000000;
+            color: #000000;
+        }
+
+        @media (min-width: 576px) {
+            .login-buttons a {
+                width: 250px;
+            }
+        }
+
+        @media (max-width: 575.98px) {
+            .login-buttons a {
+                width: 100%;
+            }
+        }
+    </style>
 </head>
 <body>
-Hello
-<a href="/hello">hello</a>
+<!-- 메인 로고 컴포넌트 -->
+<div class="container py-5 d-flex justify-content-center align-items-center">
+    <a href="index.html" class="logo-text text-decoration-none text-dark">
+        <img src="./img/logo.png" alt="다락방 로고" width="100" height="100">
+        <h1 class="mb-0">다락방 커뮤니티</h1>
+    </a>
+</div>
+<!--로그인 버튼-->
+<div class="container py-5 d-flex justify-content-center">
+    <div class="login-buttons">
+        <!-- 일반 로그인 -->
+        <a href="login.html" class="btn btn-custom-login btn-login-default btn-lg" aria-label="일반 로그인">
+            <!-- 아이콘 추가 (선택 사항) -->
+            <i class="fas fa-user me-2"></i> 로그인
+        </a>
+        <!-- 카카오 로그인 -->
+        <a href="login.html" class="btn btn-custom-login btn-login-kakao btn-lg" aria-label="카카오 로그인">
+            <i class="fab fa-kakao me-2"></i> 카카오 로그인
+        </a>
+        <!-- 네이버 로그인 -->
+        <a href="login.html" class="btn btn-custom-login btn-login-naver btn-lg" aria-label="네이버 로그인">
+            <i class="fab fa-naver me-2"></i> 네이버 로그인
+        </a>
+        <!-- 깃허브 로그인 -->
+        <a href="login.html" class="btn btn-custom-login btn-login-github btn-lg" aria-label="깃허브 로그인">
+            <i class="fab fa-github me-2"></i> 깃허브 로그인
+        </a>
+        <!-- 구글 로그인 -->
+        <a href="login.html" class="btn btn-custom-login btn-login-google btn-lg" aria-label="구글 로그인">
+            <i class="fab fa-google me-2"></i> 구글 로그인
+        </a>
+    </div>
+</div>
+<!--회원가입 버튼-->
+<div class="container py-5 d-flex justify-content-center">
+    <div class="login-buttons">
+        <!-- 회원가입 -->
+        <a href="signup.html" class="btn btn-custom-login btn-login-default btn-lg" aria-label="회원가입">
+            <!-- 아이콘 추가 (선택 사항) -->
+            <i class="fas fa-user-plus me-2"></i> 회원가입
+        </a>
+    </div>
+</div>
 </body>
 </html>
