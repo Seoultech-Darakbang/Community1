@@ -1,0 +1,39 @@
+.login-buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    width: 100%;
+    max-width: 300px; /* 버튼 최대 너비 지정 */
+}
+
+.btn-custom-login {
+    width: 100%; /* 버튼 너비를 100%로 설정 */
+    padding: 10px 20px; /* 버튼 내부 여백 */
+}
+
+.btn-login-default {
+    background-color: #007bff;
+    color: white;
+}
+
+.btn-login-kakao {
+    background-color: #FEE500;
+    color: #3C1E1E;
+}
+
+.btn-login-naver {
+    background-color: #1EC800;
+    color: white;
+}
+
+.btn-login-github {
+    background-color: #333333;
+    color: white;
+}
+
+.btn-login-google {
+    background-color: white;
+    border: 1px solid #000000;
+    color: #000000;
+}

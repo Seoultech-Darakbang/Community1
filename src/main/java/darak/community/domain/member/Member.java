@@ -23,6 +23,8 @@ public class Member extends BaseEntity {
     @Column(name = "member_id")
     private Long id;
 
+    private String loginId;
+
     @Embedded
     private MemberPassword password;
 
@@ -42,7 +44,8 @@ public class Member extends BaseEntity {
     // Builder 패턴의 단점 : 필수값을 놓칠 수 있음
     // -> NonNull을 붙여준다.
     @Builder
-    public Member(String name, String password, String phone, LocalDate birth, String email) {
+    public Member(String loginId, String name, String password, String phone, LocalDate birth, String email) {
+        this.loginId = loginId;
         this.name = name;
         this.password = new MemberPassword(password);
         this.phone = phone;

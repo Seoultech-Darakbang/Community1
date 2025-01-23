@@ -1,0 +1,8 @@
+.logo-text {
+    display: flex;
+    align-items: center;
+}
+
+.logo-text img {
+    margin-right: 20px; /* 로고와 텍스트 사이의 간격 조정 */
+}
