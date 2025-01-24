@@ -1,6 +1,5 @@
 package darak.community.service;
 
-import darak.community.domain.LoginStatus;
 import darak.community.domain.member.Member;
 import darak.community.dto.MemberUpdateDTO;
 import darak.community.repository.MemberRepository;
@@ -16,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class MemberServiceImpl implements MemberService {
+
     private final MemberRepository memberRepository;
 
     // 회원 생성
@@ -67,20 +67,6 @@ public class MemberServiceImpl implements MemberService {
         Member member = memberRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
         memberRepository.withdraw(member);
     }
-
-    @Override
-    public LoginStatus login(String name, String password) {
-        List<Member> memberList = memberRepository.findByName(name);
-        if (memberList.isEmpty()) {
-            return LoginStatus.NONEXIST;
-        }
-
-        if (memberList.getFirst().isMatchedPassword(password)) {
-            return LoginStatus.SUCCESS;
-        }
-        return LoginStatus.FAILED;
-    }
-
 
     // name 찾기
     @Override

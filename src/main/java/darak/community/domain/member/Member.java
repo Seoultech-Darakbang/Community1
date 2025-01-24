@@ -1,6 +1,7 @@
 package darak.community.domain.member;
 
 import darak.community.domain.BaseEntity;
+import darak.community.exception.PasswordFailedExceededException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -8,7 +9,6 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
-import jakarta.validation.constraints.NotEmpty;
 import java.time.LocalDate;
 import lombok.Builder;
 import lombok.Getter;
@@ -28,7 +28,6 @@ public class Member extends BaseEntity {
     @Embedded
     private MemberPassword password;
 
-    @NotEmpty
     private String name;
 
     @Enumerated(EnumType.STRING)
@@ -92,16 +91,21 @@ public class Member extends BaseEntity {
         }
     }
 
-    public boolean isMatchedPassword(final String rawPassword) {
+    public boolean isMatchedPassword(final String rawPassword) throws PasswordFailedExceededException {
         return password.isMatched(rawPassword);
     }
 
-    public void changePassword(final String newPassword, final String oldPassword) {
+    public void changePassword(final String newPassword, final String oldPassword)
+            throws PasswordFailedExceededException {
         password.changePassword(newPassword, oldPassword);
     }
 
     public boolean isMatchedPhone(String phone) {
         return this.phone.equals(phone);
+    }
+
+    public boolean isPasswordExpired() {
+        return password.isPasswordExpired();
     }
 
 }

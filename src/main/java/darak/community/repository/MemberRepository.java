@@ -26,6 +26,10 @@ public class MemberRepository {
         return Optional.ofNullable(em.find(Member.class, id));
     }
 
+    public Optional<Member> findByLoginId(String loginId) {
+        return findAll().stream().filter(m -> m.getLoginId().equals(loginId)).findFirst();
+    }
+
     public List<Member> findByName(String name) {
         return em.createQuery("select m from Member m where m.name = :name", Member.class).setParameter("name", name)
                 .getResultList();
@@ -37,6 +41,10 @@ public class MemberRepository {
                 .setParameter("birth", birthDay)
                 .setParameter("phone", phoneNumber)
                 .getResultList();
+    }
+
+    public List<Member> findAll() {
+        return em.createQuery("SELECT m from Member m", Member.class).getResultList();
     }
 
     public void withdraw(Member member) {

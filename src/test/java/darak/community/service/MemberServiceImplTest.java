@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import darak.community.domain.LoginStatus;
+import darak.community.domain.LoginResult;
 import darak.community.domain.member.Member;
 import darak.community.dto.MemberUpdateDTO;
 import darak.community.repository.MemberRepository;
@@ -114,7 +114,7 @@ class MemberServiceImplTest {
         Member member = Member.builder().name("admin").password("qwe123").build();
         memberServiceImpl.join(member);
         // when
-        assertEquals(memberServiceImpl.login("admin2", "asdf"), LoginStatus.NONEXIST);
+        assertEquals(memberServiceImpl.login("admin2", "asdf"), LoginResult.NON_EXIST);
     }
 
     @Test
@@ -123,7 +123,7 @@ class MemberServiceImplTest {
         Member member = Member.builder().name("admin").password("qwe123").build();
         memberServiceImpl.join(member);
         // when
-        assertEquals(memberServiceImpl.login("admin", "asdf"), LoginStatus.FAILED);
+        assertEquals(memberServiceImpl.login("admin", "asdf"), LoginResult.FAILED);
     }
 
     @Test
@@ -132,7 +132,7 @@ class MemberServiceImplTest {
         Member member = Member.builder().name("admin").password("qwe123").build();
         memberServiceImpl.join(member);
         // when
-        assertEquals(memberServiceImpl.login("admin", "qwe123"), LoginStatus.SUCCESS);
+        assertEquals(memberServiceImpl.login("admin", "qwe123"), LoginResult.SUCCESS);
 
     }
 

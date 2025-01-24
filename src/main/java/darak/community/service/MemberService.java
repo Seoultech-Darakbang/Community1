@@ -1,6 +1,5 @@
 package darak.community.service;
 
-import darak.community.domain.LoginStatus;
 import darak.community.domain.member.Member;
 import darak.community.dto.MemberUpdateDTO;
 import java.time.LocalDate;
@@ -14,8 +13,6 @@ public interface MemberService {
     List<Member> findByName(String name);
 
     void update(MemberUpdateDTO memberUpdateDTO);
-
-    LoginStatus login(String name, String password);
 
     void remove(Long id);
 

@@ -28,19 +28,20 @@
                    th:errorclass="field-error">
             <div class="field-error" th:errors="*{password}"></div>
         </div>
+        <hr class="my-4">
+        <div class="row">
+            <div class="col">
+                <button class="w-100 btn btn-primary btn-lg" type="submit" th:text="#{button.loginForm.login}">로그인
+                </button>
+            </div>
+            <div class="col">
+                <button class="w-100 btn btn-secondary btn-lg"
+                        onclick="location.href='items.html'"
+                        th:onclick="|location.href='@{/}'|"
+                        type="button" th:text="#{button.loginForm.cancel}">취소
+                </button>
+            </div>
+        </div>
     </form>
-    <hr class="my-4">
-    <div class="row">
-        <div class="col">
-            <button class="w-100 btn btn-primary btn-lg" type="submit" th:text="#{button.loginForm.login}">로그인</button>
-        </div>
-        <div class="col">
-            <button class="w-100 btn btn-secondary btn-lg"
-                    onclick="location.href='items.html'"
-                    th:onclick="|location.href='@{/}'|"
-                    type="button" th:text="#{button.loginForm.cancel}">취소
-            </button>
-        </div>
-    </div>
 </div>
 </body>

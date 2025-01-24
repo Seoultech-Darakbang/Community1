@@ -24,15 +24,24 @@ public class MemberPassword {
         this.password = password;
         this.expirationDate = LocalDateTime.now().plusSeconds(TTL);
         this.ttl = TTL; // 2 weeks
+        this.failedCount = 0;
     }
 
-    public boolean isMatched(final String rawPassword) {
-        if (failedCount >= MAX_FAILED_COUNT) {
-            throw new PasswordFailedExceededException();
-        }
+    public boolean isMatched(final String rawPassword) throws PasswordFailedExceededException {
+        checkFailedCount();
         final boolean matches = isMatches(rawPassword);
         updateFailedCount(matches);
         return matches;
+    }
+
+    public boolean isPasswordExpired() {
+        return LocalDateTime.now().isAfter(expirationDate);
+    }
+
+    private void checkFailedCount() throws PasswordFailedExceededException {
+        if (failedCount >= MAX_FAILED_COUNT) {
+            throw new PasswordFailedExceededException();
+        }
     }
 
     private boolean isMatches(String rawPassword) {
@@ -48,7 +57,8 @@ public class MemberPassword {
         failedCount++;
     }
 
-    public void changePassword(final String newPassword, final String oldPassword) {
+    public void changePassword(final String newPassword, final String oldPassword)
+            throws PasswordFailedExceededException {
         if (isMatched(oldPassword)) {
             password = encodePassword(newPassword);
             extendExpirationDate();
