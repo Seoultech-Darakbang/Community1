@@ -4,13 +4,12 @@
     <th:block th:replace="~{template/fragments/layoutFragment :: head}"/>
     <link th:href="@{/css/basic-form.css}" rel="stylesheet">
 </head>
-<body>
 <div th:insert="~{template/fragments/loginFragment::logoHeader}"></div>
 <div class="container">
     <div class="text-center">
-        <h2 th:text="#{title.member.login}">로그인</h2>
+        <h2 th:text="#{title.member.join}">회원가입</h2>
     </div>
-    <form th:action th:object="${loginForm}" method="post">
+    <form th:action th:object="${memberCreateForm}" method="post">
         <div th:if="${#fields.hasGlobalErrors()}">
             <p class="field-error" th:each="err : ${#fields.globalErrors()}"
                th:text="${err}">전체 오류 메시지</p>
@@ -28,10 +27,39 @@
                    th:errorclass="field-error">
             <div class="field-error" th:errors="*{password}"></div>
         </div>
+        <div>
+            <label for="name" th:text="#{label.member.name}">이름</label>
+            <input type="text" id="name" th:field="*{name}"
+                   class="form-control"
+                   th:errorclass="field-error">
+            <div class="field-error" th:errors="*{name}"></div>
+        </div>
+        <div>
+            <label for="phone" th:text="#{label.member.phone}">전화번호</label>
+            <input type="text" id="phone" th:field="*{phone}"
+                   class="form-control"
+                   th:errorclass="field-error">
+            <div class="field-error" th:errors="*{phone}"></div>
+        </div>
+        <div>
+            <label for="birth" th:text="#{label.member.birth}">생년월일</label>
+            <input type="text" id="birth" th:field="*{birth}"
+                   class="form-control"
+                   th:errorclass="field-error">
+            <div class="field-error" th:errors="*{birth}"></div>
+        </div>
+        <div>
+            <label for="email" th:text="#{label.member.email}">이메일</label>
+            <input type="text" id="email" th:field="*{email}"
+                   class="form-control"
+                   th:errorclass="field-error">
+            <div class="field-error" th:errors="*{email}"></div>
+        </div>
         <hr class="my-4">
         <div class="row">
             <div class="col">
-                <button class="w-100 btn btn-primary btn-lg" type="submit" th:text="#{button.loginForm.login}">로그인
+                <button class="w-100 btn btn-primary btn-lg" type="submit" th:text="#{button.member.join}">가입
+                    완료
                 </button>
             </div>
             <div class="col">
@@ -44,4 +72,4 @@
         </div>
     </form>
 </div>
-</body>
+</html>
