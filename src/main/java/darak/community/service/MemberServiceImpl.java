@@ -6,6 +6,7 @@ import darak.community.repository.MemberRepository;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,15 +24,15 @@ public class MemberServiceImpl implements MemberService {
     @Override
     public Long join(Member member) {
         // 중복 회원 검사
-        validateDuplicateMember(member.getName());
+        validateDuplicateMember(member.getLoginId());
         memberRepository.save(member);
         return member.getId();
     }
 
     // 중복 회원 검사 메서드
-    private void validateDuplicateMember(String name) {
-        List<Member> findMembers = memberRepository.findByName(name);
-        if (!findMembers.isEmpty()) {
+    private void validateDuplicateMember(String loginId) {
+        Optional<Member> findMember = memberRepository.findByLoginId(loginId);
+        if (findMember.isPresent()) {
             throw new IllegalStateException("이미 존재하는 회원입니다");
         }
     }
