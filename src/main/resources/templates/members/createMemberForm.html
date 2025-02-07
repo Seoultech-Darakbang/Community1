@@ -36,21 +36,21 @@
         </div>
         <div>
             <label for="phone" th:text="#{label.member.phone}">전화번호</label>
-            <input type="text" id="phone" th:field="*{phone}"
+            <input type="tel" id="phone" th:field="*{phone}"
                    class="form-control"
                    th:errorclass="field-error">
             <div class="field-error" th:errors="*{phone}"></div>
         </div>
         <div>
             <label for="birth" th:text="#{label.member.birth}">생년월일</label>
-            <input type="text" id="birth" th:field="*{birth}"
+            <input type="date" id="birth" th:field="*{birth}"
                    class="form-control"
                    th:errorclass="field-error">
             <div class="field-error" th:errors="*{birth}"></div>
         </div>
         <div>
             <label for="email" th:text="#{label.member.email}">이메일</label>
-            <input type="text" id="email" th:field="*{email}"
+            <input type="email" id="email" th:field="*{email}"
                    class="form-control"
                    th:errorclass="field-error">
             <div class="field-error" th:errors="*{email}"></div>
