@@ -12,6 +12,8 @@ public interface MemberService {
 
     List<Member> findByName(String name);
 
+    void validateDuplicateMember(String loginId);
+    
     void update(MemberUpdateDTO memberUpdateDTO);
 
     void remove(Long id);

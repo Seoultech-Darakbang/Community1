@@ -30,7 +30,7 @@ public class MemberServiceImpl implements MemberService {
     }
 
     // 중복 회원 검사 메서드
-    private void validateDuplicateMember(String loginId) {
+    public void validateDuplicateMember(String loginId) {
         Optional<Member> findMember = memberRepository.findByLoginId(loginId);
         if (findMember.isPresent()) {
             throw new IllegalStateException("이미 존재하는 회원입니다");
