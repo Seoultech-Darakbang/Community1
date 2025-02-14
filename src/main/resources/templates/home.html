@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>다락방 커뮤니티</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+  <script>
+    // Tailwind CSS의 다크모드 설정 (클래스 기반)
+    tailwind.config = {
+      darkMode: 'class'
+    };
+  </script>
+  <style>
+    /* 스크롤 시 섹션 페이드인 애니메이션 */
+    .fade-in-section {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+    }
+
+    .fade-in-section.visible {
+      opacity: 1;
+      transform: none;
+    }
+  </style>
+</head>
+
+<body class="dark:bg-gray-900 dark:text-white bg-white text-black min-h-screen transition-colors duration-300">
+  <!-- 헤더 및 네비게이션 -->
+  <header class="sticky top-0 bg-opacity-90 backdrop-blur-lg">
+    <!-- 데스크탑 네비게이션 (md 이상) -->
+    <nav class="container max-w-6xl mx-auto px-6 py-3 hidden md:grid grid-cols-3 items-center">
+      <!-- 왼쪽: 로고 -->
+      <div class="flex items-center space-x-4 justify-start">
+        <img src="https://via.placeholder.com/40" alt="다락방 로고" class="w-10 h-10">
+        <h1 class="text-2xl font-bold">다락방</h1>
+      </div>
+      <!-- 가운데: 홈, 소개, 활동, 소식 -->
+      <div class="flex justify-center gap-x-8">
+        <a href="#slider" class="hover:text-blue-500 transition-colors">홈</a>
+        <a href="#about" class="hover:text-blue-500 transition-colors">소개</a>
+        <a href="#activities" class="hover:text-blue-500 transition-colors">활동</a>
+        <a href="#news" class="hover:text-blue-500 transition-colors">소식</a>
+      </div>
+      <!-- 오른쪽: 커뮤니티, 로그인, 회원가입, 다크모드 토글 -->
+      <div class="flex items-center gap-x-6 justify-end">
+        <a href="/community" class="hover:text-blue-500 transition-colors flex items-center gap-1">
+          <i class="fas fa-users"></i> 커뮤니티
+        </a>
+        <a href="/login" class="hover:text-blue-500 transition-colors flex items-center gap-1">
+          <i class="fas fa-sign-in-alt"></i> 로그인
+        </a>
+        <a href="/signup" class="hover:text-blue-500 transition-colors flex items-center gap-1">
+          <i class="fas fa-user-plus"></i> 회원가입
+        </a>
+        <button id="darkModeToggle"
+          class="p-2 w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-700 focus:ring focus:ring-blue-500">
+          <i class="fas fa-moon text-gray-700"></i>
+        </button>
+      </div>
+    </nav>
+    <!-- 모바일 네비게이션 (md 미만) -->
+    <nav class="container mx-auto px-6 py-3 md:hidden flex items-center justify-between">
+      <div class="flex items-center space-x-4">
+        <img src="https://via.placeholder.com/40" alt="다락방 로고" class="w-10 h-10">
+        <h1 class="text-2xl font-bold">다락방</h1>
+      </div>
+      <button id="menuToggle" class="p-2 text-gray-700 dark:text-white">
+        <i class="fas fa-bars text-2xl"></i>
+      </button>
+    </nav>
+  </header>
+
+  <!-- 모바일 메뉴 -->
+  <aside id="mobileMenu"
+    class="fixed right-0 inset-y-0 w-64 dark:bg-gray-800 bg-white shadow-lg translate-x-full transition-transform duration-300 z-20">
+    <button id="closeMenu" class="p-2 m-4 text-gray-700 dark:text-white">
+      <i class="fas fa-times text-2xl"></i>
+    </button>
+    <nav class="flex flex-col space-y-4 px-6">
+      <!-- 상단: 홈, 소개, 활동, 소식 -->
+      <a href="#slider" class="hover:text-blue-500 transition-colors">홈</a>
+      <a href="#about" class="hover:text-blue-500 transition-colors">소개</a>
+      <a href="#activities" class="hover:text-blue-500 transition-colors">활동</a>
+      <a href="#news" class="hover:text-blue-500 transition-colors">소식</a>
+      <hr class="border-gray-300 dark:border-gray-600 my-2">
+      <!-- 하단: 커뮤니티, 로그인, 회원가입 -->
+      <a href="/community" class="hover:text-blue-500 transition-colors flex items-center gap-2">
+        <i class="fas fa-users"></i> 커뮤니티
+      </a>
+      <a href="/login" class="hover:text-blue-500 transition-colors flex items-center gap-2">
+        <i class="fas fa-sign-in-alt"></i> 로그인
+      </a>
+      <a href="/signup" class="hover:text-blue-500 transition-colors flex items-center gap-2">
+        <i class="fas fa-user-plus"></i> 회원가입
+      </a>
+      <button id="darkModeToggleMobile"
+        class="p-2 w-full rounded-full bg-gray-200 dark:bg-gray-700 focus:ring focus:ring-blue-500">
+        <i class="fas fa-moon text-gray-700 dark:text-yellow-400"></i>
+      </button>
+    </nav>
+  </aside>
+
+  <!-- 메인 콘텐츠 -->
+  <main>
+    <!-- Section 1: 홍보 슬라이드 (각 슬라이드는 3초마다 변경) -->
+    <section id="slider" class="relative min-h-screen fade-in-section">
+      <div class="overflow-hidden relative h-full">
+        <!-- 슬라이드 1: 모집 이미지 -->
+        <div class="absolute inset-0 slide" id="slide1">
+          <img src="https://via.placeholder.com/1200x800?text=모집+이미지" class="w-full h-full object-cover" alt="모집 이미지">
+          <div class="absolute inset-0 bg-black bg-opacity-40 flex flex-col justify-center items-center">
+            <h2 class="text-white text-4xl font-bold mb-4">신입 기수 모집 중(~3/10)</h2>
+            <button class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">35기 지원</button>
+          </div>
+        </div>
+        <!-- 슬라이드 2: 소개 이미지 -->
+        <div class="absolute inset-0 slide hidden" id="slide2">
+          <img src="https://via.placeholder.com/1200x800?text=소개+이미지" class="w-full h-full object-cover" alt="소개 이미지">
+          <div class="absolute inset-0 bg-black bg-opacity-40 flex flex-col justify-center items-center">
+            <h2 class="text-white text-4xl font-bold mb-4">다락방 소개</h2>
+            <p class="text-white text-xl">서울과학기술대학교 컴퓨터공학과 학술동아리 다락방입니다!</p>
+          </div>
+        </div>
+        <!-- 슬라이드 3: 활동 이미지 -->
+        <div class="absolute inset-0 slide hidden" id="slide3">
+          <img src="https://via.placeholder.com/1200x800?text=활동+이미지" class="w-full h-full object-cover" alt="활동 이미지">
+          <div class="absolute inset-0 bg-black bg-opacity-40 flex flex-col justify-center items-center">
+            <h2 class="text-white text-4xl font-bold mb-4">다양한 활동</h2>
+            <p class="text-white text-xl">세미나, 스터디, 오운완 챌린지 등 다양한 활동을 진행합니다.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 2: 다락방 소개 -->
+    <section id="about" class="px-6 py-12 min-h-screen fade-in-section">
+      <div class="container mx-auto text-center">
+        <h2 class="text-3xl font-bold mb-4">다락방 소개</h2>
+        <p class="text-lg">서울과학기술대학교 컴퓨터공학과 학술동아리 다락방입니다!</p>
+      </div>
+    </section>
+
+    <!-- Section 3: 동아리 활동 소개 -->
+    <section id="activities" class="px-6 py-12 bg-gray-50 dark:bg-gray-800 min-h-screen fade-in-section">
+      <div class="container mx-auto space-y-8">
+        <!-- Row 1: 스터디 -->
+        <div class="flex flex-col md:flex-row justify-between items-center">
+          <div class="w-full md:w-1/2 flex items-center">
+            <img src="https://via.placeholder.com/300x200?text=스터디" alt="스터디" class="w-1/2 object-cover rounded">
+            <div class="ml-4">
+              <h3 class="text-xl font-semibold">스터디</h3>
+              <p class="text-sm">동아리 내 스터디 활동에 대한 간략 소개.</p>
+            </div>
+          </div>
+          <div class="w-full md:w-1/2"></div>
+        </div>
+        <!-- Row 2: 세미나 -->
+        <div class="flex flex-col md:flex-row justify-between items-center">
+          <div class="w-full md:w-1/2"></div>
+          <div class="w-full md:w-1/2 flex items-center">
+            <img src="https://via.placeholder.com/300x200?text=세미나" alt="세미나" class="w-1/2 object-cover rounded">
+            <div class="ml-4">
+              <h3 class="text-xl font-semibold">세미나</h3>
+              <p class="text-sm">세미나 활동에 대한 간략 소개.</p>
+            </div>
+          </div>
+        </div>
+        <!-- Row 3: 오운완 챌린지 -->
+        <div class="flex flex-col md:flex-row justify-between items-center">
+          <div class="w-full md:w-1/2 flex items-center">
+            <img src="https://via.placeholder.com/300x200?text=오운완" alt="오운완" class="w-1/2 object-cover rounded">
+            <div class="ml-4">
+              <h3 class="text-xl font-semibold">오운완 챌린지</h3>
+              <p class="text-sm">운동완료 챌린지에 대한 간략 소개.</p>
+            </div>
+          </div>
+          <div class="w-full md:w-1/2"></div>
+        </div>
+        <!-- Row 4: 개강파티 & 종강파티 -->
+        <div class="flex flex-col md:flex-row justify-between items-center">
+          <div class="w-full md:w-1/2"></div>
+          <div class="w-full md:w-1/2 flex items-center">
+            <img src="https://via.placeholder.com/300x200?text=파티" alt="파티" class="w-1/2 object-cover rounded">
+            <div class="ml-4">
+              <h3 class="text-xl font-semibold">개강파티 &amp; 종강파티</h3>
+              <p class="text-sm">파티 관련 간략 소개.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 4: 최신 소식 -->
+    <section id="news" class="px-6 py-12 min-h-screen fade-in-section">
+      <div class="container mx-auto">
+        <h2 class="text-3xl font-bold mb-6 text-center">최신 소식</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <article class="p-4 border rounded hover:shadow-lg">
+            <h3 class="text-xl font-semibold mb-2">공지사항</h3>
+            <p class="text-sm">최근 공지사항의 간략한 내용이 표시됩니다.</p>
+          </article>
+          <article class="p-4 border rounded hover:shadow-lg">
+            <h3 class="text-xl font-semibold mb-2">커뮤니티</h3>
+            <p class="text-sm">최근 커뮤니티의 간략한 내용이 표시됩니다.</p>
+          </article>
+          <article class="p-4 border rounded hover:shadow-lg">
+            <h3 class="text-xl font-semibold mb-2">활동</h3>
+            <p class="text-sm">최근 활동의 간략한 내용이 표시됩니다.</p>
+          </article>
+          <article class="p-4 border rounded hover:shadow-lg">
+            <h3 class="text-xl font-semibold mb-2">Member</h3>
+            <p class="text-sm">Member 게시판의 최신 내용이 표시됩니다.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- 푸터 -->
+  <footer class="bg-gray-100 dark:bg-gray-800 py-6">
+    <div class="container max-w-4xl mx-auto px-6 text-center">
+      <p>&copy; 2025 다락방. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- 스크립트 영역 -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // 다크모드 관련 함수
+      function updateDarkModeIcons() {
+        const desktopIcon = document.getElementById('darkModeToggle')?.querySelector('i');
+        const mobileIcon = document.getElementById('darkModeToggleMobile')?.querySelector('i');
+        if (document.documentElement.classList.contains('dark')) {
+          if (desktopIcon) desktopIcon.className = 'fas fa-sun text-yellow-400';
+          if (mobileIcon) mobileIcon.className = 'fas fa-sun text-yellow-400';
+        } else {
+          if (desktopIcon) desktopIcon.className = 'fas fa-moon text-gray-700';
+          if (mobileIcon) mobileIcon.className = 'fas fa-moon text-gray-700';
+        }
+      }
+
+      function initialTheme() {
+        if (localStorage.theme === 'dark') {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+        updateDarkModeIcons();
+      }
+
+      function toggleDarkMode() {
+        if (document.documentElement.classList.contains('dark')) {
+          document.documentElement.classList.remove('dark');
+          localStorage.theme = 'light';
+        } else {
+          document.documentElement.classList.add('dark');
+          localStorage.theme = 'dark';
+        }
+        updateDarkModeIcons();
+      }
+
+      // 다크모드 토글 이벤트 리스너 등록
+      document.getElementById('darkModeToggle').addEventListener('click', toggleDarkMode);
+      document.getElementById('darkModeToggleMobile').addEventListener('click', toggleDarkMode);
+
+      // 모바일 메뉴 토글 처리
+      const mobileMenu = document.getElementById('mobileMenu');
+      document.getElementById('menuToggle').addEventListener('click', () => {
+        mobileMenu.classList.toggle('translate-x-full');
+      });
+      document.getElementById('closeMenu').addEventListener('click', () => {
+        mobileMenu.classList.add('translate-x-full');
+      });
+
+      // 슬라이드 기능: 3초 간격으로 자동 전환
+      const slides = document.querySelectorAll('.slide');
+      let currentSlide = 0;
+      setInterval(() => {
+        slides[currentSlide].classList.add('hidden');
+        currentSlide = (currentSlide + 1) % slides.length;
+        slides[currentSlide].classList.remove('hidden');
+      }, 3000);
+
+      // 스크롤 시 섹션 애니메이션 처리
+      const faders = document.querySelectorAll('.fade-in-section');
+      const appearOptions = {
+        threshold: 0.1,
+        rootMargin: "0px 0px -50px 0px"
+      };
+
+      const appearOnScroll = new IntersectionObserver(function (entries, observer) {
+        entries.forEach(entry => {
+          if (!entry.isIntersecting) return;
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        });
+      }, appearOptions);
+
+      faders.forEach(fader => {
+        appearOnScroll.observe(fader);
+      });
+
+      initialTheme();
+    });
+  </script>
+</body>
+
+</html>
