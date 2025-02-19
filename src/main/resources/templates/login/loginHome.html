@@ -1,0 +1,64 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{template/fragments/layoutFragment :: head}"/>
+    <title th:text="#{title}">다락방 커뮤니티</title>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+<!-- 메인 로고 컴포넌트 -->
+<div th:insert="~{template/fragments/loginFragment::logoHeader}"></div>
+
+<!-- 로그인 버튼 섹션 -->
+<div class="container mx-auto px-4 py-8 flex-grow flex flex-col justify-center">
+    <div class="flex flex-col space-y-4 w-full max-w-md mx-auto">
+        <!-- 일반 로그인 -->
+        <button type="button"
+                class="flex justify-center items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-lg shadow transition duration-200"
+                th:onclick="|location.href='@{/login}'|"
+                aria-label="일반 로그인">
+            <span th:text="#{button.login}" class="font-semibold">로그인</span>
+        </button>
+        <!-- 카카오 로그인 -->
+        <button type="button"
+                class="flex justify-center items-center space-x-2 bg-yellow-400 hover:bg-yellow-500 text-black py-3 px-6 rounded-lg shadow transition duration-200"
+                th:onclick="|location.href='@{/kakao-login}'|"
+                aria-label="카카오 로그인">
+            <span th:text="#{button.login.kakao}" class="font-semibold">카카오 로그인</span>
+        </button>
+        <!-- 네이버 로그인 -->
+        <button type="button"
+                class="flex justify-center items-center space-x-2 bg-green-600 hover:bg-green-700 text-white py-3 px-6 rounded-lg shadow transition duration-200"
+                th:onclick="|location.href='@{/naver-login}'|"
+                aria-label="네이버 로그인">
+            <span th:text="#{button.login.naver}" class="font-semibold">네이버 로그인</span>
+        </button>
+        <!-- 깃허브 로그인 -->
+        <button type="button"
+                class="flex justify-center items-center space-x-2 bg-gray-800 hover:bg-gray-900 text-white py-3 px-6 rounded-lg shadow transition duration-200"
+                th:onclick="|location.href='@{/github-login}'|"
+                aria-label="깃허브 로그인">
+            <span th:text="#{button.login.github}" class="font-semibold">깃허브 로그인</span>
+        </button>
+        <!-- 구글 로그인 -->
+        <button type="button"
+                class="flex justify-center items-center space-x-2 bg-red-600 hover:bg-red-700 text-white py-3 px-6 rounded-lg shadow transition duration-200"
+                th:onclick="|location.href='@{/google-login}'|"
+                aria-label="구글 로그인">
+            <span th:text="#{button.login.google}" class="font-semibold">구글 로그인</span>
+        </button>
+    </div>
+</div>
+
+<!-- 회원가입 버튼 섹션 -->
+<div class="container mx-auto px-4 py-8">
+    <div class="flex justify-center">
+        <button type="button"
+                class="flex justify-center items-center space-x-2 bg-indigo-600 hover:bg-indigo-700 text-white py-3 px-6 rounded-lg shadow transition duration-200"
+                th:onclick="|location.href='@{/members/new}'|"
+                aria-label="회원가입">
+            <span th:text="#{button.member.join}" class="font-semibold">회원가입</span>
+        </button>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>다락방 동아리 - 커뮤니티 홈</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+  <script>
+    // Tailwind CSS 다크모드 설정 (클래스 기반)
+    tailwind.config = {
+      darkMode: 'class'
+    };
+  </script>
+  <style>
+    /* 스크롤 시 섹션 페이드인 애니메이션 */
+    .fade-in-section {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+    }
+
+    .fade-in-section.visible {
+      opacity: 1;
+      transform: none;
+    }
+
+    /* dropdown 서브메뉴 transition */
+    .group:hover .group-hover\:opacity-100 {
+      opacity: 1;
+    }
+  </style>
+</head>
+
+<body class="dark:bg-gray-900 dark:text-white bg-white text-black min-h-screen transition-colors duration-300">
+  <!-- 헤더 및 네비게이션 -->
+  <header class="sticky top-0 bg-opacity-90 backdrop-blur-lg">
+    <!-- 데스크탑 네비게이션 (md 이상) -->
+    <nav class="relative container max-w-6xl mx-auto px-6 py-3 hidden md:flex items-center justify-between">
+      <!-- 좌측: 로고 -->
+      <div class="w-1/4 flex items-center justify-start">
+        <img src="https://via.placeholder.com/40" alt="다락방 로고" class="w-10 h-10">
+        <h1 class="text-2xl font-bold">다락방</h1>
+      </div>
+      <!-- 중앙: 네비게이션 메뉴 (드롭다운 포함) -->
+      <div class="absolute left-1/2 transform -translate-x-1/2 flex space-x-6 whitespace-nowrap">
+        <!-- 소개 -->
+        <div class="relative group">
+          <a href="/home" class="hover:text-blue-500 transition-colors">소개</a>
+        </div>
+        <!-- 공지사항 -->
+        <div class="relative group">
+          <a href="/community/notice" class="hover:text-blue-500 transition-colors">공지사항</a>
+          <div
+            class="absolute left-0 mt-2 w-40 bg-white dark:bg-gray-800 rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity">
+            <a href="/community/notice?type=recruit" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">모집
+              공고</a>
+            <a href="/community/notice?type=announcement"
+              class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">전달 사항</a>
+            <a href="/community/notice?type=faq"
+              class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">FAQ</a>
+          </div>
+        </div>
+        <!-- 활동 게시판 -->
+        <div class="relative group">
+          <a href="/community/activity" class="hover:text-blue-500 transition-colors">활동 게시판</a>
+          <div
+            class="absolute left-0 mt-2 w-56 bg-white dark:bg-gray-800 rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity">
+            <a href="/community/activity/2025-c-language"
+              class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">2025 C언어 스터디</a>
+            <a href="/community/activity/2025-data-structure"
+              class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">2025 자료구조 스터디</a>
+            <a href="/community/activity/oowon" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">오운완
+              챌린지</a>
+          </div>
+        </div>
+        <!-- 자유 게시판 -->
+        <div class="relative group">
+          <a href="/community/free" class="hover:text-blue-500 transition-colors">자유 게시판</a>
+          <div
+            class="absolute left-0 mt-2 w-40 bg-white dark:bg-gray-800 rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity">
+            <a href="/community/free/board" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">자유게시판</a>
+            <a href="/community/free/qna" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">Q&amp;A</a>
+          </div>
+        </div>
+        <!-- Tech 게시판 -->
+        <div class="relative group">
+          <a href="/community/tech" class="hover:text-blue-500 transition-colors">Tech 게시판</a>
+          <div
+            class="absolute left-0 mt-2 w-56 bg-white dark:bg-gray-800 rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity">
+            <a href="/community/tech/backend" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">백엔드
+              게시판</a>
+            <a href="/community/tech/frontend" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">프론트엔드
+              게시판</a>
+            <a href="/community/tech/data" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">데이터</a>
+            <a href="/community/tech/ai" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">AI</a>
+            <a href="/community/tech/game" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">게임</a>
+            <a href="/community/tech/security" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">보안</a>
+          </div>
+        </div>
+        <!-- 갤러리 -->
+        <div class="relative group">
+          <a href="/community/gallery" class="hover:text-blue-500 transition-colors">갤러리</a>
+          <div
+            class="absolute left-0 mt-2 w-40 bg-white dark:bg-gray-800 rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity">
+            <a href="/community/gallery/2025" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">2025</a>
+            <a href="/community/gallery/2024" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">2024</a>
+            <a href="/community/gallery/2023" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">2023</a>
+            <a href="/community/gallery/2022" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">2022</a>
+          </div>
+        </div>
+      </div>
+      <!-- 우측: 로그인/로그아웃 및 다크모드 토글 -->
+      <div class="w-1/4 flex justify-end items-center gap-x-4">
+        <a href="/login" class="hover:text-blue-500 transition-colors" id="loginBtn">로그인</a>
+        <a href="/logout" class="hover:text-blue-500 transition-colors" id="logoutBtn">로그아웃</a>
+        <a href="/profile" class="hover:text-blue-500 transition-colors" id="profileBtn">프로필</a>
+        <button id="darkModeToggle"
+          class="p-2 w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-700 focus:ring focus:ring-blue-500">
+          <i class="fas fa-moon text-gray-700"></i>
+        </button>
+      </div>
+    </nav>
+    <!-- 모바일 네비게이션 (md 미만) -->
+    <nav class="container mx-auto px-6 py-3 md:hidden flex items-center justify-between">
+      <div class="flex items-center space-x-4">
+        <img src="https://via.placeholder.com/40" alt="다락방 로고" class="w-10 h-10">
+        <h1 class="text-2xl font-bold">다락방</h1>
+      </div>
+      <button id="menuToggle" class="p-2 text-gray-700 dark:text-white">
+        <i class="fas fa-bars text-2xl"></i>
+      </button>
+    </nav>
+  </header>
+
+  <!-- 모바일 메뉴 -->
+  <aside id="mobileMenu"
+    class="fixed right-0 inset-y-0 w-64 dark:bg-gray-800 bg-white shadow-lg translate-x-full transition-transform duration-300 z-20">
+    <button id="closeMenu" class="p-2 m-4 text-gray-700 dark:text-white">
+      <i class="fas fa-times text-2xl"></i>
+    </button>
+    <nav class="flex flex-col space-y-4 px-6">
+      <!-- 소개 -->
+      <div>
+        <a href="/home" class="hover:text-blue-500 transition-colors block">소개</a>
+      </div>
+      <!-- 공지사항 -->
+      <div>
+        <a href="/community/notice" class="hover:text-blue-500 transition-colors block">공지사항</a>
+        <div class="ml-4">
+          <a href="/community/notice?type=recruit" class="hover:text-blue-500 transition-colors block">모집 공고</a>
+          <a href="/community/notice?type=announcement" class="hover:text-blue-500 transition-colors block">전달 사항</a>
+          <a href="/community/notice?type=faq" class="hover:text-blue-500 transition-colors block">FAQ</a>
+        </div>
+      </div>
+      <!-- 활동 게시판 -->
+      <div>
+        <a href="/community/activity" class="hover:text-blue-500 transition-colors block">활동 게시판</a>
+        <div class="ml-4">
+          <a href="/community/activity/2025-c-language" class="hover:text-blue-500 transition-colors block">2025 C언어
+            스터디</a>
+          <a href="/community/activity/2025-data-structure" class="hover:text-blue-500 transition-colors block">2025
+            자료구조 스터디</a>
+          <a href="/community/activity/oowon" class="hover:text-blue-500 transition-colors block">오운완 챌린지</a>
+        </div>
+      </div>
+      <!-- 자유 게시판 -->
+      <div>
+        <a href="/community/free" class="hover:text-blue-500 transition-colors block">자유 게시판</a>
+        <div class="ml-4">
+          <a href="/community/free/board" class="hover:text-blue-500 transition-colors block">자유게시판</a>
+          <a href="/community/free/qna" class="hover:text-blue-500 transition-colors block">Q&amp;A</a>
+        </div>
+      </div>
+      <!-- Tech 게시판 -->
+      <div>
+        <a href="/community/tech" class="hover:text-blue-500 transition-colors block">Tech 게시판</a>
+        <div class="ml-4">
+          <a href="/community/tech/backend" class="hover:text-blue-500 transition-colors block">백엔드 게시판</a>
+          <a href="/community/tech/frontend" class="hover:text-blue-500 transition-colors block">프론트엔드 게시판</a>
+          <a href="/community/tech/data" class="hover:text-blue-500 transition-colors block">데이터</a>
+          <a href="/community/tech/ai" class="hover:text-blue-500 transition-colors block">AI</a>
+          <a href="/community/tech/game" class="hover:text-blue-500 transition-colors block">게임</a>
+          <a href="/community/tech/security" class="hover:text-blue-500 transition-colors block">보안</a>
+        </div>
+      </div>
+      <!-- 갤러리 -->
+      <div>
+        <a href="/community/gallery" class="hover:text-blue-500 transition-colors block">갤러리</a>
+        <div class="ml-4">
+          <a href="/community/gallery/2025" class="hover:text-blue-500 transition-colors block">2025</a>
+          <a href="/community/gallery/2024" class="hover:text-blue-500 transition-colors block">2024</a>
+          <a href="/community/gallery/2023" class="hover:text-blue-500 transition-colors block">2023</a>
+          <a href="/community/gallery/2022" class="hover:text-blue-500 transition-colors block">2022</a>
+        </div>
+      </div>
+      <!-- 로그인/로그아웃 (default hidden) & 다크모드 토글 -->
+      <a href="/login" class="hover:text-blue-500 transition-colors block hidden" id="mobileLoginBtn">로그인</a>
+      <a href="/logout" class="hover:text-blue-500 transition-colors block hidden" id="mobileLogoutBtn">로그아웃</a>
+      <a href="/profile" class="hover:text-blue-500 transition-colors block hidden" id="mobileProfileBtn">프로필</a>
+      <button id="darkModeToggleMobile"
+        class="p-2 w-full rounded-full bg-gray-200 dark:bg-gray-700 focus:ring focus:ring-blue-500">
+        <i class="fas fa-moon text-gray-700"></i>
+      </button>
+    </nav>
+  </aside>
+
+  <!-- 메인 콘텐츠 -->
+  <main>
+    <!-- Section 1. 즐겨찾는 게시판 -->
+    <section id="favorites" class="px-6 py-12">
+      <div class="container mx-auto">
+        <h2 class="text-3xl font-bold mb-6 text-center">즐겨찾는 게시판</h2>
+        <div class="flex flex-wrap justify-center gap-4">
+          <a href="/community/notice" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">공지사항</a>
+          <a href="/community/activity" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">활동 게시판</a>
+          <a href="/community/free" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">자유 게시판</a>
+          <a href="/community/tech" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Tech 게시판</a>
+          <a href="/community/gallery" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">갤러리</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 2. 게시판 미리보기 -->
+    <section id="board-preview" class="px-6 py-12">
+      <div class="container mx-auto">
+        <h2 class="text-3xl font-bold mb-6 text-center">게시판 미리보기</h2>
+        <!-- 공지사항 미리보기 -->
+        <div class="mb-8">
+          <h3 class="text-2xl font-semibold mb-4">
+            <a href="/community/notice" class="hover:text-blue-500 transition-colors">공지사항</a>
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="p-4 border rounded hover:shadow-lg">
+              <h4 class="text-lg font-semibold">[모집 공고] 게시글 제목 1</h4>
+              <p class="text-sm">게시글 미리보기 내용...</p>
+            </div>
+            <div class="p-4 border rounded hover:shadow-lg">
+              <h4 class="text-lg font-semibold">[모집 공고] 게시글 제목 2</h4>
+              <p class="text-sm">게시글 미리보기 내용...</p>
+            </div>
+            <div class="p-4 border rounded hover:shadow-lg">
+              <h4 class="text-lg font-semibold">[전달 사항] 게시글 제목 3</h4>
+              <p class="text-sm">게시글 미리보기 내용...</p>
+            </div>
+            <div class="p-4 border rounded hover:shadow-lg">
+              <h4 class="text-lg font-semibold">[FAQ] 게시글 제목 4</h4>
+              <p class="text-sm">게시글 미리보기 내용...</p>
+            </div>
+          </div>
+        </div>
+        <!-- 활동 게시판 미리보기 -->
+        <div class="mb-8">
+          <h3 class="text-2xl font-semibold mb-4">
+            <a href="/community/activity" class="hover:text-blue-500 transition-colors">활동 게시판</a>
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="p-4 border rounded hover:shadow-lg">
+              <h4 class="text-lg font-semibold">2025 C언어 스터디</h4>
+              <p class="text-sm">게시글 미리보기 내용...</p>
+            </div>
+            <div class="p-4 border rounded hover:shadow-lg">
+              <h4 class="text-lg font-semibold">2025 자료구조 스터디</h4>
+              <p class="text-sm">게시글 미리보기 내용...</p>
+            </div>
+            <div class="p-4 border rounded hover:shadow-lg">
+              <h4 class="text-lg font-semibold">오운완 챌린지</h4>
+              <p class="text-sm">게시글 미리보기 내용...</p>
+            </div>
+            <div class="p-4 border rounded hover:shadow-lg">
+              <h4 class="text-lg font-semibold">기타 활동 게시글</h4>
+              <p class="text-sm">게시글 미리보기 내용...</p>
+            </div>
+          </div>
+        </div>
+        <!-- 자유 게시판 미리보기 -->
+        <div class="mb-8">
+          <h3 class="text-2xl font-semibold mb-4">
+            <a href="/community/free" class="hover:text-blue-500 transition-colors">자유 게시판</a>
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="p-4 border rounded hover:shadow-lg">
+              <h4 class="text-lg font-semibold">자유게시판 게시글 1</h4>
+              <p class="text-sm">게시글 미리보기 내용...</p>
+            </div>
+            <div class="p-4 border rounded hover:shadow-lg">
+              <h4 class="text-lg font-semibold">Q&amp;A 게시글 2</h4>
+              <p class="text-sm">게시글 미리보기 내용...</p>
+            </div>
+            <div class="p-4 border rounded hover:shadow-lg">
+              <h4 class="text-lg font-semibold">자유게시판 게시글 3</h4>
+              <p class="text-sm">게시글 미리보기 내용...</p>
+            </div>
+            <div class="p-4 border rounded hover:shadow-lg">
+              <h4 class="text-lg font-semibold">Q&amp;A 게시글 4</h4>
+              <p class="text-sm">게시글 미리보기 내용...</p>
+            </div>
+          </div>
+        </div>
+        <!-- Tech 게시판 미리보기 -->
+        <div class="mb-8">
+          <h3 class="text-2xl font-semibold mb-4">
+            <a href="/community/tech" class="hover:text-blue-500 transition-colors">Tech 게시판</a>
+          </h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="p-4 border rounded hover:shadow-lg">
+              <h4 class="text-lg font-semibold">백엔드 게시판</h4>
+              <p class="text-sm">게시글 미리보기 내용...</p>
+            </div>
+            <div class="p-4 border rounded hover:shadow-lg">
+              <h4 class="text-lg font-semibold">프론트엔드 게시판</h4>
+              <p class="text-sm">게시글 미리보기 내용...</p>
+            </div>
+            <div class="p-4 border rounded hover:shadow-lg">
+              <h4 class="text-lg font-semibold">데이터</h4>
+              <p class="text-sm">게시글 미리보기 내용...</p>
+            </div>
+            <div class="p-4 border rounded hover:shadow-lg">
+              <h4 class="text-lg font-semibold">AI</h4>
+              <p class="text-sm">게시글 미리보기 내용...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Section 3. 갤러리 미리보기 -->
+    <section id="gallery-preview" class="px-6 py-12 bg-gray-50 dark:bg-gray-800">
+      <div class="container mx-auto">
+        <h2 class="text-3xl font-bold mb-6 text-center">갤러리 미리보기</h2>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <a href="/community/gallery/2025">
+            <img src="https://via.placeholder.com/300x200?text=2025" alt="2025 갤러리"
+              class="w-full h-auto object-cover rounded">
+          </a>
+          <a href="/community/gallery/2024">
+            <img src="https://via.placeholder.com/300x200?text=2024" alt="2024 갤러리"
+              class="w-full h-auto object-cover rounded">
+          </a>
+          <a href="/community/gallery/2023">
+            <img src="https://via.placeholder.com/300x200?text=2023" alt="2023 갤러리"
+              class="w-full h-auto object-cover rounded">
+          </a>
+          <a href="/community/gallery/2022">
+            <img src="https://via.placeholder.com/300x200?text=2022" alt="2022 갤러리"
+              class="w-full h-auto object-cover rounded">
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- 푸터 -->
+  <footer class="bg-gray-100 dark:bg-gray-800 py-6 mt-12">
+    <div class="container max-w-5xl mx-auto px-6 text-center">
+      <p>&copy; 2025 다락방 동아리. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- 스크립트 영역 -->
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // 다크모드 관련 함수
+      function updateDarkModeIcons() {
+        const desktopIcon = document.getElementById('darkModeToggle')?.querySelector('i');
+        const mobileIcon = document.getElementById('darkModeToggleMobile')?.querySelector('i');
+        if (document.documentElement.classList.contains('dark')) {
+          if (desktopIcon) desktopIcon.className = 'fas fa-sun text-yellow-400';
+          if (mobileIcon) mobileIcon.className = 'fas fa-sun text-yellow-400';
+        } else {
+          if (desktopIcon) desktopIcon.className = 'fas fa-moon text-gray-700';
+          if (mobileIcon) mobileIcon.className = 'fas fa-moon text-gray-700';
+        }
+      }
+
+      function initialTheme() {
+        if (localStorage.theme === 'dark') {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+        updateDarkModeIcons();
+      }
+
+      function toggleDarkMode() {
+        if (document.documentElement.classList.contains('dark')) {
+          document.documentElement.classList.remove('dark');
+          localStorage.theme = 'light';
+        } else {
+          document.documentElement.classList.add('dark');
+          localStorage.theme = 'dark';
+        }
+        updateDarkModeIcons();
+      }
+
+      // 다크모드 토글 이벤트 등록
+      document.getElementById('darkModeToggle').addEventListener('click', toggleDarkMode);
+      document.getElementById('darkModeToggleMobile').addEventListener('click', toggleDarkMode);
+
+      // 모바일 메뉴 토글 처리
+      const mobileMenu = document.getElementById('mobileMenu');
+      document.getElementById('menuToggle').addEventListener('click', () => {
+        mobileMenu.classList.toggle('translate-x-full');
+      });
+      document.getElementById('closeMenu').addEventListener('click', () => {
+        mobileMenu.classList.add('translate-x-full');
+      });
+
+      // 스크롤 시 섹션 애니메이션 처리
+      const faders = document.querySelectorAll('.fade-in-section');
+      const appearOptions = {
+        threshold: 0.1,
+        rootMargin: "0px 0px -50px 0px"
+      };
+
+      const appearOnScroll = new IntersectionObserver(function (entries, observer) {
+        entries.forEach(entry => {
+          if (!entry.isIntersecting) return;
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        });
+      }, appearOptions);
+
+      faders.forEach(fader => {
+        appearOnScroll.observe(fader);
+      });
+
+      initialTheme();
+    });
+  </script>
+</body>
+
+</html>
