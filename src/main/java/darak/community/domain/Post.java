@@ -9,6 +9,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import java.util.concurrent.atomic.AtomicLong;
 import lombok.Getter;
 
 
@@ -23,6 +24,10 @@ public class Post extends BaseEntity {
 
     private String content;
 
+    private AtomicLong readCount;
+
+    private Boolean anonymous;
+
     @Enumerated(EnumType.STRING)
     private ContentType contentType;
 
@@ -33,4 +38,8 @@ public class Post extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_id")
     private Board board;
+
+    public void increaseReadCount() {
+        readCount.incrementAndGet();
+    }
 }
