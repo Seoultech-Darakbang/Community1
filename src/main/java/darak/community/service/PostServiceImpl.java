@@ -29,9 +29,9 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional
-    public void delete(Post post) {
-        commentRepository.findByPostId(post.getId()).forEach(commentRepository::delete);
-        postRepository.delete(post);
+    public void deleteById(Long id) {
+        commentRepository.findByPostId(id).forEach(commentRepository::delete);
+        postRepository.deleteById(id);
     }
 
     @Override
@@ -43,4 +43,11 @@ public class PostServiceImpl implements PostService {
     public List<Post> findByMemberName(String memberName) {
         return postRepository.findByMemberName(memberName);
     }
+
+    @Override
+    @Transactional
+    public void increaseReadCount(Long id) {
+        postRepository.findById(id).ifPresent(Post::increaseReadCount);
+    }
+
 }

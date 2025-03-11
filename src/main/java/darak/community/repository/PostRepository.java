@@ -23,17 +23,23 @@ public class PostRepository {
 
     public List<Post> findByTitle(String title) {
         return em.createQuery("select p from Post p where p.title = :title", Post.class)
-            .setParameter("title", title)
-            .getResultList();
+                .setParameter("title", title)
+                .getResultList();
     }
 
     public List<Post> findByMemberName(String memberName) {
         return em.createQuery("select p from Post p where p.member.name = :memberName", Post.class)
-            .setParameter("memberName", memberName)
-            .getResultList();
+                .setParameter("memberName", memberName)
+                .getResultList();
     }
 
     public void delete(Post post) {
         em.remove(post);
+    }
+
+    public void deleteById(Long id) {
+        em.createQuery("delete from Post p where p.id = :id")
+                .setParameter("id", id)
+                .executeUpdate();
     }
 }
