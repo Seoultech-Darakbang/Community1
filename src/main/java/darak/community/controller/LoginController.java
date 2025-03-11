@@ -25,6 +25,11 @@ public class LoginController {
 
     private final LoginService loginService;
 
+    @GetMapping("/login/home")
+    public String loginHome() {
+        return "login/loginHome";
+    }
+
     @GetMapping("/login")
     public String loginForm(@ModelAttribute("loginForm") LoginForm form, Model model) {
         return "login/loginForm";
