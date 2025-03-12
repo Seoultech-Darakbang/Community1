@@ -4,6 +4,7 @@ import darak.community.domain.member.Member;
 import darak.community.dto.MemberCreateForm;
 import darak.community.dto.ResponseDto;
 import darak.community.service.MemberService;
+import darak.community.web.argumentresolver.Login;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -25,7 +26,11 @@ public class MemberController {
     private final MemberService memberService;
 
     @GetMapping("/members/new")
-    public String createForm(@ModelAttribute("memberCreateForm") MemberCreateForm form, Model model) {
+    public String createForm(@Login Member member, @ModelAttribute("memberCreateForm") MemberCreateForm form,
+                             Model model) {
+        if (member != null) {
+            return "redirect:/";
+        }
         return "members/createMemberForm";
     }
 

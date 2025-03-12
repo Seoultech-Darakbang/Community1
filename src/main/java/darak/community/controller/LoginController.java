@@ -4,7 +4,8 @@ import darak.community.domain.member.Member;
 import darak.community.dto.LoginForm;
 import darak.community.exception.PasswordFailedExceededException;
 import darak.community.service.LoginService;
-import darak.community.session.SessionConst;
+import darak.community.web.argumentresolver.Login;
+import darak.community.web.session.SessionConst;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -26,12 +27,18 @@ public class LoginController {
     private final LoginService loginService;
 
     @GetMapping("/login/home")
-    public String loginHome() {
+    public String loginHome(@Login Member member) {
+        if (member != null) {
+            return "redirect:/";
+        }
         return "login/loginHome";
     }
 
     @GetMapping("/login")
-    public String loginForm(@ModelAttribute("loginForm") LoginForm form, Model model) {
+    public String loginForm(@Login Member member, @ModelAttribute("loginForm") LoginForm form, Model model) {
+        if (member != null) {
+            return "redirect:/";
+        }
         return "login/loginForm";
     }
 
