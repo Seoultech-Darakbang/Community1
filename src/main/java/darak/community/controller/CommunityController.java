@@ -18,7 +18,7 @@ public class CommunityController {
     @GetMapping("/community")
     public String communityHome(@Login Member member) {
         if (member == null) {
-            return "login/loginHome";
+            return "login/loginForm";
         }
         return "community/communityHome";
     }

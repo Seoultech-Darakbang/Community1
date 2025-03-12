@@ -26,14 +26,6 @@ public class LoginController {
 
     private final LoginService loginService;
 
-    @GetMapping("/login/home")
-    public String loginHome(@Login Member member) {
-        if (member != null) {
-            return "redirect:/";
-        }
-        return "login/loginHome";
-    }
-
     @GetMapping("/login")
     public String loginForm(@Login Member member, @ModelAttribute("loginForm") LoginForm form, Model model) {
         if (member != null) {
