@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+<aside th:fragment="boardSidebar(boardType, activeBoard)" class="hidden md:block md:w-1/4 mb-6">
+  <div class="p-4 border rounded shadow-lg dark:bg-gray-800">
+    <!-- 공지사항 사이드바 -->
+    <div th:if="${boardType == 'notice'}">
+      <h3 class="text-xl font-bold mb-4">공지사항</h3>
+      <ul class="space-y-2">
+        <li>
+          <a href="/community/list?board=공지사항"
+            th:class="${activeBoard == 'all'} ? 'block p-2 bg-blue-100 dark:bg-blue-900 font-bold' : 'block p-2 hover:bg-gray-200 dark:hover:bg-gray-700'">
+            전체 공지
+          </a>
+        </li>
+        <li>
+          <a href="/community/list?board=모집공고"
+            th:class="${activeBoard == 'recruit'} ? 'block p-2 bg-blue-100 dark:bg-blue-900 font-bold' : 'block p-2 hover:bg-gray-200 dark:hover:bg-gray-700'">
+            모집 공고
+          </a>
+        </li>
+        <li>
+          <a href="/community/list?board=행사안내"
+            th:class="${activeBoard == 'event'} ? 'block p-2 bg-blue-100 dark:bg-blue-900 font-bold' : 'block p-2 hover:bg-gray-200 dark:hover:bg-gray-700'">
+            행사 안내
+          </a>
+        </li>
+        <li>
+          <a href="/community/list?board=기타소식"
+            th:class="${activeBoard == 'other'} ? 'block p-2 bg-blue-100 dark:bg-blue-900 font-bold' : 'block p-2 hover:bg-gray-200 dark:hover:bg-gray-700'">
+            기타 소식
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <!-- 다른 게시판 타입에 대한 사이드바도 추가 가능 -->
+  </div>
+</aside>
+
+</html>

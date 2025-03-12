@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: layout(~{::title}, ~{::main})}">
+
+<head>
+  <title>다락방 커뮤니티 - 작성한 게시글 목록</title>
+</head>
+
+<body>
+  <main>
+    <div class="container max-w-6xl mx-auto px-6 py-8">
+      <div class="flex flex-col md:flex-row gap-6">
+        <!-- 좌측: 프로필 사이드바 -->
+        <div th:replace="~{fragments/profileSidebar :: profileSidebar('posts')}"></div>
+
+        <!-- 우측: 작성한 게시글 목록 -->
+        <div class="w-full md:w-3/4">
+          <h1 class="text-3xl font-bold mb-6">작성한 게시글 목록</h1>
+
+          <!-- 검색 및 필터링 -->
+          <div class="mb-6 flex flex-col md:flex-row gap-4">
+            <div class="flex-grow">
+              <input type="text" placeholder="검색어를 입력하세요" class="w-full p-2 border rounded dark:bg-gray-700">
+            </div>
+            <div class="flex gap-2">
+              <select class="p-2 border rounded dark:bg-gray-700">
+                <option value="">전체 게시판</option>
+                <option value="notice">공지사항</option>
+                <option value="activity">활동 게시판</option>
+                <option value="free">자유 게시판</option>
+                <option value="tech">Tech 게시판</option>
+              </select>
+              <button class="px-4 py-2 bg-blue-500 text-white rounded">검색</button>
+            </div>
+          </div>
+
+          <!-- 게시글 목록 테이블 -->
+          <div class="overflow-x-auto mb-6">
+            <table class="w-full border-collapse">
+              <thead>
+                <tr class="bg-gray-100 dark:bg-gray-700">
+                  <th class="p-3 text-left">번호</th>
+                  <th class="p-3 text-left">게시판</th>
+                  <th class="p-3 text-left">제목</th>
+                  <th class="p-3 text-left">작성일</th>
+                  <th class="p-3 text-left">조회수</th>
+                  <th class="p-3 text-left">좋아요</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- 게시글 항목 -->
+                <tr class="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800">
+                  <td class="p-3">1</td>
+                  <td class="p-3">자유 게시판</td>
+                  <td class="p-3"><a href="/community/post/1" class="text-blue-500 hover:underline">첫 번째 게시글 제목</a></td>
+                  <td class="p-3">2025-01-01</td>
+                  <td class="p-3">123</td>
+                  <td class="p-3">45</td>
+                </tr>
+                <tr class="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800">
+                  <td class="p-3">2</td>
+                  <td class="p-3">Tech 게시판</td>
+                  <td class="p-3"><a href="/community/post/2" class="text-blue-500 hover:underline">두 번째 게시글 제목</a></td>
+                  <td class="p-3">2025-01-02</td>
+                  <td class="p-3">98</td>
+                  <td class="p-3">32</td>
+                </tr>
+                <tr class="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800">
+                  <td class="p-3">3</td>
+                  <td class="p-3">활동 게시판</td>
+                  <td class="p-3"><a href="/community/post/3" class="text-blue-500 hover:underline">세 번째 게시글 제목</a></td>
+                  <td class="p-3">2025-01-03</td>
+                  <td class="p-3">76</td>
+                  <td class="p-3">21</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- 페이지네이션 -->
+          <div class="flex justify-center">
+            <nav class="inline-flex">
+              <a href="#" class="px-3 py-1 border rounded-l hover:bg-gray-100 dark:hover:bg-gray-700">이전</a>
+              <a href="#" class="px-3 py-1 border-t border-b bg-blue-500 text-white">1</a>
+              <a href="#" class="px-3 py-1 border-t border-b hover:bg-gray-100 dark:hover:bg-gray-700">2</a>
+              <a href="#" class="px-3 py-1 border-t border-b hover:bg-gray-100 dark:hover:bg-gray-700">3</a>
+              <a href="#" class="px-3 py-1 border rounded-r hover:bg-gray-100 dark:hover:bg-gray-700">다음</a>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</body>
+
+</html>

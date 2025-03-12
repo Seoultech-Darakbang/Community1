@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: layout(~{::title}, ~{::main})}">
+
+<head>
+  <title>다락방 커뮤니티 - 회원 프로필</title>
+</head>
+
+<body>
+  <main>
+    <div class="container max-w-6xl mx-auto px-6 py-8">
+      <div class="flex flex-col md:flex-row gap-6">
+        <!-- 좌측: 프로필 사이드바 -->
+        <div th:replace="~{fragments/profileSidebar :: profileSidebar('profile')}"></div>
+
+        <!-- 우측: 회원 정보 -->
+        <div class="w-full md:w-3/4">
+          <h1 class="text-3xl font-bold mb-6">회원 정보</h1>
+
+          <!-- 프로필 정보 카드 -->
+          <div class="bg-white dark:bg-gray-800 rounded shadow p-6 mb-6">
+            <div class="flex flex-col md:flex-row items-center md:items-start gap-6">
+              <!-- 프로필 이미지 -->
+              <div class="w-32 h-32 rounded-full overflow-hidden bg-gray-200 flex-shrink-0">
+                <img src="https://via.placeholder.com/128" alt="프로필 이미지" class="w-full h-full object-cover">
+              </div>
+
+              <!-- 회원 정보 -->
+              <div class="flex-grow">
+                <h2 class="text-2xl font-bold mb-2">홍길동</h2>
+                <p class="text-gray-600 dark:text-gray-400 mb-4">가입일: 2025-01-01</p>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <p class="font-semibold">이메일</p>
+                    <p>user@example.com</p>
+                  </div>
+                  <div>
+                    <p class="font-semibold">닉네임</p>
+                    <p>길동이</p>
+                  </div>
+                  <div>
+                    <p class="font-semibold">활동 점수</p>
+                    <p>1,234점</p>
+                  </div>
+                  <div>
+                    <p class="font-semibold">회원 등급</p>
+                    <p>정회원</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 프로필 수정 버튼 -->
+          <div class="flex justify-end mb-6">
+            <a href="/profile/edit" class="px-4 py-2 bg-blue-500 text-white rounded">프로필 수정</a>
+          </div>
+
+          <!-- 활동 통계 -->
+          <h2 class="text-2xl font-bold mb-4">활동 통계</h2>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <div class="bg-white dark:bg-gray-800 rounded shadow p-4 text-center">
+              <p class="text-lg font-semibold">작성한 게시글</p>
+              <p class="text-3xl font-bold text-blue-500">42</p>
+            </div>
+            <div class="bg-white dark:bg-gray-800 rounded shadow p-4 text-center">
+              <p class="text-lg font-semibold">작성한 댓글</p>
+              <p class="text-3xl font-bold text-blue-500">128</p>
+            </div>
+            <div class="bg-white dark:bg-gray-800 rounded shadow p-4 text-center">
+              <p class="text-lg font-semibold">받은 좋아요</p>
+              <p class="text-3xl font-bold text-blue-500">256</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</body>
+
+</html>

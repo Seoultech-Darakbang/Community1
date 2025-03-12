@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: layout(~{::title}, ~{::main})}">
+
+<head>
+  <title>다락방 동아리 - 게시글 등록</title>
+  <style>
+    /* contenteditable 영역을 textarea와 유사하게 보이도록 */
+    .rich-editor {
+      min-height: 16rem;
+      border: 1px solid #ccc;
+      padding: 0.75rem;
+      border-radius: 0.375rem;
+      outline: none;
+      overflow-y: auto;
+    }
+
+    .rich-editor:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 1px #3b82f6;
+    }
+
+    /* 편집 툴바 버튼 스타일 */
+    .btn-toolbar {
+      background: #f3f4f6;
+      border: 1px solid #d1d5db;
+      border-radius: 0.25rem;
+      padding: 0.25rem 0.5rem;
+      margin-right: 0.5rem;
+      cursor: pointer;
+    }
+
+    .btn-toolbar:hover {
+      background: #e5e7eb;
+    }
+
+    /* select도 버튼과 동일하게 보이도록 */
+    select.btn-toolbar {
+      cursor: pointer;
+      background: #f3f4f6;
+      border: 1px solid #d1d5db;
+      border-radius: 0.25rem;
+      padding: 0.25rem 0.5rem;
+    }
+  </style>
+</head>
+
+<body>
+  <main>
+    <div class="container max-w-6xl mx-auto px-6 py-8">
+      <div class="flex flex-col md:flex-row gap-6">
+        <!-- 좌측: 게시판 사이드바 (boardType과 activeBoard는 컨트롤러에서 전달) -->
+        <div th:replace="~{fragments/boardSidebar :: boardSidebar(${boardType}, ${activeBoard})}"></div>
+
+        <!-- 우측: 게시글 작성 폼 -->
+        <div class="w-full md:w-3/4">
+          <h1 class="text-3xl font-bold mb-6">게시글 작성</h1>
+
+          <form action="/community/post/create" method="post">
+            <!-- 게시판 선택 -->
+            <div class="mb-4">
+              <label for="board" class="block mb-2 font-semibold">게시판 선택</label>
+              <select id="board" name="board" class="w-full p-2 border rounded dark:bg-gray-700">
+                <option value="">게시판을 선택하세요</option>
+                <option value="notice">공지사항</option>
+                <option value="activity">활동 게시판</option>
+                <option value="free">자유 게시판</option>
+                <option value="tech">Tech 게시판</option>
+              </select>
+            </div>
+
+            <!-- 제목 입력 -->
+            <div class="mb-4">
+              <label for="title" class="block mb-2 font-semibold">제목</label>
+              <input type="text" id="title" name="title" class="w-full p-2 border rounded dark:bg-gray-700"
+                placeholder="제목을 입력하세요">
+            </div>
+
+            <!-- 내용 입력 (리치 에디터) -->
+            <div class="mb-4">
+              <label for="content" class="block mb-2 font-semibold">내용</label>
+
+              <!-- 편집 툴바 -->
+              <div class="flex flex-wrap mb-2">
+                <button type="button" title="굵게" class="btn-toolbar"><i class="fas fa-bold"></i></button>
+                <button type="button" title="기울임" class="btn-toolbar"><i class="fas fa-italic"></i></button>
+                <button type="button" title="밑줄" class="btn-toolbar"><i class="fas fa-underline"></i></button>
+                <button type="button" title="취소선" class="btn-toolbar"><i class="fas fa-strikethrough"></i></button>
+              </div>
+
+              <!-- 에디터 영역 -->
+              <div id="content" class="rich-editor dark:bg-gray-700" contenteditable="true"></div>
+
+              <!-- 실제 폼 제출 시 사용될 hidden textarea -->
+              <textarea id="hiddenContent" name="content" class="hidden"></textarea>
+            </div>
+
+            <!-- 첨부 파일 -->
+            <div class="mb-6">
+              <label for="file" class="block mb-2 font-semibold">첨부 파일</label>
+              <input type="file" id="file" name="file" class="w-full p-2 border rounded dark:bg-gray-700">
+            </div>
+
+            <!-- 버튼 영역 -->
+            <div class="flex justify-end space-x-2">
+              <a href="/community/list" class="px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded">취소</a>
+              <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded">등록</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- 에디터 스크립트 -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const contentDiv = document.getElementById("content");
+
+      // 굵게
+      document.querySelector('button[title="굵게"]').addEventListener("click", function () {
+        document.execCommand("bold", false, null);
+        contentDiv.focus();
+      });
+
+      // 기울임
+      document.querySelector('button[title="기울임"]').addEventListener("click", function () {
+        document.execCommand("italic", false, null);
+        contentDiv.focus();
+      });
+
+      // 밑줄
+      document.querySelector('button[title="밑줄"]').addEventListener("click", function () {
+        document.execCommand("underline", false, null);
+        contentDiv.focus();
+      });
+
+      // 취소선
+      document.querySelector('button[title="취소선"]').addEventListener("click", function () {
+        document.execCommand("strikeThrough", false, null);
+        contentDiv.focus();
+      });
+
+      // 폼 제출 시 contenteditable 영역의 내용을 hidden textarea에 복사
+      const form = document.querySelector("form");
+      form.addEventListener("submit", function () {
+        const hiddenTextarea = document.getElementById("hiddenContent");
+        hiddenTextarea.value = contentDiv.innerHTML;
+      });
+    });
+  </script>
+</body>
+
+</html>

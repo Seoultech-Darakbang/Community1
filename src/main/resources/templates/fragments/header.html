@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+<header th:fragment="header" class="sticky top-0 bg-opacity-90 backdrop-blur-lg">
+  <!-- PC 네비게이션 (md 이상) -->
+  <nav class="relative container max-w-6xl mx-auto px-6 py-3 hidden md:flex items-center justify-between">
+    <!-- 좌측: 로고 및 홈 링크 -->
+    <div class="w-1/4 flex items-center space-x-4">
+      <a href="/home" class="flex items-center space-x-2">
+        <img src="https://via.placeholder.com/40" alt="다락방 로고" class="w-10 h-10">
+        <span class="text-xl font-bold">다락방</span>
+      </a>
+    </div>
+
+    <!-- 중앙: 메인 네비게이션 -->
+    <div class="absolute left-1/2 transform -translate-x-1/2 flex space-x-6 whitespace-nowrap">
+      <!-- 소개 -->
+      <a href="/home" class="hover:text-blue-500 transition-colors">소개</a>
+
+      <!-- 공지사항 -->
+      <div class="relative group">
+        <a href="/community/notice" class="hover:text-blue-500 transition-colors">공지사항</a>
+        <div
+          class="absolute left-0 mt-2 w-40 bg-white dark:bg-gray-800 rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity">
+          <a href="/community/notice?type=recruit" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">모집
+            공고</a>
+          <a href="/community/notice?type=announcement"
+            class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">전달 사항</a>
+          <a href="/community/notice?type=faq" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">FAQ</a>
+        </div>
+      </div>
+
+      <!-- 활동 게시판 -->
+      <div class="relative group">
+        <a href="/community/activity" class="hover:text-blue-500 transition-colors">활동 게시판</a>
+        <div
+          class="absolute left-0 mt-2 w-40 bg-white dark:bg-gray-800 rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity">
+          <a href="/community/activity/2025-c-language"
+            class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">2025 C언어 스터디</a>
+          <a href="/community/activity/2025-data-structure"
+            class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">2025 자료구조 스터디</a>
+          <a href="/community/activity/oowon" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">오운완
+            챌린지</a>
+        </div>
+      </div>
+
+      <!-- 자유 게시판 -->
+      <div class="relative group">
+        <a href="/community/free" class="hover:text-blue-500 transition-colors">자유 게시판</a>
+        <div
+          class="absolute left-0 mt-2 w-40 bg-white dark:bg-gray-800 rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity">
+          <a href="/community/free/board" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">자유게시판</a>
+          <a href="/community/free/qna" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">Q&amp;A</a>
+        </div>
+      </div>
+
+      <!-- Tech 게시판 -->
+      <div class="relative group">
+        <a href="/community/tech" class="hover:text-blue-500 transition-colors">Tech 게시판</a>
+        <div
+          class="absolute left-0 mt-2 w-56 bg-white dark:bg-gray-800 rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity">
+          <a href="/community/tech/backend" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">백엔드 게시판</a>
+          <a href="/community/tech/frontend" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">프론트엔드
+            게시판</a>
+          <a href="/community/tech/data" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">데이터</a>
+          <a href="/community/tech/ai" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">AI</a>
+          <a href="/community/tech/game" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">게임</a>
+          <a href="/community/tech/security" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">보안</a>
+        </div>
+      </div>
+
+      <!-- 갤러리 -->
+      <div class="relative group">
+        <a href="/community/gallery" class="hover:text-blue-500 transition-colors">갤러리</a>
+        <div
+          class="absolute left-0 mt-2 w-40 bg-white dark:bg-gray-800 rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity">
+          <a href="/community/gallery/2025" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">2025</a>
+          <a href="/community/gallery/2024" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">2024</a>
+          <a href="/community/gallery/2023" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">2023</a>
+          <a href="/community/gallery/2022" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700">2022</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 우측: 로그인/로그아웃 및 다크모드 토글 -->
+    <div class="w-1/4 flex justify-end items-center gap-x-4">
+      <a href="/login" class="hover:text-blue-500 transition-colors hidden" id="loginBtn">로그인</a>
+      <a href="/logout" class="hover:text-blue-500 transition-colors hidden" id="logoutBtn">로그아웃</a>
+      <a href="/profile" class="hover:text-blue-500 transition-colors hidden" id="profileBtn">프로필</a>
+      <button id="darkModeToggle"
+        class="p-2 w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-700 focus:ring focus:ring-blue-500">
+        <i class="fas fa-moon text-gray-700"></i>
+      </button>
+    </div>
+  </nav>
+
+  <!-- 모바일 네비게이션 (md 미만) -->
+  <nav class="container mx-auto px-6 py-3 md:hidden flex items-center justify-between">
+    <div class="flex items-center space-x-4">
+      <img src="https://via.placeholder.com/40" alt="다락방 로고" class="w-10 h-10">
+      <h1 class="text-2xl font-bold">다락방</h1>
+    </div>
+    <button id="menuToggle" class="p-2 text-gray-700 dark:text-white">
+      <i class="fas fa-bars text-2xl"></i>
+    </button>
+  </nav>
+</header>
+
+</html>

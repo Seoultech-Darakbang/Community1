@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+<aside th:fragment="mobileMenu" id="mobileMenu"
+  class="fixed right-0 inset-y-0 w-64 dark:bg-gray-800 bg-white shadow-lg translate-x-full transition-transform duration-300 z-20">
+  <button id="closeMenu" class="p-2 m-4 text-gray-700 dark:text-white">
+    <i class="fas fa-times text-2xl"></i>
+  </button>
+  <nav class="flex flex-col space-y-4 px-6">
+    <!-- 소개 -->
+    <div>
+      <a href="/home" class="hover:text-blue-500 transition-colors block">소개</a>
+    </div>
+
+    <!-- 공지사항 -->
+    <div>
+      <a href="/community/notice" class="hover:text-blue-500 transition-colors block">공지사항</a>
+      <div class="ml-4">
+        <a href="/community/notice?type=recruit" class="hover:text-blue-500 transition-colors block">모집 공고</a>
+        <a href="/community/notice?type=announcement" class="hover:text-blue-500 transition-colors block">전달 사항</a>
+        <a href="/community/notice?type=faq" class="hover:text-blue-500 transition-colors block">FAQ</a>
+      </div>
+    </div>
+
+    <!-- 활동 게시판 -->
+    <div>
+      <a href="/community/activity" class="hover:text-blue-500 transition-colors block">활동 게시판</a>
+      <div class="ml-4">
+        <a href="/community/activity/2025-c-language" class="hover:text-blue-500 transition-colors block">2025 C언어
+          스터디</a>
+        <a href="/community/activity/2025-data-structure" class="hover:text-blue-500 transition-colors block">2025 자료구조
+          스터디</a>
+        <a href="/community/activity/oowon" class="hover:text-blue-500 transition-colors block">오운완 챌린지</a>
+      </div>
+    </div>
+
+    <!-- 자유 게시판 -->
+    <div>
+      <a href="/community/free" class="hover:text-blue-500 transition-colors block">자유 게시판</a>
+      <div class="ml-4">
+        <a href="/community/free/board" class="hover:text-blue-500 transition-colors block">자유게시판</a>
+        <a href="/community/free/qna" class="hover:text-blue-500 transition-colors block">Q&amp;A</a>
+      </div>
+    </div>
+
+    <!-- Tech 게시판 -->
+    <div>
+      <a href="/community/tech" class="hover:text-blue-500 transition-colors block">Tech 게시판</a>
+      <div class="ml-4">
+        <a href="/community/tech/backend" class="hover:text-blue-500 transition-colors block">백엔드 게시판</a>
+        <a href="/community/tech/frontend" class="hover:text-blue-500 transition-colors block">프론트엔드 게시판</a>
+        <a href="/community/tech/data" class="hover:text-blue-500 transition-colors block">데이터</a>
+        <a href="/community/tech/ai" class="hover:text-blue-500 transition-colors block">AI</a>
+        <a href="/community/tech/game" class="hover:text-blue-500 transition-colors block">게임</a>
+        <a href="/community/tech/security" class="hover:text-blue-500 transition-colors block">보안</a>
+      </div>
+    </div>
+
+    <!-- 갤러리 -->
+    <div>
+      <a href="/community/gallery" class="hover:text-blue-500 transition-colors block">갤러리</a>
+      <div class="ml-4">
+        <a href="/community/gallery/2025" class="hover:text-blue-500 transition-colors block">2025</a>
+        <a href="/community/gallery/2024" class="hover:text-blue-500 transition-colors block">2024</a>
+        <a href="/community/gallery/2023" class="hover:text-blue-500 transition-colors block">2023</a>
+        <a href="/community/gallery/2022" class="hover:text-blue-500 transition-colors block">2022</a>
+      </div>
+    </div>
+
+    <!-- 로그인/로그아웃 (default hidden) & 다크모드 토글 -->
+    <a href="/login" class="hover:text-blue-500 transition-colors block hidden" id="mobileLoginBtn">로그인</a>
+    <a href="/logout" class="hover:text-blue-500 transition-colors block hidden" id="mobileLogoutBtn">로그아웃</a>
+    <a href="/profile" class="hover:text-blue-500 transition-colors block hidden" id="mobileProfileBtn">프로필</a>
+    <button id="darkModeToggleMobile"
+      class="p-2 w-full rounded-full bg-gray-200 dark:bg-gray-700 focus:ring focus:ring-blue-500">
+      <i class="fas fa-moon text-gray-700"></i>
+    </button>
+  </nav>
+</aside>
+
+</html>
