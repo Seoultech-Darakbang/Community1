@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: layout(~{::title}, ~{::main})}">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>다락방 커뮤니티 - 게시글 목록</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+  <script>
+    tailwind.config = {
+      darkMode: 'class'
+    };
+  </script>
+  <style>
+    /* 스크롤 시 섹션 페이드인 애니메이션 */
+    .fade-in-section {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+    }
+
+    .fade-in-section.visible {
+      opacity: 1;
+      transform: none;
+    }
+  </style>
+</head>
+
+<body class="dark:bg-gray-900 dark:text-white bg-white text-black min-h-screen transition-colors duration-300">
+  <main>
+    <div class="container max-w-6xl mx-auto px-6 py-6 flex flex-col md:flex-row">
+      <!-- 좌측: 게시판 사이드바 -->
+      <div th:replace="~{fragments/boardSidebar :: boardSidebar('notice', 'recruit')}"></div>
+
+      <!-- 우측 메인 영역 -->
+      <main class="w-full md:w-3/4 md:pl-6">
+        <!-- Section 1: 게시판 설명 -->
+        <section class="mb-6 p-4 border rounded shadow-lg dark:bg-gray-800 fade-in-section">
+          <h2 class="text-2xl font-bold mb-2">모집 공고</h2>
+          <p class="text-gray-700 dark:text-gray-300">
+            이 게시판은 다락방 동아리 신입 회원 및 지원 관련 모집 공고를 게시하는 곳입니다.
+          </p>
+        </section>
+
+        <!-- Section 2: 게시글 목록 -->
+        <section class="mb-6 space-y-4 fade-in-section">
+          <!-- 게시글 1 -->
+          <article class="p-4 border rounded hover:shadow-lg dark:border-gray-700 dark:bg-gray-800">
+            <h3 class="text-xl font-bold mb-2">[모집 공고] 신입 회원 모집 안내</h3>
+            <p class="mb-2 text-gray-600 dark:text-gray-300">
+              다락방 동아리에서 신입 회원을 모집합니다. 열정적인 분들의 많은 지원 바랍니다...
+            </p>
+            <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">
+              <span class="mr-4"><i class="fas fa-thumbs-up"></i> 12</span>
+              <span class="mr-4"><i class="fas fa-comments"></i> 3</span>
+              <span class="mr-4"><i class="fas fa-eye"></i> 145</span>
+              <span class="mr-4"><i class="fas fa-calendar"></i> 2023-10-01</span>
+              <span><i class="fas fa-user"></i> 관리팀</span>
+            </div>
+          </article>
+
+          <!-- 게시글 2 -->
+          <article class="p-4 border rounded hover:shadow-lg dark:border-gray-700 dark:bg-gray-800">
+            <h3 class="text-xl font-bold mb-2">[모집 공고] 이번 학기 신규 지원 안내</h3>
+            <p class="mb-2 text-gray-600 dark:text-gray-300">
+              이번 학기 다락방에 지원할 새로운 기회를 놓치지 마세요! 지원 방법은 홈페이지를 참고해 주세요...
+            </p>
+            <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">
+              <span class="mr-4"><i class="fas fa-thumbs-up"></i> 8</span>
+              <span class="mr-4"><i class="fas fa-comments"></i> 2</span>
+              <span class="mr-4"><i class="fas fa-eye"></i> 120</span>
+              <span class="mr-4"><i class="fas fa-calendar"></i> 2023-09-15</span>
+              <span><i class="fas fa-user"></i> 관리팀</span>
+            </div>
+          </article>
+
+          <!-- 페이지네이션 -->
+          <div class="flex justify-center mt-8">
+            <nav class="inline-flex">
+              <a href="#" class="px-3 py-1 border rounded-l hover:bg-gray-100 dark:hover:bg-gray-700">이전</a>
+              <a href="#" class="px-3 py-1 border-t border-b bg-blue-500 text-white">1</a>
+              <a href="#" class="px-3 py-1 border-t border-b hover:bg-gray-100 dark:hover:bg-gray-700">2</a>
+              <a href="#" class="px-3 py-1 border-t border-b hover:bg-gray-100 dark:hover:bg-gray-700">3</a>
+              <a href="#" class="px-3 py-1 border rounded-r hover:bg-gray-100 dark:hover:bg-gray-700">다음</a>
+            </nav>
+          </div>
+        </section>
+      </main>
+    </div>
+  </main>
+
+  <!-- 푸터 -->
+  <footer class="bg-gray-100 dark:bg-gray-800 py-6 mt-6">
+    <div class="container max-w-6xl mx-auto px-6 text-center">
+      <p>&copy; 2023 다락방 동아리. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- 스크립트 영역: 다크모드, 모바일 메뉴, 섹션 애니메이션 등 -->
+  <script>
+    // 다크모드 관련 함수 (데스크탑과 모바일 아이콘 모두 업데이트)
+    function updateDarkModeIcons() {
+      const desktopIcon = document.getElementById('darkModeToggle')?.querySelector('i');
+      const mobileIcon = document.getElementById('darkModeToggleMobile')?.querySelector('i');
+      if (document.documentElement.classList.contains('dark')) {
+        if (desktopIcon) desktopIcon.className = 'fas fa-sun text-yellow-400';
+        if (mobileIcon) mobileIcon.className = 'fas fa-sun text-yellow-400';
+      } else {
+        if (desktopIcon) desktopIcon.className = 'fas fa-moon text-gray-700';
+        if (mobileIcon) mobileIcon.className = 'fas fa-moon text-gray-700';
+      }
+    }
+
+    function initialTheme() {
+      if (localStorage.theme === 'dark') {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+      updateDarkModeIcons();
+    }
+
+    function toggleDarkMode() {
+      if (document.documentElement.classList.contains('dark')) {
+        document.documentElement.classList.remove('dark');
+        localStorage.theme = 'light';
+      } else {
+        document.documentElement.classList.add('dark');
+        localStorage.theme = 'dark';
+      }
+      updateDarkModeIcons();
+    }
+
+    document.getElementById('darkModeToggle')?.addEventListener('click', toggleDarkMode);
+    document.getElementById('darkModeToggleMobile')?.addEventListener('click', toggleDarkMode);
+
+    // 모바일 메뉴 토글 처리
+    const mobileMenu = document.getElementById('mobileMenu');
+    document.getElementById('menuToggle')?.addEventListener('click', () => {
+      mobileMenu.classList.toggle('translate-x-full');
+    });
+    document.getElementById('closeMenu')?.addEventListener('click', () => {
+      mobileMenu.classList.add('translate-x-full');
+    });
+
+    // 스크롤 시 섹션 애니메이션 처리
+    const faders = document.querySelectorAll('.fade-in-section');
+    const appearOptions = {
+      threshold: 0.1,
+      rootMargin: "0px 0px -50px 0px"
+    };
+
+    const appearOnScroll = new IntersectionObserver((entries, observer) => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      });
+    }, appearOptions);
+
+    faders.forEach(fader => {
+      appearOnScroll.observe(fader);
+    });
+
+    initialTheme();
+  </script>
+</body>
+
+</html>

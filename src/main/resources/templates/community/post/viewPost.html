@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: layout(~{::title}, ~{::main})}">
+
+<head>
+    <title>다락방 커뮤니티 - 게시글 조회</title>
+</head>
+
+<body>
+    <main>
+        <div class="container max-w-6xl mx-auto px-6 py-8">
+            <div class="flex flex-col md:flex-row gap-6">
+                <!-- 좌측: 게시판 사이드바 (boardType과 activeBoard는 컨트롤러에서 전달) -->
+                <div th:replace="~{fragments/boardSidebar :: boardSidebar(${boardType}, ${activeBoard})}"></div>
+
+                <!-- 우측: 게시글 내용 -->
+                <div class="w-full md:w-3/4">
+                    <!-- 게시글 헤더 -->
+                    <div class="mb-6">
+                        <h1 class="text-3xl font-bold mb-2">게시글 제목</h1>
+                        <div class="flex justify-between items-center text-gray-600 dark:text-gray-400">
+                            <div>
+                                <span>작성자: 홍길동</span>
+                                <span class="mx-2">|</span>
+                                <span>2025-01-01 12:34</span>
+                            </div>
+                            <div>
+                                <span>조회수: 123</span>
+                                <span class="mx-2">|</span>
+                                <span>좋아요: 45</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 게시글 본문 -->
+                    <div class="prose dark:prose-invert max-w-none mb-8 p-4 border rounded">
+                        <p>게시글 내용이 여기에 표시됩니다.</p>
+                        <p>여러 줄의 내용이 있을 수 있습니다.</p>
+                        <p>HTML 태그가 포함될 수 있습니다.</p>
+                    </div>
+
+                    <!-- 게시글 하단 버튼 -->
+                    <div class="flex justify-between mb-8">
+                        <div>
+                            <a href="/community/list" class="px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded">목록으로</a>
+                        </div>
+                        <div class="space-x-2">
+                            <button class="px-4 py-2 bg-blue-500 text-white rounded">좋아요</button>
+                            <a href="/community/edit/1" class="px-4 py-2 bg-green-500 text-white rounded">수정</a>
+                            <button class="px-4 py-2 bg-red-500 text-white rounded">삭제</button>
+                        </div>
+                    </div>
+
+                    <!-- 댓글 섹션 -->
+                    <div class="mb-8">
+                        <h3 class="text-xl font-bold mb-4">댓글 (3)</h3>
+
+                        <!-- 댓글 작성 폼 -->
+                        <div class="mb-6">
+                            <textarea class="w-full p-3 border rounded dark:bg-gray-700" rows="3"
+                                placeholder="댓글을 작성해주세요"></textarea>
+                            <div class="flex justify-end mt-2">
+                                <button class="px-4 py-2 bg-blue-500 text-white rounded">댓글 작성</button>
+                            </div>
+                        </div>
+
+                        <!-- 댓글 목록 -->
+                        <div class="space-y-4">
+                            <!-- 댓글 1 -->
+                            <div class="p-4 border rounded">
+                                <div class="flex justify-between mb-2">
+                                    <div>
+                                        <span class="font-bold">댓글 작성자1</span>
+                                        <span class="text-sm text-gray-600 dark:text-gray-400 ml-2">2025-01-01
+                                            13:00</span>
+                                    </div>
+                                    <div class="space-x-2">
+                                        <button class="text-sm text-blue-500">좋아요 (5)</button>
+                                        <button class="text-sm text-gray-500">수정</button>
+                                        <button class="text-sm text-red-500">삭제</button>
+                                    </div>
+                                </div>
+                                <p>댓글 내용입니다.</p>
+                            </div>
+
+                            <!-- 댓글 2 -->
+                            <div class="p-4 border rounded">
+                                <div class="flex justify-between mb-2">
+                                    <div>
+                                        <span class="font-bold">댓글 작성자2</span>
+                                        <span class="text-sm text-gray-600 dark:text-gray-400 ml-2">2025-01-01
+                                            14:00</span>
+                                    </div>
+                                    <div class="space-x-2">
+                                        <button class="text-sm text-blue-500">좋아요 (2)</button>
+                                        <button class="text-sm text-gray-500">수정</button>
+                                        <button class="text-sm text-red-500">삭제</button>
+                                    </div>
+                                </div>
+                                <p>두 번째 댓글 내용입니다.</p>
+                            </div>
+
+                            <!-- 댓글 3 -->
+                            <div class="p-4 border rounded">
+                                <div class="flex justify-between mb-2">
+                                    <div>
+                                        <span class="font-bold">댓글 작성자3</span>
+                                        <span class="text-sm text-gray-600 dark:text-gray-400 ml-2">2025-01-01
+                                            15:00</span>
+                                    </div>
+                                    <div class="space-x-2">
+                                        <button class="text-sm text-blue-500">좋아요 (0)</button>
+                                        <button class="text-sm text-gray-500">수정</button>
+                                        <button class="text-sm text-red-500">삭제</button>
+                                    </div>
+                                </div>
+                                <p>세 번째 댓글 내용입니다.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+
+</html>
