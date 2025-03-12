@@ -1,0 +1,51 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:replace="~{template/fragments/layoutFragment :: head}"/>
+    <link th:href="@{/css/basic-form.css}" rel="stylesheet">
+</head>
+<body class="bg-gray-50">
+<div th:insert="~{template/fragments/loginFragment::logoHeader}"></div>
+<div class="container mx-auto max-w-4xl px-4 py-8">
+    <div class="text-center mb-6">
+        <h2 class="text-2xl font-bold" th:text="#{title.member.login}">로그인</h2>
+    </div>
+    <h2 th:if="${param.memberJoinStatus}" class="text-center text-green-600 mb-4" th:text="'회원 가입 성공'"></h2>
+    <form th:action th:object="${loginForm}" method="post" class="space-y-6">
+        <div th:if="${#fields.hasGlobalErrors()}" class="mb-4">
+            <p class="text-red-600" th:each="err : ${#fields.globalErrors()}" th:text="${err}">전체 오류 메시지</p>
+        </div>
+        <div>
+            <label for="loginId" class="block text-sm font-medium text-gray-700" th:text="#{label.login.id}">로그인
+                ID</label>
+            <input type="text" id="loginId" th:field="*{loginId}"
+                   class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                   th:errorclass="field-error">
+            <div class="text-red-600 text-sm" th:errors="*{loginId}"></div>
+        </div>
+        <div>
+            <label for="password" class="block text-sm font-medium text-gray-700"
+                   th:text="#{label.login.password}">비밀번호</label>
+            <input type="password" id="password" th:field="*{password}"
+                   class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                   th:errorclass="field-error">
+            <div class="text-red-600 text-sm" th:errors="*{password}"></div>
+        </div>
+        <hr class="my-4 border-gray-300">
+        <div class="flex space-x-4">
+            <div class="w-1/2">
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded text-lg"
+                        th:text="#{button.loginForm.login}">로그인
+                </button>
+            </div>
+            <div class="w-1/2">
+                <button type="button" class="w-full bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded text-lg"
+                        th:onclick="|location.href='@{/}'|"
+                        onclick="location.href='loginHome.html'" th:text="#{button.cancel}">취소
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+</body>
+</html>
