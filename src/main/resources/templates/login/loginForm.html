@@ -55,7 +55,7 @@
         </div>
     </form>
 
-    <!-- 서드 파티 로그인 버튼 영역 -->
+    <!-- 서드 파티 로그인 버튼 영역 + 회원 가입 버튼-->
     <div class="mt-8">
         <div class="flex flex-col space-y-4">
             <!-- 카카오 로그인 -->
@@ -86,19 +86,13 @@
                     aria-label="구글 로그인">
                 <span th:text="#{button.login.google}" class="font-semibold">구글 로그인</span>
             </button>
+            <button type="button"
+                    class="flex justify-center items-center space-x-2 bg-indigo-600 hover:bg-indigo-700 text-white py-3 px-6 rounded-lg shadow transition duration-200"
+                    th:onclick="|location.href='@{/members/new}'|"
+                    aria-label="회원가입">
+                <span th:text="#{button.member.join}" class="font-semibold">회원가입</span>
+            </button>
         </div>
-    </div>
-</div>
-
-<!-- 회원가입 버튼 영역 -->
-<div class="container mx-auto px-4 py-8">
-    <div class="flex justify-center">
-        <button type="button"
-                class="flex justify-center items-center space-x-2 bg-indigo-600 hover:bg-indigo-700 text-white py-3 px-6 rounded-lg shadow transition duration-200"
-                th:onclick="|location.href='@{/members/new}'|"
-                aria-label="회원가입">
-            <span th:text="#{button.member.join}" class="font-semibold">회원가입</span>
-        </button>
     </div>
 </div>
 </body>
