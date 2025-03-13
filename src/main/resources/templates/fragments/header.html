@@ -32,9 +32,9 @@
                 </div>
             </div>
 
-            <!-- 활동 게시판 -->
+            <!-- activity -->
             <div class="relative group">
-                <a href="/community/activity" class="hover:text-blue-500 transition-colors">활동 게시판</a>
+                <a href="/community/activity" class="hover:text-blue-500 transition-colors">Activity</a>
                 <div
                         class="absolute left-0 mt-2 w-40 bg-white dark:bg-gray-800 rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity">
                     <a href="/community/activity/2025-c-language"
@@ -90,9 +90,19 @@
 
         <!-- 우측: 로그인/로그아웃 및 다크모드 토글 -->
         <div class="w-1/4 flex justify-end items-center gap-x-4">
-            <a href="/login" class="hover:text-blue-500 transition-colors hidden" id="loginBtn">로그인</a>
-            <a href="/logout" class="hover:text-blue-500 transition-colors hidden" id="logoutBtn">로그아웃</a>
-            <a href="/profile" class="hover:text-blue-500 transition-colors hidden" id="profileBtn">프로필</a>
+            <a th:href="@{/login}" href="/login" th:if="${member == null}"
+               class="hover:text-blue-500 transition-colors"
+               id="loginBtn">
+                <i class="fas fa-sign-in-alt"></i> 로그인</a>
+
+            <form th:action="@{/logout}" action="/logout" th:if="${member != null}" method="post">
+                <button class="hover:text-blue-500 transition-colors" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i> 로그아웃
+                </button>
+            </form>
+            <a href="/profile" th:if="${member != null}" class="hover:text-blue-500 transition-colors" id="profileBtn">
+                <i class="fa fa-user"></i>
+                프로필</a>
             <button id="darkModeToggle"
                     class="p-2 w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-700 focus:ring focus:ring-blue-500">
                 <i class="fas fa-moon text-gray-700"></i>
@@ -103,7 +113,7 @@
     <!-- 모바일 네비게이션 (md 미만) -->
     <nav class="container mx-auto px-6 py-3 md:hidden flex items-center justify-between">
         <div class="flex items-center space-x-4">
-            <img src="https://via.placeholder.com/40" alt="다락방 로고" class="w-10 h-10">
+            <img src="/img/logo.png" alt="다락방 로고" class="w-10 h-10">
             <h1 class="text-2xl font-bold">다락방</h1>
         </div>
         <button id="menuToggle" class="p-2 text-gray-700 dark:text-white">
