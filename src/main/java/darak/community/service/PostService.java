@@ -1,5 +1,6 @@
 package darak.community.service;
 
+import darak.community.domain.Attachment;
 import darak.community.domain.Post;
 import java.util.List;
 
@@ -15,4 +16,8 @@ public interface PostService {
     List<Post> findByMemberName(String memberName);
 
     void increaseReadCount(Long id);
+
+    List<Post> findRecentPostsByCategory(Long categoryId, int limit);
+
+    List<Attachment> findRecentGalleryImages(int limit);
 }

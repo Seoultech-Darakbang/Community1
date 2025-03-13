@@ -1,5 +1,6 @@
 package darak.community.service;
 
+import darak.community.domain.Attachment;
 import darak.community.domain.Post;
 import darak.community.repository.CommentRepository;
 import darak.community.repository.PostRepository;
@@ -48,6 +49,16 @@ public class PostServiceImpl implements PostService {
     @Transactional
     public void increaseReadCount(Long id) {
         postRepository.findById(id).ifPresent(Post::increaseReadCount);
+    }
+
+    @Override
+    public List<Post> findRecentPostsByCategory(Long categoryId, int limit) {
+        return postRepository.findRecentPostsByCategory(categoryId, limit);
+    }
+
+    @Override
+    public List<Attachment> findRecentGalleryImages(int limit) {
+        return postRepository.findRecentGalleryImages(limit);
     }
 
 }

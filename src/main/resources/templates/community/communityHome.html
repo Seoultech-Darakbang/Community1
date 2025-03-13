@@ -26,85 +26,77 @@
                 <h2 class="text-3xl font-bold mb-6 text-center">최근 게시글</h2>
 
                 <!-- 공지사항 미리보기 -->
-                <div class="mb-8">
+                <div class="mb-8"
+                    th:if="${recentPostsByCategory.containsKey('notice') && !recentPostsByCategory.get('notice').isEmpty()}">
                     <h3 class="text-2xl font-semibold mb-4">
                         <a href="/community/notice" class="hover:text-blue-500 transition-colors">공지사항</a>
                     </h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="p-4 border rounded hover:shadow-lg">
-                            <h4 class="text-lg font-semibold">모집 공고</h4>
-                            <p class="text-sm">게시글 미리보기 내용...</p>
-                        </div>
-                        <div class="p-4 border rounded hover:shadow-lg">
-                            <h4 class="text-lg font-semibold">전달 사항</h4>
-                            <p class="text-sm">게시글 미리보기 내용...</p>
-                        </div>
-                        <div class="p-4 border rounded hover:shadow-lg">
-                            <h4 class="text-lg font-semibold">FAQ</h4>
-                            <p class="text-sm">게시글 미리보기 내용...</p>
+                        <div th:each="post : ${recentPostsByCategory.get('notice')}"
+                            class="p-4 border rounded hover:shadow-lg">
+                            <h4 class="text-lg font-semibold">
+                                <a th:href="@{'/community/post/' + ${post.id}}" th:text="${post.title}">게시글 제목</a>
+                            </h4>
+                            <p class="text-sm" th:text="${#strings.abbreviate(post.content, 100)}">게시글 미리보기 내용...</p>
+                            <p class="text-xs text-gray-500 mt-2"
+                                th:text="${#temporals.format(post.createdDate, 'yyyy-MM-dd')}">날짜</p>
                         </div>
                     </div>
                 </div>
 
                 <!-- 활동 게시판 미리보기 -->
-                <div class="mb-8">
+                <div class="mb-8"
+                    th:if="${recentPostsByCategory.containsKey('activity') && !recentPostsByCategory.get('activity').isEmpty()}">
                     <h3 class="text-2xl font-semibold mb-4">
                         <a href="/community/activity" class="hover:text-blue-500 transition-colors">활동 게시판</a>
                     </h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="p-4 border rounded hover:shadow-lg">
-                            <h4 class="text-lg font-semibold">2025 C언어 스터디</h4>
-                            <p class="text-sm">게시글 미리보기 내용...</p>
-                        </div>
-                        <div class="p-4 border rounded hover:shadow-lg">
-                            <h4 class="text-lg font-semibold">2025 자료구조 스터디</h4>
-                            <p class="text-sm">게시글 미리보기 내용...</p>
-                        </div>
-                        <div class="p-4 border rounded hover:shadow-lg">
-                            <h4 class="text-lg font-semibold">오운완 챌린지</h4>
-                            <p class="text-sm">게시글 미리보기 내용...</p>
+                        <div th:each="post : ${recentPostsByCategory.get('activity')}"
+                            class="p-4 border rounded hover:shadow-lg">
+                            <h4 class="text-lg font-semibold">
+                                <a th:href="@{'/community/post/' + ${post.id}}" th:text="${post.title}">게시글 제목</a>
+                            </h4>
+                            <p class="text-sm" th:text="${#strings.abbreviate(post.content, 100)}">게시글 미리보기 내용...</p>
+                            <p class="text-xs text-gray-500 mt-2"
+                                th:text="${#temporals.format(post.createdDate, 'yyyy-MM-dd')}">날짜</p>
                         </div>
                     </div>
                 </div>
 
                 <!-- 자유 게시판 미리보기 -->
-                <div class="mb-8">
+                <div class="mb-8"
+                    th:if="${recentPostsByCategory.containsKey('free') && !recentPostsByCategory.get('free').isEmpty()}">
                     <h3 class="text-2xl font-semibold mb-4">
                         <a href="/community/free" class="hover:text-blue-500 transition-colors">자유 게시판</a>
                     </h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="p-4 border rounded hover:shadow-lg">
-                            <h4 class="text-lg font-semibold">자유게시판</h4>
-                            <p class="text-sm">게시글 미리보기 내용...</p>
-                        </div>
-                        <div class="p-4 border rounded hover:shadow-lg">
-                            <h4 class="text-lg font-semibold">Q&amp;A</h4>
-                            <p class="text-sm">게시글 미리보기 내용...</p>
+                        <div th:each="post : ${recentPostsByCategory.get('free')}"
+                            class="p-4 border rounded hover:shadow-lg">
+                            <h4 class="text-lg font-semibold">
+                                <a th:href="@{'/community/post/' + ${post.id}}" th:text="${post.title}">게시글 제목</a>
+                            </h4>
+                            <p class="text-sm" th:text="${#strings.abbreviate(post.content, 100)}">게시글 미리보기 내용...</p>
+                            <p class="text-xs text-gray-500 mt-2"
+                                th:text="${#temporals.format(post.createdDate, 'yyyy-MM-dd')}">날짜</p>
                         </div>
                     </div>
                 </div>
 
                 <!-- Tech 게시판 미리보기 -->
-                <div class="mb-8">
+                <div class="mb-8"
+                    th:if="${recentPostsByCategory.containsKey('tech') && !recentPostsByCategory.get('tech').isEmpty()}">
                     <h3 class="text-2xl font-semibold mb-4">
                         <a href="/community/tech" class="hover:text-blue-500 transition-colors">Tech 게시판</a>
                     </h3>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="p-4 border rounded hover:shadow-lg">
-                            <h4 class="text-lg font-semibold">백엔드 게시판</h4>
-                            <p class="text-sm">게시글 미리보기 내용...</p>
-                        </div>
-                        <div class="p-4 border rounded hover:shadow-lg">
-                            <h4 class="text-lg font-semibold">프론트엔드 게시판</h4>
-                            <p class="text-sm">게시글 미리보기 내용...</p>
-                        </div>
-                        <div class="p-4 border rounded hover:shadow-lg">
-                            <h4 class="text-lg font-semibold">데이터</h4>
-                            <p class="text-sm">게시글 미리보기 내용...</p>
-                        </div>
-                        <div class="p-4 border rounded hover:shadow-lg">
-                            <h4 class="text-lg font-semibold">AI</h4>
-                            <p class="text-sm">게시글 미리보기 내용...</p>
+                        <div th:each="post : ${recentPostsByCategory.get('tech')}"
+                            class="p-4 border rounded hover:shadow-lg">
+                            <h4 class="text-lg font-semibold">
+                                <a th:href="@{'/community/post/' + ${post.id}}" th:text="${post.title}">게시글 제목</a>
+                            </h4>
+                            <p class="text-sm" th:text="${#strings.abbreviate(post.content, 100)}">게시글 미리보기 내용...</p>
+                            <p class="text-xs text-gray-500 mt-2"
+                                th:text="${#temporals.format(post.createdDate, 'yyyy-MM-dd')}">날짜</p>
                         </div>
                     </div>
                 </div>
@@ -116,20 +108,13 @@
             <div class="container mx-auto">
                 <h2 class="text-3xl font-bold mb-6 text-center">갤러리 미리보기</h2>
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <a href="/community/gallery/2025">
-                        <img src="https://via.placeholder.com/300x200?text=2025" alt="2025 갤러리"
-                            class="w-full h-auto object-cover rounded">
+                    <a th:each="image : ${galleryImages}" th:href="@{'/community/post/' + ${image.post.id}}">
+                        <img th:src="${image.url}" th:alt="${image.post.title}"
+                            class="w-full h-48 object-cover rounded">
                     </a>
-                    <a href="/community/gallery/2024">
-                        <img src="https://via.placeholder.com/300x200?text=2024" alt="2024 갤러리"
-                            class="w-full h-auto object-cover rounded">
-                    </a>
-                    <a href="/community/gallery/2023">
-                        <img src="https://via.placeholder.com/300x200?text=2023" alt="2023 갤러리"
-                            class="w-full h-auto object-cover rounded">
-                    </a>
-                    <a href="/community/gallery/2022">
-                        <img src="https://via.placeholder.com/300x200?text=2022" alt="2022 갤러리"
+                    <!-- 이미지가 없을 경우 기본 이미지 표시 -->
+                    <a th:if="${galleryImages == null || galleryImages.isEmpty()}" href="/community/gallery">
+                        <img src="https://via.placeholder.com/300x200?text=갤러리" alt="갤러리"
                             class="w-full h-auto object-cover rounded">
                     </a>
                 </div>

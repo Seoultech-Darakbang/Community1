@@ -9,7 +9,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import java.util.concurrent.atomic.AtomicLong;
 import lombok.Getter;
 
 
@@ -24,7 +23,7 @@ public class Post extends BaseEntity {
 
     private String content;
 
-    private AtomicLong readCount;
+    private Long readCount;
 
     private Boolean anonymous;
 
@@ -39,7 +38,7 @@ public class Post extends BaseEntity {
     @JoinColumn(name = "board_id")
     private Board board;
 
-    public void increaseReadCount() {
-        readCount.incrementAndGet();
+    public synchronized void increaseReadCount() {
+        readCount++;
     }
 }

@@ -1,5 +1,6 @@
 package darak.community.repository;
 
+import darak.community.domain.Attachment;
 import darak.community.domain.Post;
 import jakarta.persistence.EntityManager;
 import java.util.List;
@@ -41,5 +42,26 @@ public class PostRepository {
         em.createQuery("delete from Post p where p.id = :id")
                 .setParameter("id", id)
                 .executeUpdate();
+    }
+
+    public List<Post> findRecentPostsByCategory(Long categoryId, int limit) {
+        return em.createQuery(
+                        "select p from Post p join p.board b where b.boardCategory.id = :categoryId " +
+                                "order by p.createdDate desc", Post.class)
+                .setParameter("categoryId", categoryId)
+                .setMaxResults(limit)
+                .getResultList();
+    }
+
+    public List<Attachment> findRecentGalleryImages(int limit) {
+        return em.createQuery(
+                        "select a from Attachment a " +
+                        "join a.post p " +
+                        "join p.board b " +
+                        "join b.boardCategory bc " +
+                        "where bc.name = 'gallery' " +
+                        "order by p.createdDate desc", Attachment.class)
+                .setMaxResults(limit)
+                .getResultList();
     }
 }
