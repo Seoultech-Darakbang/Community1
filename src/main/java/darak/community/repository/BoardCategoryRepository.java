@@ -13,8 +13,17 @@ public class BoardCategoryRepository {
 
     private final EntityManager em;
 
+    public void save(BoardCategory boardCategory) {
+        if (boardCategory.getId() == null) {
+            em.persist(boardCategory);
+        } else {
+            em.merge(boardCategory);
+        }
+    }
+
     public List<BoardCategory> findAll() {
-        return em.createQuery("select bc from BoardCategory bc", BoardCategory.class)
+        return em.createQuery(
+                "select distinct bc from BoardCategory bc left join fetch bc.boards", BoardCategory.class)
                 .getResultList();
     }
 

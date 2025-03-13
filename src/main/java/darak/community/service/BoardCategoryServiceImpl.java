@@ -4,6 +4,7 @@ import darak.community.domain.BoardCategory;
 import darak.community.repository.BoardCategoryRepository;
 import jakarta.annotation.PostConstruct;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,14 @@ public class BoardCategoryServiceImpl implements BoardCategoryService {
 
     private final BoardCategoryRepository boardCategoryRepository;
     private final List<BoardCategory> boardCategories = new ArrayList<>();
+
+    @Override
+    @Transactional
+    public void save(BoardCategory boardCategory) {
+        boardCategoryRepository.save(boardCategory);
+        boardCategories.add(boardCategory);
+        Collections.sort(boardCategories);
+    }
 
     @Override
     public List<BoardCategory> findAll() {
@@ -31,5 +40,6 @@ public class BoardCategoryServiceImpl implements BoardCategoryService {
     @PostConstruct
     public void init() {
         boardCategories.addAll(boardCategoryRepository.findAll());
+        Collections.sort(boardCategories);
     }
 }
