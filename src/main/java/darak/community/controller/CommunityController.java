@@ -37,8 +37,9 @@ public class CommunityController {
     private final PostService postService;
 
     @ModelAttribute
-    public void addAttributes(Model model) {
+    public void addAttributes(@Login Member member, Model model) {
         addBoardInformation(model);
+        model.addAttribute("member", member);
     }
 
     @GetMapping("/community")
@@ -46,7 +47,6 @@ public class CommunityController {
         if (member == null) {
             return "login/loginForm";
         }
-        model.addAttribute("member", member);
 
         model.addAttribute("boardFavorites", boardFavoriteService.findByMemberId(member.getId()));
 
@@ -95,7 +95,7 @@ public class CommunityController {
         model.addAttribute("board", board);
         model.addAttribute("boardType", categoryName);
         model.addAttribute("activeBoard", boardName);
-        
+
         // 추가: 사이드바에 표시할 게시판 목록 전달
         model.addAttribute("boards", boardService.findBoardsByCategory(categoryName));
 
@@ -111,6 +111,64 @@ public class CommunityController {
 
         return "community/board/board";
     }
+
+    @GetMapping("/community/{categoryName}/{boardName}/{postId}")
+    public String viewPost(@Login Member member,
+                           @PathVariable String categoryName,
+                           @PathVariable String boardName,
+                           @PathVariable Long postId,
+                           Model model) {
+        if (member == null) {
+            return "login/loginForm";
+        }
+
+        BoardCategory category = boardCategoryService.findByName(categoryName);
+        Board board = boardService.findByName(boardName);
+        Post post = postService.findById(postId);
+
+        if (category == null || board == null || post == null) {
+            return "redirect:/error/404";
+        }
+
+        model.addAttribute("category", category);
+        model.addAttribute("board", board);
+        model.addAttribute("boardType", categoryName);
+        model.addAttribute("activeBoard", boardName);
+        model.addAttribute("post", post);
+
+        // 추가: 사이드바에 표시할 게시판 목록 전달
+        model.addAttribute("boards", boardService.findBoardsByCategory(categoryName));
+
+        return "community/post/viewPost";
+    }
+
+    @GetMapping("/community/{categoryName}/{boardName}/write")
+    public String writePost(@Login Member member,
+                            @PathVariable String categoryName,
+                            @PathVariable String boardName,
+                            Model model) {
+        if (member == null) {
+            return "login/loginForm";
+        }
+
+        BoardCategory category = boardCategoryService.findByName(categoryName);
+        Board board = boardService.findByName(boardName);
+
+        if (category == null || board == null) {
+            return "redirect:/error/404";
+        }
+
+        model.addAttribute("category", category);
+        model.addAttribute("board", board);
+        model.addAttribute("boardType", categoryName);
+        model.addAttribute("activeBoard", boardName);
+
+        // 추가: 사이드바에 표시할 게시판 목록 전달
+        model.addAttribute("boards", boardService.findBoardsByCategory(categoryName));
+
+        return "community/post/createPostForm";
+    }
+
 
     private Map<String, List<Post>> getRecentPostMap() {
         Map<String, List<Post>> recentPostsByCategory = new HashMap<>();
