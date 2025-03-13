@@ -2,6 +2,7 @@ package darak.community.controller;
 
 import darak.community.domain.member.Member;
 import darak.community.service.BoardCategoryService;
+import darak.community.service.BoardFavoriteService;
 import darak.community.service.BoardService;
 import darak.community.web.argumentresolver.Login;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 
 @Slf4j
 @Controller
@@ -17,6 +19,12 @@ public class CommunityController {
 
     private final BoardService boardService;
     private final BoardCategoryService boardCategoryService;
+    private final BoardFavoriteService boardFavoriteService;
+
+    @ModelAttribute
+    public void addAttributes(Model model) {
+        addBoardInformation(model);
+    }
 
     @GetMapping("/community")
     public String communityHome(@Login Member member, Model model) {
@@ -25,8 +33,8 @@ public class CommunityController {
         }
         model.addAttribute("member", member);
 
-        addBoardInformation(model);
-
+        model.addAttribute("boardFavorites", boardFavoriteService.findByMemberId(member.getId()));
+        
         return "community/communityHome";
     }
 

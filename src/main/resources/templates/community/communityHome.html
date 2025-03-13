@@ -11,17 +11,10 @@
     <section id="favorites" class="px-6 py-12">
         <div class="container mx-auto">
             <h2 class="text-3xl font-bold mb-6 text-center">즐겨찾는 게시판</h2>
-            <div class="flex flex-wrap justify-center gap-4">
-                <a href="/community/notice"
-                   class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">공지사항</a>
-                <a href="/community/activity" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">활동
-                    게시판</a>
-                <a href="/community/free" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">자유
-                    게시판</a>
-                <a href="/community/tech" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Tech
-                    게시판</a>
-                <a href="/community/gallery"
-                   class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">갤러리</a>
+            <div th:each="boardFavorite : ${boardFavorites}" class="flex flex-wrap justify-center gap-4">
+                <a th:href="@{'/community/' + ${boardFavorite.board.boardCategory.name.toLowerCase()} + '/' + ${boardFavorite.board.name.toLowerCase()}}"
+                   class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                   th:text="${#messages.msg('board.' + boardFavorite.board.name)}"></a>
             </div>
         </div>
     </section>
