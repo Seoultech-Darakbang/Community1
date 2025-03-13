@@ -32,4 +32,8 @@ public class BoardCategory implements Comparable<BoardCategory> {
         boards.add(board);
         board.setBoardCategory(this);
     }
+
+    public String getFirstBoardName() {
+        return boards.getFirst().getName();
+    }
 }

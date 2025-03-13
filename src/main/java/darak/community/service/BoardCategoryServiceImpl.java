@@ -37,6 +37,12 @@ public class BoardCategoryServiceImpl implements BoardCategoryService {
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시판입니다."));
     }
 
+    @Override
+    public BoardCategory findByName(String name) {
+        return boardCategoryRepository.findByName(name)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 카테고리입니다."));
+    }
+
     @PostConstruct
     public void init() {
         boardCategories.addAll(boardCategoryRepository.findAll());

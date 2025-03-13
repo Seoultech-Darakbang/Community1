@@ -10,4 +10,6 @@ public interface BoardCategoryService {
     List<BoardCategory> findAll();
 
     BoardCategory findById(Long boardId);
+
+    BoardCategory findByName(String name);
 }

@@ -2,6 +2,8 @@ package darak.community.service;
 
 import darak.community.domain.Board;
 import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface BoardService {
     Long save(Board board);
@@ -13,5 +15,8 @@ public interface BoardService {
     List<Board> findAll();
 
     List<Board> findByBoardCategoryId(Long categoryId);
-
+    
+    List<Board> findBoardsByCategory(String categoryName);
+    
+    Page<Board> findBoardsByCategoryPaged(String categoryName, Pageable pageable);
 }

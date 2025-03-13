@@ -6,6 +6,8 @@ import darak.community.repository.CommentRepository;
 import darak.community.repository.PostRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -61,4 +63,13 @@ public class PostServiceImpl implements PostService {
         return postRepository.findRecentGalleryImages(limit);
     }
 
+    @Override
+    public List<Post> findByBoardId(Long id) {
+        return postRepository.findByBoardId(id);
+    }
+
+    @Override
+    public Page<Post> findByBoardIdPaged(Long boardId, Pageable pageable) {
+        return postRepository.findByBoardIdPaged(boardId, pageable);
+    }
 }

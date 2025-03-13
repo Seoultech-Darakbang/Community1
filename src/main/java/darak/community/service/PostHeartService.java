@@ -5,7 +5,7 @@ import java.util.List;
 
 public interface PostHeartService {
 
-    void save(PostHeart postHeart);
+    void save(Long postId, Long memberId);
 
     void cancel(Long postId, Long memberId);
 

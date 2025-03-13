@@ -32,4 +32,12 @@ public class BoardCategoryRepository {
         return Optional.ofNullable(boardCategory);
     }
 
+    public Optional<BoardCategory> findByName(String name) {
+        return em.createQuery("select bc from BoardCategory bc where bc.name = :name", BoardCategory.class)
+                .setParameter("name", name)
+                .getResultList()
+                .stream()
+                .findFirst();
+    }
+
 }

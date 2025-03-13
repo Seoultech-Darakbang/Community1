@@ -1,6 +1,7 @@
 package darak.community.controller;
 
 import darak.community.domain.Attachment;
+import darak.community.domain.Board;
 import darak.community.domain.BoardCategory;
 import darak.community.domain.Post;
 import darak.community.domain.member.Member;
@@ -14,10 +15,16 @@ import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Slf4j
 @Controller
@@ -52,6 +59,57 @@ public class CommunityController {
         model.addAttribute("galleryImages", galleryImages);
 
         return "community/communityHome";
+    }
+
+    @GetMapping("/community/{categoryName}")
+    public String redirectFirstBoard(@Login Member member, @PathVariable String categoryName, Model model) {
+        if (member == null) {
+            return "login/loginForm";
+        }
+        BoardCategory category = boardCategoryService.findByName(categoryName);
+        if (category == null) {
+            return "redirect:/error/404";
+        }
+        return "redirect:/community/" + categoryName + "/" + category.getFirstBoardName();
+    }
+
+    @GetMapping("/community/{categoryName}/{boardName}")
+    public String board(@Login Member member,
+                        @PathVariable String categoryName,
+                        @PathVariable String boardName,
+                        @RequestParam(defaultValue = "1") int page,
+                        @RequestParam(defaultValue = "10") int size,
+                        Model model) {
+        if (member == null) {
+            return "login/loginForm";
+        }
+
+        BoardCategory category = boardCategoryService.findByName(categoryName);
+        Board board = boardService.findByName(boardName);
+
+        if (category == null || board == null) {
+            return "redirect:/error/404";
+        }
+
+        model.addAttribute("category", category);
+        model.addAttribute("board", board);
+        model.addAttribute("boardType", categoryName);
+        model.addAttribute("activeBoard", boardName);
+        
+        // 추가: 사이드바에 표시할 게시판 목록 전달
+        model.addAttribute("boards", boardService.findBoardsByCategory(categoryName));
+
+        // 페이지네이션 처리
+        Pageable pageable = PageRequest.of(page - 1, size, Sort.by("createdDate").descending());
+        Page<Post> postPage = postService.findByBoardIdPaged(board.getId(), pageable);
+
+        model.addAttribute("posts", postPage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", postPage.getTotalPages());
+        model.addAttribute("startPage", Math.max(1, page - 2));
+        model.addAttribute("endPage", Math.min(postPage.getTotalPages(), page + 2));
+
+        return "community/board/board";
     }
 
     private Map<String, List<Post>> getRecentPostMap() {
