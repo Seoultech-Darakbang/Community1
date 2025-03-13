@@ -35,7 +35,8 @@ public class BoardRepository {
     }
 
     public List<Board> findByBoardCategoryId(Long boardCategoryId) {
-        return em.createQuery("select b from Board b where b.boardCategory.id = :boardCategoryId", Board.class)
+        return em.createQuery("select b from Board b where b.boardCategory.id = :boardCategoryId order by b.id asc",
+                        Board.class)
                 .setParameter("boardCategoryId", boardCategoryId)
                 .getResultList();
     }
