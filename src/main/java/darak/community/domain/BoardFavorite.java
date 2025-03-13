@@ -20,7 +20,7 @@ import lombok.NoArgsConstructor;
                 columnNames = {"member_id", "board_id"}
         )
 )
-public class BoardFavorite extends BaseEntity {
+public class BoardFavorite {
 
     @Id
     @GeneratedValue
