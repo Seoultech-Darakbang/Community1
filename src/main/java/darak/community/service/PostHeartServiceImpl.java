@@ -54,4 +54,9 @@ public class PostHeartServiceImpl implements PostHeartService {
     public int heartCountInPost(Long postId) {
         return postHeartRepository.countByPostId(postId);
     }
+
+    @Override
+    public boolean isLiked(Long postId, Long memberId) {
+        return postHeartRepository.findByPostIdAndMemberId(postId, memberId).isPresent();
+    }
 }

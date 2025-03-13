@@ -19,5 +19,5 @@ public abstract class Heart extends BaseEntity { // Like는 SQL 예약어랑 겹
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
-    private Member member;
+    protected Member member;
 }

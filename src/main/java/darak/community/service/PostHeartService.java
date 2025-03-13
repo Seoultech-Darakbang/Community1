@@ -12,4 +12,6 @@ public interface PostHeartService {
     List<PostHeart> findByMemberId(Long memberId);
 
     int heartCountInPost(Long postId);
+
+    boolean isLiked(Long postId, Long memberId);
 }

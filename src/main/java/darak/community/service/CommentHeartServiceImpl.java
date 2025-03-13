@@ -1,7 +1,11 @@
 package darak.community.service;
 
+import darak.community.domain.Comment;
 import darak.community.domain.heart.CommentHeart;
+import darak.community.domain.member.Member;
 import darak.community.repository.CommentHeartRepository;
+import darak.community.repository.CommentRepository;
+import darak.community.repository.MemberRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -13,19 +17,24 @@ import org.springframework.transaction.annotation.Transactional;
 public class CommentHeartServiceImpl implements CommentHeartService {
 
     private final CommentHeartRepository commentHeartRepository;
+    private final CommentRepository commentRepository;
+    private final MemberRepository memberRepository;
 
     @Override
     @Transactional
-    public void save(CommentHeart commentHeart) {
-        validateDuplicateCommentHeart(commentHeart);
-        commentHeartRepository.save(commentHeart);
-    }
-
-    private void validateDuplicateCommentHeart(CommentHeart commentHeart) {
-        if (commentHeartRepository.findByCommentIdAndMemberId(commentHeart.getComment().getId(),
-                commentHeart.getMember().getId()).isPresent()) {
+    public void save(Long commentId, Long memberId) {
+        if (commentHeartRepository.findByCommentIdAndMemberId(commentId, memberId).isPresent()) {
             throw new IllegalStateException("이미 좋아요를 누른 댓글입니다.");
         }
+
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 댓글입니다."));
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+
+        // CommentHeart 생성 및 저장 (양방향 관계 설정은 생성자에서 처리)
+        CommentHeart commentHeart = new CommentHeart(comment, member);
+        commentHeartRepository.save(commentHeart);
     }
 
     @Override
@@ -44,5 +53,10 @@ public class CommentHeartServiceImpl implements CommentHeartService {
     @Override
     public int heartCountInComment(Long commentId) {
         return commentHeartRepository.countByCommentId(commentId);
+    }
+    
+    @Override
+    public boolean isLiked(Long commentId, Long memberId) {
+        return commentHeartRepository.findByCommentIdAndMemberId(commentId, memberId).isPresent();
     }
 }
