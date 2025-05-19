@@ -2,6 +2,7 @@ package darak.community.service;
 
 import darak.community.domain.member.Member;
 import darak.community.dto.MemberUpdateDTO;
+import darak.community.exception.PasswordFailedExceededException;
 import darak.community.repository.MemberRepository;
 import java.time.LocalDate;
 import java.util.List;
@@ -81,4 +82,11 @@ public class MemberServiceImpl implements MemberService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
+    @Override
+    public void changePassword(Long id, String oldPassword, String newPassword) throws PasswordFailedExceededException {
+        Member findMember = memberRepository.findById(id)
+                .orElseThrow(() -> new IllegalStateException("존재하지 않는 회원 비밀번호 변경 시도"));
+        findMember.changePassword(oldPassword, newPassword);
+    }
 }

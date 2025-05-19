@@ -2,7 +2,9 @@ package darak.community.controller;
 
 import darak.community.domain.member.Member;
 import darak.community.dto.MemberCreateForm;
+import darak.community.dto.PasswordForm;
 import darak.community.dto.ResponseDto;
+import darak.community.exception.PasswordFailedExceededException;
 import darak.community.service.MemberService;
 import darak.community.web.argumentresolver.Login;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +16,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -55,6 +58,49 @@ public class MemberController {
         redirectAttributes.addAttribute("memberJoinStatus", true);
         return "redirect:/login";
     }
+
+    @GetMapping("/members/expired-password")
+    public String expiredPasswordForm(@Login Member member, @ModelAttribute("passwordForm") PasswordForm form) {
+        if (member == null) {
+            return "redirect:/login";
+        }
+        if (!member.isPasswordExpired()) {
+            return "redirect:/";
+        }
+
+        return "/members/expired-password";
+    }
+
+    @PutMapping("/members/password")
+    public String changePassword(@Login Member member,
+                                 @Validated @ModelAttribute("passwordForm") PasswordForm form,
+                                 BindingResult bindingResult) {
+        if (member == null) {
+            return "redirect:/login";
+        }
+        if (!member.isPasswordExpired()) {
+            return "redirect:/";
+        }
+
+        if (!form.getOldPassword().equals(form.getNewPassword())) {
+            bindingResult.reject("change.member.password.confirmFail", "새로운 비밀번호를 다시 확인해주세요.");
+            return "members/expired-password";
+        }
+
+        try {
+            if (!member.isMatchedPassword(form.getOldPassword())) {
+                bindingResult.rejectValue("oldPassword", "member.password.fail", "기존 비밀번호가 일치하지 않습니다.");
+                return "members/expired-password";
+            }
+            memberService.changePassword(member.getId(), form.getOldPassword(), form.getNewPassword());
+        } catch (PasswordFailedExceededException e) {
+            bindingResult.reject("member.password.fail.exceed", "비밀번호 변경 시도 횟수를 초과했습니다.");
+            return "members/expired-password";
+        }
+
+        return "redirect:/";
+    }
+
 
     @GetMapping("/members/new/confirmLoginId")
     @ResponseBody

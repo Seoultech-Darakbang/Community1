@@ -29,6 +29,7 @@ public class LoginController {
     @GetMapping("/login")
     public String loginForm(@Login Member member, @ModelAttribute("loginForm") LoginForm form, Model model) {
         if (member != null) {
+            model.addAttribute(member);
             return "redirect:/";
         }
         return "login/loginForm";
@@ -55,13 +56,13 @@ public class LoginController {
             return "login/loginForm";
         }
 
-        if (loginMember.isPasswordExpired()) {
-            return "redirect:/members/expired-password?redirectURL=" + redirectURL;
-        }
-
         HttpSession session = request.getSession();
         session.setAttribute(SessionConst.LOGIN_MEMBER, loginMember);
 
+        if (loginMember.isPasswordExpired()) {
+            return "redirect:/members/expired-password?redirectURL=" + redirectURL;
+        }
+        
         return "redirect:" + redirectURL;
     }
 
