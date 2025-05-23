@@ -33,7 +33,7 @@ public class BoardCategory implements Comparable<BoardCategory> {
         board.setBoardCategory(this);
     }
 
-    public String getFirstBoardName() {
-        return boards.getFirst().getName();
+    public Long getFirstBoardId() {
+        return boards.getFirst().getId();
     }
 }

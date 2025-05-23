@@ -4,7 +4,6 @@ import darak.community.domain.Board;
 import darak.community.domain.BoardCategory;
 import darak.community.repository.BoardCategoryRepository;
 import darak.community.repository.BoardRepository;
-import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -22,9 +21,8 @@ public class BoardServiceImpl implements BoardService {
 
     @Transactional
     @Override
-    public Long save(Board board) {
+    public void save(Board board) {
         boardRepository.save(board);
-        return board.getId();
     }
 
     @Override
@@ -46,24 +44,27 @@ public class BoardServiceImpl implements BoardService {
     public List<Board> findByBoardCategoryId(Long categoryId) {
         return boardRepository.findByBoardCategoryId(categoryId);
     }
-    
+
     @Override
     public List<Board> findBoardsByCategory(String categoryName) {
-        BoardCategory category = boardCategoryRepository.findByName(categoryName)
-                .orElse(null);
-        if (category == null) {
-            return Collections.emptyList();
-        }
-        return boardRepository.findByBoardCategoryId(category.getId());
+        return boardCategoryRepository.findByName(categoryName)
+                .map(BoardCategory::getId)
+                .map(boardRepository::findByBoardCategoryId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 카테고리 입니다"));
     }
-    
+
     @Override
     public Page<Board> findBoardsByCategoryPaged(String categoryName, Pageable pageable) {
-        BoardCategory category = boardCategoryRepository.findByName(categoryName)
-                .orElse(null);
-        if (category == null) {
-            return Page.empty(pageable);
-        }
-        return boardRepository.findByBoardCategoryIdPaged(category.getId(), pageable);
+
+        return boardCategoryRepository.findByName(categoryName)
+                .map(BoardCategory::getId)
+                .map(c -> boardRepository.findByBoardCategoryIdPaged(c, pageable))
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 카테고리 입니다"));
+
+    }
+
+    @Override
+    public List<Board> findBoardsByCategoryId(Long categoryId) {
+        return boardRepository.findByBoardCategoryId(categoryId);
     }
 }

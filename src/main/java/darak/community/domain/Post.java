@@ -34,6 +34,9 @@ public class Post extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private ContentType contentType;
 
+    @Enumerated(EnumType.STRING)
+    private PostType postType;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
@@ -42,11 +45,9 @@ public class Post extends BaseEntity {
     @JoinColumn(name = "board_id")
     private Board board;
 
-    // 좋아요 양방향 관계 설정
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PostHeart> hearts = new ArrayList<>();
 
-    // 댓글 양방향 관계 설정 (필요한 경우)
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> comments = new ArrayList<>();
 

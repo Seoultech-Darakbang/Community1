@@ -1,5 +1,5 @@
 package darak.community.domain.member;
 
 public enum MemberGrade {
-    USER, ADMIN, MASTER
+    NON_MEMBER, MEMBER, ADMIN, MASTER
 }

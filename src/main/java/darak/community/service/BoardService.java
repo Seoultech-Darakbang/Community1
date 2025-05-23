@@ -6,7 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface BoardService {
-    Long save(Board board);
+    void save(Board board);
 
     Board findById(Long boardId);
 
@@ -15,8 +15,10 @@ public interface BoardService {
     List<Board> findAll();
 
     List<Board> findByBoardCategoryId(Long categoryId);
-    
+
     List<Board> findBoardsByCategory(String categoryName);
-    
+
     Page<Board> findBoardsByCategoryPaged(String categoryName, Pageable pageable);
+
+    List<Board> findBoardsByCategoryId(Long categoryId);
 }

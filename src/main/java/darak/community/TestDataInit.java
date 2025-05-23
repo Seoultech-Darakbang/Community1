@@ -1,10 +1,8 @@
 package darak.community;
 
-import darak.community.domain.member.Member;
 import darak.community.service.BoardCategoryService;
 import darak.community.service.BoardService;
 import darak.community.service.MemberService;
-import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -19,19 +17,19 @@ public class TestDataInit implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        addMemberData();
+//        addMemberData();
     }
 
-    private void addMemberData() {
-        Member testMember = Member.builder()
-                .loginId("test")
-                .name("테스트")
-                .password("test!")
-                .phone("01012345678")
-                .birth(LocalDate.of(2000, 1, 1))
-                .email("test@test.com")
-                .build();
-
-        memberService.join(testMember);
-    }
+//    private void addMemberData() {
+//        Member testMember = Member.builder()
+//                .loginId("test")
+//                .name("테스트")
+//                .password("test!!")
+//                .phone("01012345678")
+//                .birth(LocalDate.of(2000, 1, 1))
+//                .email("test@test.com")
+//                .build();
+//
+//        memberService.join(testMember);
+//    }
 } 

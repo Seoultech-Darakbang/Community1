@@ -84,9 +84,9 @@ public class MemberServiceImpl implements MemberService {
 
     @Transactional
     @Override
-    public void changePassword(Long id, String oldPassword, String newPassword) throws PasswordFailedExceededException {
+    public void changePassword(Long id, String newPassword, String oldPassword) throws PasswordFailedExceededException {
         Member findMember = memberRepository.findById(id)
                 .orElseThrow(() -> new IllegalStateException("존재하지 않는 회원 비밀번호 변경 시도"));
-        findMember.changePassword(oldPassword, newPassword);
+        findMember.changePassword(newPassword, oldPassword);
     }
 }

@@ -16,7 +16,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -71,7 +70,7 @@ public class MemberController {
         return "/members/expired-password";
     }
 
-    @PutMapping("/members/password")
+    @PostMapping("/members/password")
     public String changePassword(@Login Member member,
                                  @Validated @ModelAttribute("passwordForm") PasswordForm form,
                                  BindingResult bindingResult) {
@@ -82,7 +81,7 @@ public class MemberController {
             return "redirect:/";
         }
 
-        if (!form.getOldPassword().equals(form.getNewPassword())) {
+        if (!form.getNewPassword().equals(form.getNewPasswordConfirm())) {
             bindingResult.reject("change.member.password.confirmFail", "새로운 비밀번호를 다시 확인해주세요.");
             return "members/expired-password";
         }
@@ -92,7 +91,7 @@ public class MemberController {
                 bindingResult.rejectValue("oldPassword", "member.password.fail", "기존 비밀번호가 일치하지 않습니다.");
                 return "members/expired-password";
             }
-            memberService.changePassword(member.getId(), form.getOldPassword(), form.getNewPassword());
+            memberService.changePassword(member.getId(), form.getNewPassword(), form.getOldPassword());
         } catch (PasswordFailedExceededException e) {
             bindingResult.reject("member.password.fail.exceed", "비밀번호 변경 시도 횟수를 초과했습니다.");
             return "members/expired-password";

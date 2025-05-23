@@ -14,13 +14,11 @@
 
     <!-- 동적으로 카테고리와 게시판 목록 생성 -->
     <div th:each="category : ${boardCategories}">
-      <a th:href="@{'/community/' + ${category.name.toLowerCase()}}"
-        th:text="${#messages.msg('board.category.' + category.name)}"
+      <a th:href="@{'/community/' + ${category.id}}" th:text="${category.name}"
         class="hover:text-blue-500 transition-colors block"></a>
       <div class="ml-4">
-        <a th:each="board : ${category.boards}"
-          th:href="@{'/community/' + ${category.name.toLowerCase()} + '/' + ${board.name.toLowerCase()}}"
-          th:text="${#messages.msg('board.' + board.name)}" class="hover:text-blue-500 transition-colors block"></a>
+        <a th:each="board : ${category.boards}" th:href="@{'/community/' + ${category.id} + '/' + ${board.id}}"
+          th:text="${board.name}" class="hover:text-blue-500 transition-colors block"></a>
       </div>
     </div>
 
