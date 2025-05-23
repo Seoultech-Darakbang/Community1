@@ -10,16 +10,16 @@
         <div class="container max-w-6xl mx-auto px-6 py-8">
             <div class="flex flex-col md:flex-row gap-6">
                 <!-- 좌측: 게시판 사이드바 -->
-                <div th:replace="~{fragments/boardSidebar :: boardSidebar(${boardType}, ${activeBoard})}"></div>
+                <div th:replace="~{fragments/boardSidebar :: boardSidebar(${category}, ${activeBoard}, ${boards})}">
+                </div>
 
                 <!-- 우측: 게시글 내용 -->
                 <div class="w-full md:w-3/4">
                     <!-- 게시글 헤더 -->
                     <div class="mb-6">
                         <h1 class="text-3xl font-bold mb-2">
-                            <i th:if="${post.postType.name() == 'NOTICE'}"
-                                class="fa-solid fa-bell text-red-500 mr-1"></i>
-                            <i th:if="${post.postType.name() == 'FAQ'}"
+                            <i th:if="${post.postType.key== 'NOTICE'}" class="fa-solid fa-bell text-red-500 mr-1"></i>
+                            <i th:if="${post.postType.key == 'FAQ'}"
                                 class="fa-solid fa-circle-question text-blue-500 mr-1"></i>
                             <span th:text="${post.title}">[모집 공고] 신입 회원 모집 안내</span>
                         </h1>
@@ -50,7 +50,7 @@
                     <!-- 게시글 하단 버튼 -->
                     <div class="flex justify-between mb-8">
                         <div>
-                            <a th:href="@{'/community/' + ${category.id} + '/' + ${board.id}}"
+                            <a th:href="@{'/community/boards/' + ${activeBoard.id}}"
                                 class="px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded">목록으로</a>
                         </div>
                         <div class="space-x-2">
@@ -62,10 +62,11 @@
                             </button>
                             <!-- 작성자만 수정/삭제 버튼 표시 -->
                             <th:block th:if="${member.id == post.member.id}">
-                                <a th:href="@{'/community/' + ${category.id} + '/' + ${board.id} + '/' + ${post.id} + '/edit'}"
+                                <a th:href="@{'/community/boards/' + ${activeBoard.id} + '/posts/' + ${post.id} + '/edit'}"
                                     class="px-4 py-2 bg-green-500 text-white rounded">수정</a>
                                 <button th:id="deleteButton" th:data-post-id="${post.id}"
-                                    class="px-4 py-2 bg-red-500 text-white rounded">삭제</button>
+                                    class="px-4 py-2 bg-red-500 text-white rounded">삭제
+                                </button>
                             </th:block>
                         </div>
                     </div>
@@ -81,7 +82,8 @@
                                     rows="3" placeholder="댓글을 작성해주세요"></textarea>
                                 <div class="flex justify-end mt-2">
                                     <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded">댓글
-                                        작성</button>
+                                        작성
+                                    </button>
                                 </div>
                             </form>
                         </div>
@@ -107,9 +109,11 @@
                                         <!-- 댓글 작성자만 수정/삭제 버튼 표시 -->
                                         <th:block th:if="${member.id == comment.member.id}">
                                             <button class="text-sm text-gray-500 comment-edit-button"
-                                                th:data-comment-id="${comment.id}">수정</button>
+                                                th:data-comment-id="${comment.id}">수정
+                                            </button>
                                             <button class="text-sm text-red-500 comment-delete-button"
-                                                th:data-comment-id="${comment.id}">삭제</button>
+                                                th:data-comment-id="${comment.id}">삭제
+                                            </button>
                                         </th:block>
                                     </div>
                                 </div>
@@ -121,9 +125,11 @@
                                         th:text="${comment.content}"></textarea>
                                     <div class="flex justify-end mt-2 space-x-2">
                                         <button class="px-3 py-1 bg-green-500 text-white rounded comment-update-button"
-                                            th:data-comment-id="${comment.id}">저장</button>
+                                            th:data-comment-id="${comment.id}">저장
+                                        </button>
                                         <button class="px-3 py-1 bg-gray-500 text-white rounded comment-cancel-button"
-                                            th:data-comment-id="${comment.id}">취소</button>
+                                            th:data-comment-id="${comment.id}">취소
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -192,7 +198,7 @@
                                     if (data.success) {
                                         alert('게시글이 삭제되었습니다.');
                                         // 게시판 목록 페이지로 이동
-                                        window.location.href = /*[[@{'/community/' + ${category.id} + '/' + ${board.id}}]]*/ '';
+                                        window.location.href = /*[[@{'/community/boards/' + ${activeBoard.id}}]]*/ '';
                                     }
                                 })
                                 .catch(error => console.error('Error:', error));

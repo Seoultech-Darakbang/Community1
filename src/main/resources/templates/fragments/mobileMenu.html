@@ -2,7 +2,7 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 
 <aside th:fragment="mobileMenu" id="mobileMenu"
-  class="fixed right-0 inset-y-0 w-64 dark:bg-gray-800 bg-white shadow-lg translate-x-full transition-transform duration-300 z-20">
+  class="fixed right-0 inset-y-0 w-64 dark:bg-gray-800 bg-white shadow-lg translate-x-full hidden lg:hidden z-20">
   <button id="closeMenu" class="p-2 m-4 text-gray-700 dark:text-white">
     <i class="fas fa-times text-2xl"></i>
   </button>
@@ -14,11 +14,11 @@
 
     <!-- 동적으로 카테고리와 게시판 목록 생성 -->
     <div th:each="category : ${boardCategories}">
-      <a th:href="@{'/community/' + ${category.id}}" th:text="${category.name}"
+      <a th:href="@{'/community/categories/' + ${category.id}}" th:text="${category.name}"
         class="hover:text-blue-500 transition-colors block"></a>
       <div class="ml-4">
-        <a th:each="board : ${category.boards}" th:href="@{'/community/' + ${category.id} + '/' + ${board.id}}"
-          th:text="${board.name}" class="hover:text-blue-500 transition-colors block"></a>
+        <a th:each="board : ${category.boards}" th:href="@{'/community/boards/' + ${board.id}}" th:text="${board.name}"
+          class="hover:text-blue-500 transition-colors block"></a>
       </div>
     </div>
 

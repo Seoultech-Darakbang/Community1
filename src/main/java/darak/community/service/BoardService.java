@@ -21,4 +21,6 @@ public interface BoardService {
     Page<Board> findBoardsByCategoryPaged(String categoryName, Pageable pageable);
 
     List<Board> findBoardsByCategoryId(Long categoryId);
+
+    Board findBoardAndCategoryWithBoardId(Long boardId);
 }

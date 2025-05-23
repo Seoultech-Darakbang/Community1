@@ -3,6 +3,15 @@
 
 <div th:fragment="scripts">
   <script>
+    // 페이지 로드 전에 다크 모드 적용 (깜빡임 방지)
+    (function () {
+      if (localStorage.theme === 'dark') {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    })();
+
     function updateDarkModeIcons() {
       const desktopIcon = document.getElementById('darkModeToggle')?.querySelector('i');
       const mobileIcon = document.getElementById('darkModeToggleMobile')?.querySelector('i');
@@ -16,11 +25,6 @@
     }
 
     function initialTheme() {
-      if (localStorage.theme === 'dark') {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-      }
       updateDarkModeIcons();
     }
 
@@ -41,10 +45,20 @@
     // 모바일 메뉴 토글 처리
     const mobileMenu = document.getElementById('mobileMenu');
     document.getElementById('menuToggle')?.addEventListener('click', () => {
-      mobileMenu.classList.toggle('translate-x-full');
+      mobileMenu.classList.remove('hidden');
+      // 다음 프레임에서 transform 애니메이션이 적용되도록 설정
+      requestAnimationFrame(() => {
+        mobileMenu.classList.add('transition-transform', 'duration-300');
+        mobileMenu.classList.toggle('translate-x-full');
+      });
     });
     document.getElementById('closeMenu')?.addEventListener('click', () => {
-      mobileMenu.classList.add('translate-x-full');
+      mobileMenu.classList.add('transition-transform', 'duration-300', 'translate-x-full');
+      // 애니메이션이 완료된 후 hidden 클래스 추가
+      setTimeout(() => {
+        mobileMenu.classList.add('hidden');
+        mobileMenu.classList.remove('transition-transform', 'duration-300');
+      }, 300);
     });
 
     // 섹션 애니메이션 처리

@@ -20,7 +20,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller
 @RequiredArgsConstructor
@@ -40,35 +39,27 @@ public class PostController {
         model.addAttribute("member", member);
     }
 
-    @GetMapping("/community/{categoryName}/{boardName}/{postId}")
+    @GetMapping("/community/boards/{boardId}/posts/{postId}")
     public String viewPost(@Login Member member,
-                           @PathVariable String categoryName,
-                           @PathVariable String boardName,
+                           @PathVariable Long boardId,
                            @PathVariable Long postId,
                            Model model) {
         if (member == null) {
             return "login/loginForm";
         }
 
-        BoardCategory category = boardCategoryService.findByName(categoryName);
-        Board board = boardService.findByName(boardName);
+        Board board = boardService.findBoardAndCategoryWithBoardId(boardId);
         Post post = postService.findById(postId);
 
-        if (category == null || board == null || post == null) {
+        if (board == null || board.getBoardCategory() == null || post == null) {
             return "redirect:/error/404";
         }
 
         // 조회수 증가
         postService.increaseReadCount(postId);
 
-        model.addAttribute("category", category);
-        model.addAttribute("board", board);
         model.addAttribute("post", post);
-        model.addAttribute("member", member);
-        model.addAttribute("boardType", categoryName);
-        model.addAttribute("activeBoard", boardName);
-
-        model.addAttribute("boards", boardService.findBoardsByCategory(categoryName));
+        addSideMenuInformation(model, board.getBoardCategory(), board, board.getBoardCategory().getBoards());
 
         List<Comment> comments = commentService.findByPostId(postId);
         model.addAttribute("comments", comments);
@@ -79,57 +70,27 @@ public class PostController {
         return "community/post/viewPost";
     }
 
-    @GetMapping("/community/{categoryName}/{boardName}/posts")
+    private void addSideMenuInformation(Model model, BoardCategory category, Board board, List<Board> boards) {
+        model.addAttribute("category", category);
+        model.addAttribute("activeBoard", board);
+        model.addAttribute("boards", boards);
+    }
+
+    @GetMapping("/community/boards/{boardId}/posts")
     public String writePostForm(@Login Member member,
-                                @PathVariable String categoryName,
-                                @PathVariable String boardName,
+                                @PathVariable Long boardId,
                                 Model model) {
         if (member == null) {
             return "login/loginForm";
         }
 
-        BoardCategory category = boardCategoryService.findByName(categoryName);
-        Board board = boardService.findByName(boardName);
+        Board board = boardService.findBoardAndCategoryWithBoardId(boardId);
 
-        if (category == null || board == null) {
+        if (board == null || board.getBoardCategory() == null) {
             return "redirect:/error/404";
         }
 
-        model.addAttribute("category", category);
-        model.addAttribute("board", board);
-        model.addAttribute("boardType", categoryName);
-        model.addAttribute("activeBoard", boardName);
-
-        // 추가: 사이드바에 표시할 게시판 목록 전달
-        model.addAttribute("boards", boardService.findBoardsByCategory(categoryName));
-
-        return "community/post/createPostForm";
-    }
-
-    @PostMapping("/community/{categoryName}/{boardName}/posts")
-    public String writePost(@Login Member member,
-                            @PathVariable String categoryName,
-                            @PathVariable String boardName,
-                            Model model) {
-        if (member == null) {
-            return "login/loginForm";
-        }
-
-        BoardCategory category = boardCategoryService.findByName(categoryName);
-        Board board = boardService.findByName(boardName);
-
-        if (category == null || board == null) {
-            return "redirect:/error/404";
-        }
-
-        model.addAttribute("category", category);
-        model.addAttribute("board", board);
-        model.addAttribute("boardType", categoryName);
-        model.addAttribute("activeBoard", boardName);
-
-        // 추가: 사이드바에 표시할 게시판 목록 전달
-        model.addAttribute("boards", boardService.findBoardsByCategory(categoryName));
-
+        addSideMenuInformation(model, board.getBoardCategory(), board, board.getBoardCategory().getBoards());
         return "community/post/createPostForm";
     }
 

@@ -8,9 +8,9 @@
                 카테고리</h3>
             <ul class="space-y-2">
                 <li th:each="board : ${boards}">
-                    <a th:href="@{'/community/' + ${category.id} + '/' + ${board.id}}"
-                       th:class="${activeBoard.id == board.id} ? 'block p-2 bg-blue-100 dark:bg-blue-900 font-bold' : 'block p-2 hover:bg-gray-200 dark:hover:bg-gray-700'"
-                       th:text="${board.name}">
+                    <a th:href="@{'/community/boards/' + ${board.id}}"
+                        th:class="${activeBoard.id == board.id} ? 'block p-2 bg-blue-100 dark:bg-blue-900 font-bold' : 'block p-2 hover:bg-gray-200 dark:hover:bg-gray-700'"
+                        th:text="${board.name}">
                         게시판 이름
                     </a>
                 </li>

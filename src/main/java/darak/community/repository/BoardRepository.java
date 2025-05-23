@@ -43,19 +43,31 @@ public class BoardRepository {
                 .setParameter("boardCategoryId", boardCategoryId)
                 .getResultList();
     }
-    
+
     public Page<Board> findByBoardCategoryIdPaged(Long boardCategoryId, Pageable pageable) {
-        List<Board> boards = em.createQuery("select b from Board b where b.boardCategory.id = :boardCategoryId order by b.id asc",
+        List<Board> boards = em.createQuery(
+                        "select b from Board b where b.boardCategory.id = :boardCategoryId order by b.id asc",
                         Board.class)
                 .setParameter("boardCategoryId", boardCategoryId)
                 .setFirstResult((int) pageable.getOffset())
                 .setMaxResults(pageable.getPageSize())
                 .getResultList();
-                
-        Long count = em.createQuery("select count(b) from Board b where b.boardCategory.id = :boardCategoryId", Long.class)
+
+        Long count = em.createQuery("select count(b) from Board b where b.boardCategory.id = :boardCategoryId",
+                        Long.class)
                 .setParameter("boardCategoryId", boardCategoryId)
                 .getSingleResult();
-                
+
         return new PageImpl<>(boards, pageable, count);
+    }
+
+
+    public Optional<Board> findByIdWithCategoryAndBoards(Long boardId) {
+        return Optional.ofNullable(em.createQuery("select distinct b from Board b "
+                        + "join fetch b.boardCategory bc "
+                        + "join fetch bc.boards bcc "
+                        + "where b.id = :boardId", Board.class)
+                .setParameter("boardId", boardId)
+                .getSingleResult());
     }
 }

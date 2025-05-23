@@ -42,7 +42,7 @@ public class BoardController {
         model.addAttribute("member", member);
     }
 
-    @GetMapping("/community/{categoryId}")
+    @GetMapping("/community/categories/{categoryId}")
     public String redirectFirstBoard(@Login Member member, @PathVariable Long categoryId, Model model) {
         if (member == null) {
             return "login/loginForm";
@@ -51,12 +51,11 @@ public class BoardController {
         if (category == null) {
             return "redirect:/error/404";
         }
-        return "redirect:/community/" + categoryId + "/" + category.getFirstBoardId();
+        return "redirect:/community/boards/" + category.getFirstBoardId();
     }
 
-    @GetMapping("/community/{categoryId}/{boardId}")
+    @GetMapping("/community/boards/{boardId}")
     public String board(@Login Member member,
-                        @PathVariable Long categoryId,
                         @PathVariable Long boardId,
                         @RequestParam(defaultValue = "1") int page,
                         @RequestParam(defaultValue = "10") int size,
@@ -65,19 +64,15 @@ public class BoardController {
             return "login/loginForm";
         }
 
-        BoardCategory category = boardCategoryService.findById(categoryId);
-        Board board = boardService.findById(boardId);
+        Board board = boardService.findBoardAndCategoryWithBoardId(boardId);
 
-        if (category == null || board == null) {
+        if (board == null || board.getBoardCategory() == null) {
             return "redirect:/error/404";
         }
 
-        model.addAttribute("category", category);
-        model.addAttribute("board", board);
-        model.addAttribute("category", category);
+        model.addAttribute("category", board.getBoardCategory());
         model.addAttribute("activeBoard", board);
-
-        model.addAttribute("boards", boardService.findBoardsByCategoryId(categoryId));
+        model.addAttribute("boards", board.getBoardCategory().getBoards());
 
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by("createdDate").descending());
         Page<Post> postPage = postService.findByBoardIdPaged(board.getId(), pageable);
