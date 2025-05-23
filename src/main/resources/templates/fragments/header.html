@@ -20,9 +20,12 @@
       <!-- 동적으로 카테고리와 게시판 목록 생성 -->
       <div th:each="category : ${boardCategories}" class="relative group">
         <a th:href="@{'/community/categories/' + ${category.id}}" th:text="${category.name}"
-          class="hover:text-blue-500 transition-colors"></a>
-        <div
-          class="absolute left-0 mt-2 w-56 bg-white dark:bg-gray-800 rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity">
+          class="hover:text-blue-500 group-hover:text-blue-500 transition-colors"></a>
+        <div class="absolute left-0 top-full z-10 w-56
+        bg-white dark:bg-gray-800 rounded shadow-lg
+        invisible opacity-0 pointer-events-none
+        group-hover:visible group-hover:opacity-100 group-hover:pointer-events-auto
+        transition-opacity duration-200">
           <a th:each="board : ${category.boards}" th:href="@{'/community/boards/' + ${board.id}}"
             th:text="${board.name}" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"></a>
         </div>

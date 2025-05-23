@@ -39,12 +39,9 @@
                     </div>
 
                     <!-- 게시글 본문 -->
-                    <div class="prose dark:prose-invert max-w-none mb-8 p-4 border rounded">
-                        <div th:utext="${post.content}">
-                            <p>게시글 내용이 여기에 표시됩니다.</p>
-                            <p>여러 줄의 내용이 있을 수 있습니다.</p>
-                            <p>HTML 태그가 포함될 수 있습니다.</p>
-                        </div>
+                    <div class="prose dark:prose-invert max-w-none mb-8 p-4 border rounded bg-white">
+                        <!-- 클라이언트 사이드 Viewer 용 컨테이너 -->
+                        <div id="viewer"></div>
                     </div>
 
                     <!-- 게시글 하단 버튼 -->
@@ -325,6 +322,17 @@
                             .catch(error => console.error('Error:', error));
                     });
                 });
+
+                // Toast UI Viewer 초기화
+                if (document.querySelector('#viewer')) {
+                    toastui.Editor.factory({
+                        el: document.getElementById('viewer'),
+                        viewer: true,
+                        initialValue: /*[[${post.content}]]*/ '',
+                        plugins: [toastui.Editor.plugin.codeSyntaxHighlight],
+                        height: 'auto'
+                    });
+                }
             });
         </script>
     </main>

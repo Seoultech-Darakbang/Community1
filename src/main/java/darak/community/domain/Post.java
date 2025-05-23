@@ -14,10 +14,13 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
+@NoArgsConstructor
 public class Post extends BaseEntity {
     @Id
     @GeneratedValue
@@ -30,9 +33,6 @@ public class Post extends BaseEntity {
     private Long readCount;
 
     private Boolean anonymous;
-
-    @Enumerated(EnumType.STRING)
-    private ContentType contentType;
 
     @Enumerated(EnumType.STRING)
     private PostType postType;
@@ -50,6 +50,17 @@ public class Post extends BaseEntity {
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> comments = new ArrayList<>();
+
+    @Builder
+    public Post(String title, String content, Boolean anonymous, PostType postType, Member member, Board board) {
+        this.title = title;
+        this.content = content;
+        this.anonymous = anonymous;
+        this.postType = postType;
+        this.member = member;
+        this.board = board;
+        this.readCount = 0L;
+    }
 
     public synchronized void increaseReadCount() {
         readCount++;

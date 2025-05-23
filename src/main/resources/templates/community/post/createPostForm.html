@@ -45,99 +45,110 @@
 </head>
 
 <body>
-<main>
-    <div class="container max-w-6xl mx-auto px-6 py-8">
-        <div class="flex flex-col md:flex-row gap-6">
-            <!-- 좌측: 게시판 사이드바 (boardType과 activeBoard는 컨트롤러에서 전달) -->
-            <div th:replace="~{fragments/boardSidebar :: boardSidebar(${category}, ${activeBoard}, ${boards})}"></div>
+    <main>
+        <div class="container max-w-6xl mx-auto px-6 py-8">
+            <div class="flex flex-col md:flex-row gap-6">
+                <!-- 좌측: 게시판 사이드바 (boardType과 activeBoard는 컨트롤러에서 전달) -->
+                <div th:replace="~{fragments/boardSidebar :: boardSidebar(${category}, ${activeBoard}, ${boards})}">
+                </div>
 
-            <!-- 우측: 게시글 작성 폼 -->
-            <div class="w-full md:w-3/4">
-                <h1 class="text-3xl font-bold mb-6">게시글 작성</h1>
+                <!-- 우측: 게시글 작성 폼 -->
+                <div class="w-full md:w-3/4">
+                    <h1 class="text-3xl font-bold mb-6">게시글 작성</h1>
 
-                <form action="/community/post/create" method="post">
-                    <!-- 제목 입력 -->
-                    <div class="mb-4">
-                        <label for="title" class="block mb-2 font-semibold">제목</label>
-                        <input type="text" id="title" name="title" class="w-full p-2 border rounded dark:bg-gray-700"
-                               placeholder="제목을 입력하세요">
-                    </div>
+                    <form th:action="@{'/community/boards/' + ${activeBoard.id} + '/posts'}"
+                        th:object="${postCURequestForm}" method="post">
 
-                    <!-- 내용 입력 (리치 에디터) -->
-                    <div class="mb-4">
-                        <label for="content" class="block mb-2 font-semibold">내용</label>
-
-                        <!-- 편집 툴바 -->
-                        <div class="flex flex-wrap mb-2">
-                            <button type="button" title="굵게" class="btn-toolbar"><i class="fas fa-bold"></i></button>
-                            <button type="button" title="기울임" class="btn-toolbar"><i class="fas fa-italic"></i></button>
-                            <button type="button" title="밑줄" class="btn-toolbar"><i class="fas fa-underline"></i>
-                            </button>
-                            <button type="button" title="취소선" class="btn-toolbar"><i class="fas fa-strikethrough"></i>
-                            </button>
+                        <!-- 제목 입력 -->
+                        <div class="mb-4">
+                            <label for="title" class="block mb-2 font-semibold">제목</label>
+                            <input type="text" id="title" th:field="*{title}"
+                                class="w-full p-2 border rounded dark:bg-gray-700" placeholder="제목을 입력하세요">
+                            <p th:if="${#fields.hasErrors('title')}" th:errors="*{title}" class="text-red-500 text-sm">
+                            </p>
                         </div>
 
-                        <!-- 에디터 영역 -->
-                        <div id="content" class="rich-editor dark:bg-gray-700" contenteditable="true"></div>
+                        <!-- 게시글 유형 선택 -->
+                        <div class="mb-4">
+                            <label class="block mb-2 font-semibold">게시글 유형</label>
 
-                        <!-- 실제 폼 제출 시 사용될 hidden textarea -->
-                        <textarea id="hiddenContent" name="content" class="hidden"></textarea>
-                    </div>
+                            <!-- MASTER나 ADMIN인 경우 -->
+                            <div th:if="${member.memberGrade == T(darak.community.domain.member.MemberGrade).MASTER || member.memberGrade == T(darak.community.domain.member.MemberGrade).ADMIN}"
+                                class="flex flex-wrap gap-4">
+                                <div class="flex items-center">
+                                    <input type="radio" th:field="*{postType}" id="normal" value="NORMAL" class="mr-2">
+                                    <label for="normal">일반 게시글</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input type="radio" th:field="*{postType}" id="faq" value="FAQ" class="mr-2">
+                                    <label for="faq">질문 게시글</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input type="radio" th:field="*{postType}" id="notice" value="NOTICE" class="mr-2">
+                                    <label for="notice">공지사항</label>
+                                </div>
+                            </div>
 
-                    <!-- 첨부 파일 -->
-                    <div class="mb-6">
-                        <label for="file" class="block mb-2 font-semibold">첨부 파일</label>
-                        <input type="file" id="file" name="file" class="w-full p-2 border rounded dark:bg-gray-700">
-                    </div>
+                            <!-- 일반 회원인 경우 -->
+                            <div th:unless="${member.memberGrade == T(darak.community.domain.member.MemberGrade).MASTER || member.memberGrade == T(darak.community.domain.member.MemberGrade).ADMIN}"
+                                class="flex flex-wrap gap-4">
+                                <div class="flex items-center">
+                                    <input type="radio" th:field="*{postType}" id="normal" value="NORMAL" class="mr-2">
+                                    <label for="normal">일반 게시글</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input type="radio" th:field="*{postType}" id="faq" value="FAQ" class="mr-2">
+                                    <label for="faq">질문 게시글</label>
+                                </div>
+                            </div>
+                            <p th:if="${#fields.hasErrors('postType')}" th:errors="*{postType}"
+                                class="text-red-500 text-sm"></p>
+                        </div>
 
-                    <!-- 버튼 영역 -->
-                    <div class="flex justify-end space-x-2">
-                        <a href="/community/list" class="px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded">취소</a>
-                        <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded">등록</button>
-                    </div>
-                </form>
+                        <!-- 익명 여부 -->
+                        <div class="mb-4">
+                            <div class="flex items-center">
+                                <input type="checkbox" th:field="*{anonymous}" id="anonymous" class="mr-2">
+                                <label for="anonymous">익명으로 작성</label>
+                            </div>
+                        </div>
+
+                        <!-- 내용 입력 -->
+                        <div class="mb-4">
+                            <label for="content" class="block mb-2 font-semibold">내용</label>
+
+                            <!-- Toast UI Editor가 붙는 영역 -->
+                            <div id="editor" class="bg-white"></div>
+
+                            <!-- Editor 내용을 서버에 보낼 hidden 필드 -->
+                            <input type="hidden" id="hiddenContent" th:field="*{content}">
+                            <p th:if="${#fields.hasErrors('content')}" th:errors="*{content}"
+                                class="text-red-500 text-sm"></p>
+                        </div>
+
+                        <!-- 첨부 파일 -->
+                        <div class="mb-6">
+                            <label for="file" class="block mb-2 font-semibold">첨부 파일</label>
+                            <input type="file" id="file" name="file" class="w-full p-2 border rounded dark:bg-gray-700">
+                        </div>
+
+                        <!-- 버튼 영역 -->
+                        <div class="flex justify-end space-x-2">
+                            <a th:href="@{'/community/boards/' + ${activeBoard.id}}"
+                                class="px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded">취소</a>
+                            <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded">등록</button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
-    </div>
-</main>
+    </main>
 
-<!-- 에디터 스크립트 -->
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const contentDiv = document.getElementById("content");
-
-        // 굵게
-        document.querySelector('button[title="굵게"]').addEventListener("click", function () {
-            document.execCommand("bold", false, null);
-            contentDiv.focus();
+    <script>
+        document.querySelector('form')?.addEventListener('submit', () => {
+            document.getElementById('hiddenContent').value = editor.getMarkdown();
         });
-
-        // 기울임
-        document.querySelector('button[title="기울임"]').addEventListener("click", function () {
-            document.execCommand("italic", false, null);
-            contentDiv.focus();
-        });
-
-        // 밑줄
-        document.querySelector('button[title="밑줄"]').addEventListener("click", function () {
-            document.execCommand("underline", false, null);
-            contentDiv.focus();
-        });
-
-        // 취소선
-        document.querySelector('button[title="취소선"]').addEventListener("click", function () {
-            document.execCommand("strikeThrough", false, null);
-            contentDiv.focus();
-        });
-
-        // 폼 제출 시 contenteditable 영역의 내용을 hidden textarea에 복사
-        const form = document.querySelector("form");
-        form.addEventListener("submit", function () {
-            const hiddenTextarea = document.getElementById("hiddenContent");
-            hiddenTextarea.value = contentDiv.innerHTML;
-        });
-    });
-</script>
+    </script>
 </body>
 
 </html>

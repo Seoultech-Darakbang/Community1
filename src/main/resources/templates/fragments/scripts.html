@@ -82,6 +82,74 @@
 
     initialTheme();
   </script>
+
+  <!-- Toast UI Editor JS 추가 -->
+  <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
+  <script
+    src="https://uicdn.toast.com/editor-plugin-code-syntax-highlight/latest/toastui-editor-plugin-code-syntax-highlight.min.js"></script>
+
+  <!-- Toast UI Editor 초기화 및 폼 submit 훅 -->
+  <script th:inline="javascript">
+    document.addEventListener('DOMContentLoaded', () => {
+      const editorEl = document.getElementById('editor');
+      if (!editorEl) return;           // #editor가 없는 페이지(예: 보기 화면) 방어
+
+      // 전역에서 접근 가능하도록 let/var 또는 window.editor 사용
+      window.editor = new toastui.Editor({
+        el: editorEl,
+        height: '500px',
+        initialEditType: 'wysiwyg',
+        previewStyle: 'vertical',
+        language: 'ko',
+        hideModeSwitch: false,
+        usageStatistics: false,
+        toolbarItems: [
+          ['heading', 'bold', 'italic', 'strike'],
+          ['hr'],
+          ['ul', 'ol', 'task', 'indent', 'outdent'],
+          ['code', 'codeblock'],
+          ['table', 'link', 'image'],
+          ['scrollSync']
+        ],
+        plugins: [toastui.Editor.plugin.codeSyntaxHighlight],
+        hooks: {
+          addImageBlobHook: async (blob, cb) => {
+            try {
+              const fd = new FormData();
+              fd.append('file', blob, blob.name);
+              const res = await fetch('/api/uploads/images', { method: 'POST', body: fd });
+              const { url } = await res.json();
+              cb(url, blob.name);
+            } catch (e) {
+              alert('이미지 업로드 실패');
+              console.error(e);
+            }
+          }
+        }
+      });
+
+      // **폼 전송 직전에 markdown ⇢ hidden input**
+      const formEl = document.querySelector('form');
+      formEl.addEventListener('submit', () => {
+        document.getElementById('hiddenContent').value = window.editor.getMarkdown();
+      });
+    });
+  </script>
+
+  <!-- Toast UI Viewer 초기화: post가 있을 때만 렌더링 -->
+  <script th:if="${post != null}" th:inline="javascript">
+    document.addEventListener('DOMContentLoaded', function () {
+      if (document.querySelector('#viewer')) {
+        toastui.Editor.factory({
+          el: document.getElementById('viewer'),
+          viewer: true,
+          initialValue: /*[[${post.content}]]*/ '',
+          plugins: [toastui.Editor.plugin.codeSyntaxHighlight],
+          height: 'auto'
+        });
+      }
+    });
+  </script>
 </div>
 
 </html>
