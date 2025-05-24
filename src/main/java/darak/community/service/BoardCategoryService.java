@@ -12,4 +12,6 @@ public interface BoardCategoryService {
     BoardCategory findById(Long boardId);
 
     BoardCategory findByName(String name);
+
+    void refreshCache();
 }

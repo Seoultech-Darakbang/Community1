@@ -7,6 +7,28 @@
 
 <body>
     <main>
+        <!-- 관리자 패널 (관리자만 표시) -->
+        <section
+            th:if="${member != null && (member.memberGrade.name() == 'ADMIN' || member.memberGrade.name() == 'MASTER')}"
+            class="px-6 py-4 bg-red-50 dark:bg-red-900/20 border-b-2 border-red-200 dark:border-red-800">
+            <div class="container mx-auto max-w-6xl">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h2 class="text-lg font-bold text-red-700 dark:text-red-300">
+                            <i class="fas fa-shield-alt mr-2"></i>관리자 패널
+                        </h2>
+                        <p class="text-sm text-red-600 dark:text-red-400">
+                            커뮤니티 관리 및 설정을 관리할 수 있습니다.
+                        </p>
+                    </div>
+                    <a href="/admin"
+                        class="px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-colors">
+                        <i class="fas fa-cogs mr-2"></i>관리자 페이지
+                    </a>
+                </div>
+            </div>
+        </section>
+
         <!-- Section 1. 즐겨찾는 게시판 -->
         <section id="favorites" class="px-6 py-8">
             <div class="container mx-auto max-w-6xl">

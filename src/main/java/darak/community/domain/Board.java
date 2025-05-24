@@ -42,6 +42,13 @@ public class Board implements Comparable<Board> {
         boardCategory.addBoard(this);
     }
 
+    public void updateBoard(String name, String description, BoardCategory boardCategory, Integer priority) {
+        this.name = name;
+        this.description = description;
+        this.boardCategory = boardCategory;
+        this.priority = priority != null ? priority : 999;
+    }
+
     @Override
     public int compareTo(Board o) {
         return this.priority.compareTo(o.priority);

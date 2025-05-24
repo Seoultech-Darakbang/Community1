@@ -46,4 +46,9 @@ public class BoardCategory implements Comparable<BoardCategory> {
     public Long getFirstBoardId() {
         return boards.getFirst().getId();
     }
+
+    public void updateCategory(String name, Integer priority) {
+        this.name = name;
+        this.priority = priority != null ? priority : 999;
+    }
 }
