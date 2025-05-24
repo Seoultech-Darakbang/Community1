@@ -14,8 +14,12 @@ import darak.community.service.PostHeartService;
 import darak.community.service.PostService;
 import darak.community.web.argumentresolver.Login;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -26,6 +30,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
@@ -50,6 +55,7 @@ public class PostController {
     public String viewPost(@Login Member member,
                            @PathVariable Long boardId,
                            @PathVariable Long postId,
+                           @RequestParam(defaultValue = "0") int commentPage,
                            Model model) {
         if (member == null) {
             return "login/loginForm";
@@ -68,8 +74,14 @@ public class PostController {
         model.addAttribute("post", post);
         addSideMenuInformation(model, board.getBoardCategory(), board, board.getBoardCategory().getBoards());
 
-        List<Comment> comments = commentService.findByPostId(postId);
-        model.addAttribute("comments", comments);
+        // 댓글 페이징 처리 (페이지당 5개)
+        Pageable pageable = PageRequest.of(commentPage, 5);
+        Map<Comment, List<Comment>> commentsWithReplies = commentService.findCommentsWithReplies(postId, pageable);
+        Page<Comment> commentsPage = commentService.findParentCommentsByPostId(postId, pageable);
+        
+        model.addAttribute("commentsWithReplies", commentsWithReplies);
+        model.addAttribute("commentsPage", commentsPage);
+        model.addAttribute("currentCommentPage", commentPage);
 
         boolean isLiked = postHeartService.isLiked(postId, member.getId());
         model.addAttribute("isLiked", isLiked);
