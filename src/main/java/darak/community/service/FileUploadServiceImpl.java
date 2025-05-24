@@ -1,6 +1,7 @@
 package darak.community.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -9,6 +10,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.UUID;
@@ -17,23 +19,28 @@ import java.util.UUID;
 @Slf4j
 public class FileUploadServiceImpl implements FileUploadService {
 
+    @Value("${app.upload.dir}")
+    private String uploadDir;
+
     @Override
     public String uploadImage(MultipartFile file) throws Exception {
-        String staticPath = getStaticUploadsPath();
-        Path uploadDir = Paths.get(staticPath, "images");
+        // 실제 파일 시스템의 업로드 디렉터리
+        Path uploadPath = Paths.get(uploadDir, "images");
         
-        createDirectories(uploadDir);
+        createDirectories(uploadPath);
 
         String originalFilename = file.getOriginalFilename();
         String extension = getFileExtension(originalFilename);
         String filename = generateUniqueFilename(extension);
 
-        Path filePath = uploadDir.resolve(filename);
+        Path filePath = uploadPath.resolve(filename);
         
         try {
-            file.transferTo(filePath.toFile());
+            // 파일 저장
+            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
             log.info("이미지 업로드 완료: {}", filePath.toAbsolutePath());
             
+            // 브라우저가 접근할 수 있는 URL 반환 (ResourceHandler 매핑과 일치)
             String imageUrl = "/uploads/images/" + filename;
             log.info("이미지 URL: {}", imageUrl);
             
@@ -42,22 +49,6 @@ public class FileUploadServiceImpl implements FileUploadService {
         } catch (IOException e) {
             log.error("파일 저장 실패: {}", filePath, e);
             throw new RuntimeException("파일 저장에 실패했습니다.", e);
-        }
-    }
-
-    private String getStaticUploadsPath() {
-        try {
-            String currentDir = System.getProperty("user.dir");
-            String staticPath = currentDir + "/src/main/resources/static/uploads";
-            
-            Path normalizedPath = Paths.get(staticPath).normalize();
-            log.info("정적 리소스 업로드 경로: {}", normalizedPath.toAbsolutePath());
-            
-            return normalizedPath.toString();
-            
-        } catch (Exception e) {
-            log.error("정적 리소스 경로 설정 실패", e);
-            throw new RuntimeException("업로드 경로 설정에 실패했습니다.", e);
         }
     }
 

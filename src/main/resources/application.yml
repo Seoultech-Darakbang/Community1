@@ -32,4 +32,4 @@ logging:
 # 파일 업로드 설정
 app:
   upload:
-    path: uploads
+    dir: ${user.home}/darak-uploads/ # 사용자 홈 디렉터리에 업로드 폴더 생성
