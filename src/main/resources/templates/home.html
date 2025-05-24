@@ -70,663 +70,686 @@
 </head>
 
 <body class="dark:bg-gray-900 dark:text-white bg-white text-black min-h-screen transition-colors duration-300">
-<!-- 헤더 및 네비게이션 -->
-<header class="sticky top-0 bg-opacity-90 backdrop-blur-lg">
-    <!-- 데스크탑 네비게이션 (md 이상) -->
-    <nav class="container max-w-6xl mx-auto px-6 py-3 hidden md:grid grid-cols-3 items-center">
-        <!-- 왼쪽: 로고 -->
-        <div class="flex items-center space-x-4 justify-start">
-            <a href="/" class="flex items-center gap-2">
-                <img src="/img/logo.png" alt="다락방 로고" class="w-10 h-10">
+    <!-- 헤더 및 네비게이션 -->
+    <header class="sticky top-0 bg-opacity-90 backdrop-blur-lg z-50">
+        <!-- 데스크탑 네비게이션 (md 이상) -->
+        <nav class="container max-w-6xl mx-auto px-6 py-3 hidden md:grid grid-cols-3 items-center">
+            <!-- 왼쪽: 로고 -->
+            <div class="flex items-center space-x-4 justify-start">
+                <a href="/" class="flex items-center gap-2">
+                    <img src="/img/logo.png" alt="다락방 로고" class="w-10 h-10">
+                    <h1 class="text-2xl font-bold">다락방</h1>
+                </a>
+            </div>
+            <!-- 가운데: 홈, 소개, 활동, 소식 -->
+            <div class="flex justify-center gap-x-8">
+                <a href="#slider" class="hover:text-blue-500 transition-colors">홈</a>
+                <a href="#about" class="hover:text-blue-500 transition-colors">소개</a>
+                <a href="#activities" class="hover:text-blue-500 transition-colors">활동</a>
+                <a href="#news" class="hover:text-blue-500 transition-colors">소식</a>
+            </div>
+            <!-- 오른쪽: 커뮤니티, 로그인, 회원가입, 다크모드 토글 -->
+            <div class="flex items-center gap-x-6 justify-end">
+                <a th:href="@{/community}" href="/community"
+                    class="hover:text-blue-500 transition-colors flex items-center gap-1">
+                    <i class="fas fa-users"></i> 커뮤니티
+                </a>
+                <a th:href="@{/login}" th:if="${member == null}" href="/login"
+                    class="hover:text-blue-500 transition-colors flex items-center gap-1">
+                    <i class="fas fa-sign-in-alt"></i> 로그인
+                </a>
+                <a th:href="@{/members/new}" th:if="${member == null}" href="/signup"
+                    class="hover:text-blue-500 transition-colors flex items-center gap-1">
+                    <i class="fas fa-user-plus"></i> 회원가입
+                </a>
+                <form th:action="@{/logout}" th:if="${member != null}" method="post">
+                    <button class="hover:text-blue-500 transition-colors flex items-center gap-1" type="submit">
+                        <i class="fas fa-sign-out-alt"></i> 로그아웃
+                    </button>
+                </form>
+                <button id="darkModeToggle"
+                    class="p-2 w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-700 focus:ring focus:ring-blue-500 relative z-10">
+                    <i class="fas fa-moon text-gray-700"></i>
+                </button>
+            </div>
+        </nav>
+        <!-- 모바일 네비게이션 (md 미만) -->
+        <nav class="container mx-auto px-6 py-3 md:hidden flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <img src="https://via.placeholder.com/40" alt="다락방 로고" class="w-10 h-10">
                 <h1 class="text-2xl font-bold">다락방</h1>
-            </a>
-        </div>
-        <!-- 가운데: 홈, 소개, 활동, 소식 -->
-        <div class="flex justify-center gap-x-8">
+            </div>
+            <button id="menuToggle" class="p-2 text-gray-700 dark:text-white relative z-10">
+                <i class="fas fa-bars text-2xl"></i>
+            </button>
+        </nav>
+    </header>
+
+    <!-- 모바일 메뉴 -->
+    <aside id="mobileMenu"
+        class="fixed right-0 inset-y-0 w-64 dark:bg-gray-800 bg-white shadow-lg translate-x-full transition-transform duration-300 z-40">
+        <button id="closeMenu" class="p-2 m-4 text-gray-700 dark:text-white">
+            <i class="fas fa-times text-2xl"></i>
+        </button>
+        <nav class="flex flex-col space-y-4 px-6">
+            <!-- 상단: 홈, 소개, 활동, 소식 -->
             <a href="#slider" class="hover:text-blue-500 transition-colors">홈</a>
             <a href="#about" class="hover:text-blue-500 transition-colors">소개</a>
             <a href="#activities" class="hover:text-blue-500 transition-colors">활동</a>
             <a href="#news" class="hover:text-blue-500 transition-colors">소식</a>
-        </div>
-        <!-- 오른쪽: 커뮤니티, 로그인, 회원가입, 다크모드 토글 -->
-        <div class="flex items-center gap-x-6 justify-end">
+            <hr class="border-gray-300 dark:border-gray-600 my-2">
+            <!-- 하단: 커뮤니티, 로그인, 회원가입 -->
             <a th:href="@{/community}" href="/community"
-               class="hover:text-blue-500 transition-colors flex items-center gap-1">
+                class="hover:text-blue-500 transition-colors flex items-center gap-2">
                 <i class="fas fa-users"></i> 커뮤니티
             </a>
-            <a th:href="@{/login}" th:if="${member == null}" href="/login"
-               class="hover:text-blue-500 transition-colors flex items-center gap-1">
+            <a th:href="@{/login}" href="/login" th:if="${member == null}"
+                class="hover:text-blue-500 transition-colors flex items-center gap-2">
                 <i class="fas fa-sign-in-alt"></i> 로그인
             </a>
             <a th:href="@{/members/new}" th:if="${member == null}" href="/signup"
-               class="hover:text-blue-500 transition-colors flex items-center gap-1">
+                class="hover:text-blue-500 transition-colors flex items-center gap-2">
                 <i class="fas fa-user-plus"></i> 회원가입
             </a>
             <form th:action="@{/logout}" th:if="${member != null}" method="post">
-                <button class="hover:text-blue-500 transition-colors flex items-center gap-1" type="submit">
+                <button class="hover:text-blue-500 transition-colors flex items-center gap-2" type="submit">
                     <i class="fas fa-sign-out-alt"></i> 로그아웃
                 </button>
             </form>
-            <button id="darkModeToggle"
-                    class="p-2 w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-700 focus:ring focus:ring-blue-500">
-                <i class="fas fa-moon text-gray-700"></i>
+            <button id="darkModeToggleMobile"
+                class="p-2 w-full rounded-full bg-gray-200 dark:bg-gray-700 focus:ring focus:ring-blue-500 relative z-10">
+                <i class="fas fa-moon text-gray-700 dark:text-yellow-400"></i>
             </button>
-        </div>
-    </nav>
-    <!-- 모바일 네비게이션 (md 미만) -->
-    <nav class="container mx-auto px-6 py-3 md:hidden flex items-center justify-between">
-        <div class="flex items-center space-x-4">
-            <img src="https://via.placeholder.com/40" alt="다락방 로고" class="w-10 h-10">
-            <h1 class="text-2xl font-bold">다락방</h1>
-        </div>
-        <button id="menuToggle" class="p-2 text-gray-700 dark:text-white">
-            <i class="fas fa-bars text-2xl"></i>
-        </button>
-    </nav>
-</header>
+        </nav>
+    </aside>
 
-<!-- 모바일 메뉴 -->
-<aside id="mobileMenu"
-       class="fixed right-0 inset-y-0 w-64 dark:bg-gray-800 bg-white shadow-lg translate-x-full transition-transform duration-300 z-20">
-    <button id="closeMenu" class="p-2 m-4 text-gray-700 dark:text-white">
-        <i class="fas fa-times text-2xl"></i>
-    </button>
-    <nav class="flex flex-col space-y-4 px-6">
-        <!-- 상단: 홈, 소개, 활동, 소식 -->
-        <a href="#slider" class="hover:text-blue-500 transition-colors">홈</a>
-        <a href="#about" class="hover:text-blue-500 transition-colors">소개</a>
-        <a href="#activities" class="hover:text-blue-500 transition-colors">활동</a>
-        <a href="#news" class="hover:text-blue-500 transition-colors">소식</a>
-        <hr class="border-gray-300 dark:border-gray-600 my-2">
-        <!-- 하단: 커뮤니티, 로그인, 회원가입 -->
-        <a th:href="@{/community}" href="/community"
-           class="hover:text-blue-500 transition-colors flex items-center gap-2">
-            <i class="fas fa-users"></i> 커뮤니티
-        </a>
-        <a th:href="@{/login}" href="/login" th:if="${member == null}"
-           class="hover:text-blue-500 transition-colors flex items-center gap-2">
-            <i class="fas fa-sign-in-alt"></i> 로그인
-        </a>
-        <a th:href="@{/members/new}" th:if="${member == null}" href="/signup"
-           class="hover:text-blue-500 transition-colors flex items-center gap-2">
-            <i class="fas fa-user-plus"></i> 회원가입
-        </a>
-        <form th:action="@{/logout}" th:if="${member != null}" method="post">
-            <button class="hover:text-blue-500 transition-colors flex items-center gap-2" type="submit">
-                <i class="fas fa-sign-out-alt"></i> 로그아웃
-            </button>
-        </form>
-        <button id="darkModeToggleMobile"
-                class="p-2 w-full rounded-full bg-gray-200 dark:bg-gray-700 focus:ring focus:ring-blue-500">
-            <i class="fas fa-moon text-gray-700 dark:text-yellow-400"></i>
-        </button>
-    </nav>
-</aside>
-
-<!-- 메인 콘텐츠 -->
-<main>
-    <!-- Section 1: 홍보 슬라이드 (각 슬라이드는 3초마다 변경) -->
-    <section id="slider" class="relative min-h-screen fade-in-section">
-        <div class="overflow-hidden relative h-screen">
-            <!-- 슬라이드 1: 모집 이미지 -->
-            <div class="absolute inset-0 slide opacity-100 transition-opacity duration-1000" id="slide1">
-                <img src="/img/main/recruit/2025_1_darak_recruit.jpeg" class="w-full h-full object-cover" alt="모집 이미지">
-                <div class="absolute inset-0 bg-black bg-opacity-40 flex flex-col justify-center items-center">
-                    <h2 class="text-white text-5xl font-bold mb-6">신입 기수 모집 중(~3/7)</h2>
-                    <button class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-lg"
+    <!-- 메인 콘텐츠 -->
+    <main>
+        <!-- Section 1: 홍보 슬라이드 (각 슬라이드는 3초마다 변경) -->
+        <section id="slider" class="relative min-h-screen fade-in-section">
+            <div class="overflow-hidden relative h-screen">
+                <!-- 슬라이드 1: 모집 이미지 -->
+                <div class="absolute inset-0 slide opacity-100 transition-opacity duration-1000" id="slide1">
+                    <img src="/img/main/recruit/2025_1_darak_recruit.jpeg" class="w-full h-full object-cover"
+                        alt="모집 이미지">
+                    <div class="absolute inset-0 bg-black bg-opacity-40 flex flex-col justify-center items-center">
+                        <h2 class="text-white text-5xl font-bold mb-6">신입 기수 모집 중(~3/7)</h2>
+                        <button
+                            class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-lg"
                             onclick="location.href='https://forms.gle/JaRoTBtnVqS3zJ9i6?fbclid=PAZXh0bgNhZW0CMTEAAaas2mjwiDcNlLJ2Qqdj6Duf3cEziuf5uTY8tRSnSZ8aebNJVmVG3tXgreQ_aem_xBU_HWYATXg6SZJ4rZlM-g'">
-                        35기
-                        지원
-                    </button>
+                            35기
+                            지원
+                        </button>
+                    </div>
                 </div>
-            </div>
-            <!-- 슬라이드 2: 소개 이미지 -->
-            <div class="absolute inset-0 slide opacity-0 transition-opacity duration-1000" id="slide2">
-                <img src="/img/main/simple/darak_logo.jpg" class="w-full h-full object-cover" alt="소개 이미지">
-                <div class="absolute inset-0 bg-black bg-opacity-40 flex flex-col justify-center items-center">
-                    <h2 class="text-white text-5xl font-bold mb-6">다락방 소개</h2>
-                    <p class="text-white text-2xl max-w-2xl text-center">서울과학기술대학교 컴퓨터공학과 학술동아리 다락방입니다!</p>
+                <!-- 슬라이드 2: 소개 이미지 -->
+                <div class="absolute inset-0 slide opacity-0 transition-opacity duration-1000" id="slide2">
+                    <img src="/img/main/simple/darak_logo.jpg" class="w-full h-full object-cover" alt="소개 이미지">
+                    <div class="absolute inset-0 bg-black bg-opacity-40 flex flex-col justify-center items-center">
+                        <h2 class="text-white text-5xl font-bold mb-6">다락방 소개</h2>
+                        <p class="text-white text-2xl max-w-2xl text-center">서울과학기술대학교 컴퓨터공학과 학술동아리 다락방입니다!</p>
+                    </div>
                 </div>
-            </div>
-            <!-- 슬라이드 3: 활동 이미지 -->
-            <div class="absolute inset-0 slide opacity-0 transition-opacity duration-1000" id="slide3">
-                <div class="grid grid-cols-2 h-full">
-                    <img src="/img/main/activity/mt/2024_2_darak_mt.jpeg" class="w-full h-full object-cover"
-                         alt="활동 이미지1">
-                    <img src="/img/main/activity/hackathon/2024_2_ec_darak_hackathon.jpeg"
-                         class="w-full h-full object-cover"
-                         alt="활동 이미지2">
+                <!-- 슬라이드 3: 활동 이미지 -->
+                <div class="absolute inset-0 slide opacity-0 transition-opacity duration-1000" id="slide3">
+                    <div class="grid grid-cols-2 h-full">
+                        <img src="/img/main/activity/mt/2024_2_darak_mt.jpeg" class="w-full h-full object-cover"
+                            alt="활동 이미지1">
+                        <img src="/img/main/activity/hackathon/2024_2_ec_darak_hackathon.jpeg"
+                            class="w-full h-full object-cover" alt="활동 이미지2">
+                    </div>
+                    <div class="absolute inset-0 bg-black bg-opacity-40 flex flex-col justify-center items-center">
+                        <h2 class="text-white text-5xl font-bold mb-6">다양한 활동</h2>
+                        <p class="text-white text-2xl max-w-2xl text-center">세미나, 스터디, 오운완 챌린지 등 다양한 활동을 진행합니다.</p>
+                    </div>
                 </div>
-                <div class="absolute inset-0 bg-black bg-opacity-40 flex flex-col justify-center items-center">
-                    <h2 class="text-white text-5xl font-bold mb-6">다양한 활동</h2>
-                    <p class="text-white text-2xl max-w-2xl text-center">세미나, 스터디, 오운완 챌린지 등 다양한 활동을 진행합니다.</p>
-                </div>
-            </div>
-            <!-- 슬라이드 인디케이터 -->
-            <div class="absolute bottom-8 left-0 right-0 flex justify-center space-x-3">
-                <button class="w-3 h-3 rounded-full bg-white bg-opacity-50 slide-indicator active"
+                <!-- 슬라이드 인디케이터 -->
+                <div class="absolute bottom-8 left-0 right-0 flex justify-center space-x-3">
+                    <button class="w-3 h-3 rounded-full bg-white bg-opacity-50 slide-indicator active"
                         data-slide="0"></button>
-                <button class="w-3 h-3 rounded-full bg-white bg-opacity-50 slide-indicator" data-slide="1"></button>
-                <button class="w-3 h-3 rounded-full bg-white bg-opacity-50 slide-indicator" data-slide="2"></button>
-            </div>
-        </div>
-    </section>
-
-    <!-- Section 2: 다락방 소개 -->
-    <section id="about" class="relative" style="height: 200vh;">
-        <!-- Sticky 컨테이너: 섹션 내에서 화면에 고정 -->
-        <div class="sticky top-0 h-screen flex items-center justify-center">
-            <div id="introText" class="transition-all duration-500" style="opacity: 0; transform: scale(1);">
-                <p class="text-4xl md:text-6xl font-bold">
-                    다락방을 소개합니다!
-                </p>
-            </div>
-        </div>
-    </section>
-
-    <!-- Section 3: 동아리 활동 소개 -->
-    <section id="activities" class="px-6 py-12 bg-gray-50 dark:bg-gray-800 min-h-screen">
-        <div class="container mx-auto">
-            <h2 class="text-3xl font-bold mb-12 text-center">동아리 활동</h2>
-
-            <!-- 활동 항목들 -->
-            <div class="activities-container relative">
-                <!-- 활동 1: 스터디 -->
-                <div class="activity-item min-h-[70vh] flex items-center fade-in-section">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-                        <div class="order-2 md:order-1">
-                            <h3 class="text-3xl font-bold mb-4">스터디</h3>
-                            <p class="text-lg mb-6">다락방에서는 다양한 주제의 스터디를 진행합니다. 프로그래밍 언어, CS, 알고리즘, 등의 전공 과목 뿐만 아니라 백엔드,
-                                프론트엔드, AI 등 관심
-                                있는 분야에 대해 함께 공부하고 성장할 수
-                                있습니다.</p>
-                            <a href="#"
-                               class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors inline-block">자세히
-                                보기</a>
-                        </div>
-                        <div class="order-1 md:order-2">
-                            <img src="/img/main/activity/study/2024_2_spring_study_logo.jpeg" alt="스터디"
-                                 class="w-full h-auto rounded-lg shadow-lg">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 활동 2: 붕짜 -->
-                <div class="activity-item min-h-[70vh] flex items-center fade-in-section">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-                        <div>
-                            <img src="/img/main/activity/boong/2024_1_boongcha_logo.jpeg" alt="붕짜"
-                                 class="w-full h-auto rounded-lg shadow-lg">
-                        </div>
-                        <div>
-                            <h3 class="text-3xl font-bold mb-4">붕짜</h3>
-                            <p class="text-lg mb-6">벛꽃 나무 아래 낭만적인 봄, 단풍이 맺고 화창한 가을, 붕어방에서 다락방 친구들과 낭만있게 짜장면을 먹어봐요!</p>
-                            <a href="#"
-                               class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors inline-block">자세히
-                                보기</a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 활동 3: 오운완 챌린지 -->
-                <div class="activity-item min-h-[70vh] flex items-center fade-in-section">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-                        <div class="order-2 md:order-1">
-                            <h3 class="text-3xl font-bold mb-4">오운완 챌린지</h3>
-                            <p class="text-lg mb-6">건강한 개발자가 되기 위한 다락방의 운동 챌린지입니다. 매일 운동 인증을 통해 서로 동기부여하고, 건강한 습관을 형성할 수
-                                있도록 돕습니다.
-                            </p>
-                            <a href="#"
-                               class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors inline-block">자세히
-                                보기</a>
-                        </div>
-                        <div class="order-1 md:order-2">
-                            <img src="/img/main/activity/challenge/2024_1_health_challenge.jpeg" alt="오운완 챌린지"
-                                 class="w-full h-auto rounded-lg shadow-lg">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 활동 4: 개강파티 & 종강파티 -->
-                <div class="activity-item min-h-[70vh] flex items-center fade-in-section">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-                        <div>
-                            <img src="/img/main/activity/semina/2024_2_semina_logo.jpeg" alt="파티"
-                                 class="w-full h-auto rounded-lg shadow-lg">
-                        </div>
-                        <div>
-                            <h3 class="text-3xl font-bold mb-4">개강파티 &amp; 종강파티</h3>
-                            <p class="text-lg mb-6">매 학기 시작과 끝을 함께 축하하는 다락방의 행사입니다. 새로운 학기의 시작을 응원하고, 한 학기 동안의 성과를
-                                공유하고 즐거운 시간을
-                                보냅니다.</p>
-                            <a href="#"
-                               class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors inline-block">자세히
-                                보기</a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 활동 5: MT -->
-                <div class="activity-item min-h-[70vh] flex items-center fade-in-section">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-                        <div class="order-2 md:order-1">
-                            <h3 class="text-3xl font-bold mb-4">MT</h3>
-                            <p class="text-lg mb-6">다락방 회원들이 함께 떠나는 1박 2일 여행입니다. 학업과 일상에서 벗어나 자연 속에서 휴식을 취하고, 회원들 간의 친목을
-                                다지는 소중한
-                                시간입니다.</p>
-                            <a href="#"
-                               class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors inline-block">자세히
-                                보기</a>
-                        </div>
-                        <div class="order-1 md:order-2">
-                            <img src="/img/main/activity/mt/2024_1_darak_mt_logo.jpeg" alt="MT"
-                                 class="w-full h-auto rounded-lg shadow-lg">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 활동 6: 멘토 - 멘티 -->
-                <div class="activity-item min-h-[70vh] flex items-center fade-in-section">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-                        <div>
-                            <img src="/img/main/activity/mento/2023_1_mento_menti_logo.jpeg" alt="멘토 멘티"
-                                 class="w-full h-auto rounded-lg shadow-lg">
-                        </div>
-                        <div>
-                            <h3 class="text-3xl font-bold mb-4">멘토 - 멘티</h3>
-                            <p class="text-lg mb-6">선배와 후배가 연결되어 학업, 진로, 취업 등 다양한 분야에서 조언과 도움을 주고받는 프로그램입니다. 실질적인 경험과
-                                지식을 공유하며 함께
-                                성장할 수 있습니다.</p>
-                            <a href="#"
-                               class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors inline-block">자세히
-                                보기</a>
-                        </div>
-                    </div>
+                    <button class="w-3 h-3 rounded-full bg-white bg-opacity-50 slide-indicator" data-slide="1"></button>
+                    <button class="w-3 h-3 rounded-full bg-white bg-opacity-50 slide-indicator" data-slide="2"></button>
                 </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!-- Section 4: 최신 소식 -->
-    <section id="news" class="px-6 py-20 min-h-screen fade-in-section bg-gray-50 dark:bg-gray-800">
-        <div class="container mx-auto max-w-6xl">
-            <h2 class="text-4xl font-bold mb-16 text-center">최신 소식</h2>
-
-            <!-- 1열: 자주 묻는 질문 & 활동 후기 -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 mb-20">
-                <!-- 자주 묻는 질문 -->
-                <div class="bg-white dark:bg-gray-900 rounded-xl shadow-lg p-8 h-auto">
-                    <h3 class="text-2xl font-bold mb-8 flex items-center">
-                        <i class="fas fa-question-circle text-blue-500 mr-3"></i>자주 묻는 질문
-                    </h3>
-
-                    <div class="space-y-4">
-                        <!-- FAQ 아이템 1 -->
-                        <div class="faq-item border-b border-gray-200 dark:border-gray-700 pb-4">
-                            <button class="faq-question w-full text-left font-medium py-2 flex justify-between items-center">
-                                <span>다락방은 어떤 동아리인가요?</span>
-                                <i class="fas fa-chevron-down text-blue-500 transition-transform duration-300"></i>
-                            </button>
-                            <div class="faq-answer hidden mt-2 pl-4 text-gray-600 dark:text-gray-400">
-                                <p>다락방은 서울과학기술대학교 컴퓨터공학과 학술동아리로, 프로그래밍 스터디, 프로젝트 개발, 취업 준비 등 다양한 활동을 통해 회원들의 성장을 돕는
-                                    동아리입니다.</p>
-                            </div>
-                        </div>
-
-                        <!-- FAQ 아이템 2 -->
-                        <div class="faq-item border-b border-gray-200 dark:border-gray-700 pb-4">
-                            <button class="faq-question w-full text-left font-medium py-2 flex justify-between items-center">
-                                <span>신입 회원은 어떻게 모집하나요?</span>
-                                <i class="fas fa-chevron-down text-blue-500 transition-transform duration-300"></i>
-                            </button>
-                            <div class="faq-answer hidden mt-2 pl-4 text-gray-600 dark:text-gray-400">
-                                <p>매 학기 초에 신입 회원을 모집합니다. 지원서 제출 후 간단한 면접을 통해 선발하며, 프로그래밍 경험이 없어도 열정만 있다면 누구나 지원
-                                    가능합니다.</p>
-                            </div>
-                        </div>
-
-                        <!-- FAQ 아이템 3 -->
-                        <div class="faq-item border-b border-gray-200 dark:border-gray-700 pb-4">
-                            <button class="faq-question w-full text-left font-medium py-2 flex justify-between items-center">
-                                <span>어떤 활동을 하나요?</span>
-                                <i class="fas fa-chevron-down text-blue-500 transition-transform duration-300"></i>
-                            </button>
-                            <div class="faq-answer hidden mt-2 pl-4 text-gray-600 dark:text-gray-400">
-                                <p>다양한 프로그래밍 언어 스터디, 알고리즘 스터디, 프로젝트 개발, 해커톤, MT, 개강/종강 파티 등 학술적인 활동과 친목 활동을 모두
-                                    진행합니다.</p>
-                            </div>
-                        </div>
-
-                        <!-- FAQ 아이템 4 -->
-                        <div class="faq-item border-b border-gray-200 dark:border-gray-700 pb-4">
-                            <button class="faq-question w-full text-left font-medium py-2 flex justify-between items-center">
-                                <span>활동 시간은 어떻게 되나요?</span>
-                                <i class="fas fa-chevron-down text-blue-500 transition-transform duration-300"></i>
-                            </button>
-                            <div class="faq-answer hidden mt-2 pl-4 text-gray-600 dark:text-gray-400">
-                                <p>정기 모임은 목요일 격주로 진행되며, 스터디는 각 팀별로 일정을 조율하여 진행합니다. 대부분의 활동은 학업에 지장이 없도록 저녁 시간이나 주말에
-                                    이루어집니다.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 활동 후기 -->
-                <div class="bg-white dark:bg-gray-900 rounded-xl shadow-lg p-8 h-auto">
-                    <h3 class="text-2xl font-bold mb-8 flex items-center">
-                        <i class="fas fa-comment-dots text-blue-500 mr-3"></i>활동 후기
-                    </h3>
-
-                    <div class="space-y-4">
-                        <!-- 후기 아이템 1 -->
-                        <div class="review-item border-b border-gray-200 dark:border-gray-700 pb-4">
-                            <button class="review-toggle w-full text-left font-medium py-2 flex justify-between items-center">
-                                <span>컴공과 3학년 김OO님의 후기</span>
-                                <i class="fas fa-chevron-down text-blue-500 transition-transform duration-300"></i>
-                            </button>
-                            <div class="review-content hidden mt-2 pl-4 text-gray-600 dark:text-gray-400">
-                                <p>"다락방에서 진행한 스프링 스터디를 통해 백엔드 개발에 대한 이해도가 크게 향상되었습니다. 함께 공부하는 동료들이 있어 어려운 내용도 쉽게 극복할 수
-                                    있었고, 실제 프로젝트까지
-                                    완성할 수 있었습니다."</p>
-                            </div>
-                        </div>
-
-                        <!-- 후기 아이템 2 -->
-                        <div class="review-item border-b border-gray-200 dark:border-gray-700 pb-4">
-                            <button class="review-toggle w-full text-left font-medium py-2 flex justify-between items-center">
-                                <span>컴공과 2학년 이OO님의 후기</span>
-                                <i class="fas fa-chevron-down text-blue-500 transition-transform duration-300"></i>
-                            </button>
-                            <div class="review-content hidden mt-2 pl-4 text-gray-600 dark:text-gray-400">
-                                <p>"알고리즘 스터디를 통해 코딩 테스트 준비를 할 수 있었고, 실제로 인턴 면접에서 큰 도움이 되었습니다. 선배들의 조언과 피드백이 정말 값진
-                                    경험이었습니다."</p>
-                            </div>
-                        </div>
-
-                        <!-- 후기 아이템 3 -->
-                        <div class="review-item border-b border-gray-200 dark:border-gray-700 pb-4">
-                            <button class="review-toggle w-full text-left font-medium py-2 flex justify-between items-center">
-                                <span>컴공과 4학년 박OO님의 후기</span>
-                                <i class="fas fa-chevron-down text-blue-500 transition-transform duration-300"></i>
-                            </button>
-                            <div class="review-content hidden mt-2 pl-4 text-gray-600 dark:text-gray-400">
-                                <p>"다락방에서 진행한 프로젝트를 포트폴리오로 활용해 원하던 기업에 취업할 수 있었습니다. 실무와 유사한 환경에서 팀 프로젝트를 경험할 수 있어 매우
-                                    유익했습니다."</p>
-                            </div>
-                        </div>
-
-                        <!-- 후기 아이템 4 -->
-                        <div class="review-item border-b border-gray-200 dark:border-gray-700 pb-4">
-                            <button class="review-toggle w-full text-left font-medium py-2 flex justify-between items-center">
-                                <span>컴공과 1학년 최OO님의 후기</span>
-                                <i class="fas fa-chevron-down text-blue-500 transition-transform duration-300"></i>
-                            </button>
-                            <div class="review-content hidden mt-2 pl-4 text-gray-600 dark:text-gray-400">
-                                <p>"프로그래밍을 처음 접했지만, 다락방의 기초 스터디를 통해 차근차근 배울 수 있었습니다. 선배들이 친절하게 도와주셔서 빠르게 성장할 수 있었고, 학과
-                                    공부에도 큰 도움이
-                                    되었습니다."</p>
-                            </div>
-                        </div>
-                    </div>
+        <!-- Section 2: 다락방 소개 -->
+        <section id="about" class="relative" style="height: 200vh;">
+            <!-- Sticky 컨테이너: 섹션 내에서 화면에 고정 -->
+            <div class="sticky top-0 h-screen flex items-center justify-center">
+                <div id="introText" class="transition-all duration-500" style="opacity: 0; transform: scale(1);">
+                    <p class="text-4xl md:text-6xl font-bold">
+                        다락방을 소개합니다!
+                    </p>
                 </div>
             </div>
+        </section>
 
-            <!-- 2열: 인스타그램 & 연락처 -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
-                <!-- 인스타그램 -->
-                <div class="bg-white dark:bg-gray-900 rounded-xl shadow-lg p-8">
-                    <h3 class="text-2xl font-bold mb-6 flex items-center">
-                        <i class="fab fa-instagram text-pink-500 mr-3"></i>인스타그램
-                    </h3>
-                    <div class="grid grid-cols-3 gap-2">
-                        <a href="https://www.instagram.com/darak_seoultech/" target="_blank"
-                           class="block overflow-hidden rounded-lg hover:opacity-80 transition-opacity">
-                            <img src="/img/main/instagram/post1.jpg" alt="인스타그램 게시물" class="w-full h-auto">
-                        </a>
-                        <a href="https://www.instagram.com/darak_seoultech/" target="_blank"
-                           class="block overflow-hidden rounded-lg hover:opacity-80 transition-opacity">
-                            <img src="/img/main/instagram/post2.jpg" alt="인스타그램 게시물" class="w-full h-auto">
-                        </a>
-                        <a href="https://www.instagram.com/darak_seoultech/" target="_blank"
-                           class="block overflow-hidden rounded-lg hover:opacity-80 transition-opacity">
-                            <img src="/img/main/instagram/post3.jpg" alt="인스타그램 게시물" class="w-full h-auto">
-                        </a>
-                        <a href="https://www.instagram.com/darak_seoultech/" target="_blank"
-                           class="block overflow-hidden rounded-lg hover:opacity-80 transition-opacity">
-                            <img src="/img/main/instagram/post4.jpg" alt="인스타그램 게시물" class="w-full h-auto">
-                        </a>
-                        <a href="https://www.instagram.com/darak_seoultech/" target="_blank"
-                           class="block overflow-hidden rounded-lg hover:opacity-80 transition-opacity">
-                            <img src="/img/main/instagram/post5.jpg" alt="인스타그램 게시물" class="w-full h-auto">
-                        </a>
-                        <a href="https://www.instagram.com/darak_seoultech/" target="_blank"
-                           class="block overflow-hidden rounded-lg hover:opacity-80 transition-opacity">
-                            <img src="/img/main/instagram/post6.jpg" alt="인스타그램 게시물" class="w-full h-auto">
-                        </a>
+        <!-- Section 3: 동아리 활동 소개 -->
+        <section id="activities" class="px-6 py-12 bg-gray-50 dark:bg-gray-800 min-h-screen">
+            <div class="container mx-auto">
+                <h2 class="text-3xl font-bold mb-12 text-center">동아리 활동</h2>
+
+                <!-- 활동 항목들 -->
+                <div class="activities-container relative">
+                    <!-- 활동 1: 스터디 -->
+                    <div class="activity-item min-h-[70vh] flex items-center fade-in-section">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                            <div class="order-2 md:order-1">
+                                <h3 class="text-3xl font-bold mb-4">스터디</h3>
+                                <p class="text-lg mb-6">다락방에서는 다양한 주제의 스터디를 진행합니다. 프로그래밍 언어, CS, 알고리즘, 등의 전공 과목 뿐만 아니라
+                                    백엔드,
+                                    프론트엔드, AI 등 관심
+                                    있는 분야에 대해 함께 공부하고 성장할 수
+                                    있습니다.</p>
+                                <a href="#"
+                                    class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors inline-block">자세히
+                                    보기</a>
+                            </div>
+                            <div class="order-1 md:order-2">
+                                <img src="/img/main/activity/study/2024_2_spring_study_logo.jpeg" alt="스터디"
+                                    class="w-full h-auto rounded-lg shadow-lg">
+                            </div>
+                        </div>
                     </div>
-                    <a href="https://www.instagram.com/darak_seoultech/" target="_blank"
-                       class="mt-6 inline-block text-blue-500 hover:text-blue-700 transition-colors">
-                        @darackbang_com <i class="fas fa-external-link-alt ml-1"></i>
-                    </a>
-                </div>
 
-                <!-- 연락처 -->
-                <div class="bg-white dark:bg-gray-900 rounded-xl shadow-lg p-8">
-                    <h3 class="text-2xl font-bold mb-6 flex items-center">
-                        <i class="fas fa-envelope text-blue-500 mr-3"></i>연락처
-                    </h3>
-                    <div class="space-y-4">
-                        <div class="flex items-start">
-                            <i class="fas fa-map-marker-alt text-blue-500 mt-1 mr-4 w-5"></i>
+                    <!-- 활동 2: 붕짜 -->
+                    <div class="activity-item min-h-[70vh] flex items-center fade-in-section">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
                             <div>
-                                <h4 class="font-medium">위치</h4>
-                                <p class="text-gray-600 dark:text-gray-400">서울과학기술대학교 미래관</p>
+                                <img src="/img/main/activity/boong/2024_1_boongcha_logo.jpeg" alt="붕짜"
+                                    class="w-full h-auto rounded-lg shadow-lg">
+                            </div>
+                            <div>
+                                <h3 class="text-3xl font-bold mb-4">붕짜</h3>
+                                <p class="text-lg mb-6">벛꽃 나무 아래 낭만적인 봄, 단풍이 맺고 화창한 가을, 붕어방에서 다락방 친구들과 낭만있게 짜장면을 먹어봐요!
+                                </p>
+                                <a href="#"
+                                    class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors inline-block">자세히
+                                    보기</a>
                             </div>
                         </div>
-                        <div class="flex items-start">
-                            <i class="fas fa-envelope text-blue-500 mt-1 mr-4 w-5"></i>
-                            <div>
-                                <h4 class="font-medium">이메일</h4>
-                                <p class="text-gray-600 dark:text-gray-400">darak@seoultech.ac.kr</p>
+                    </div>
+
+                    <!-- 활동 3: 오운완 챌린지 -->
+                    <div class="activity-item min-h-[70vh] flex items-center fade-in-section">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                            <div class="order-2 md:order-1">
+                                <h3 class="text-3xl font-bold mb-4">오운완 챌린지</h3>
+                                <p class="text-lg mb-6">건강한 개발자가 되기 위한 다락방의 운동 챌린지입니다. 매일 운동 인증을 통해 서로 동기부여하고, 건강한 습관을
+                                    형성할 수
+                                    있도록 돕습니다.
+                                </p>
+                                <a href="#"
+                                    class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors inline-block">자세히
+                                    보기</a>
+                            </div>
+                            <div class="order-1 md:order-2">
+                                <img src="/img/main/activity/challenge/2024_1_health_challenge.jpeg" alt="오운완 챌린지"
+                                    class="w-full h-auto rounded-lg shadow-lg">
                             </div>
                         </div>
-                        <div class="flex items-start">
-                            <i class="fas fa-phone text-blue-500 mt-1 mr-4 w-5"></i>
+                    </div>
+
+                    <!-- 활동 4: 개강파티 & 종강파티 -->
+                    <div class="activity-item min-h-[70vh] flex items-center fade-in-section">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
                             <div>
-                                <h4 class="font-medium">전화번호</h4>
-                                <p class="text-gray-600 dark:text-gray-400">010-1234-5678 (회장 배제훈)</p>
+                                <img src="/img/main/activity/semina/2024_2_semina_logo.jpeg" alt="파티"
+                                    class="w-full h-auto rounded-lg shadow-lg">
+                            </div>
+                            <div>
+                                <h3 class="text-3xl font-bold mb-4">개강파티 &amp; 종강파티</h3>
+                                <p class="text-lg mb-6">매 학기 시작과 끝을 함께 축하하는 다락방의 행사입니다. 새로운 학기의 시작을 응원하고, 한 학기 동안의 성과를
+                                    공유하고 즐거운 시간을
+                                    보냅니다.</p>
+                                <a href="#"
+                                    class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors inline-block">자세히
+                                    보기</a>
                             </div>
                         </div>
-                        <div class="flex items-start">
-                            <i class="fab fa-discord text-blue-500 mt-1 mr-4 w-5"></i>
+                    </div>
+
+                    <!-- 활동 5: MT -->
+                    <div class="activity-item min-h-[70vh] flex items-center fade-in-section">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                            <div class="order-2 md:order-1">
+                                <h3 class="text-3xl font-bold mb-4">MT</h3>
+                                <p class="text-lg mb-6">다락방 회원들이 함께 떠나는 1박 2일 여행입니다. 학업과 일상에서 벗어나 자연 속에서 휴식을 취하고, 회원들 간의
+                                    친목을
+                                    다지는 소중한
+                                    시간입니다.</p>
+                                <a href="#"
+                                    class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors inline-block">자세히
+                                    보기</a>
+                            </div>
+                            <div class="order-1 md:order-2">
+                                <img src="/img/main/activity/mt/2024_1_darak_mt_logo.jpeg" alt="MT"
+                                    class="w-full h-auto rounded-lg shadow-lg">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 활동 6: 멘토 - 멘티 -->
+                    <div class="activity-item min-h-[70vh] flex items-center fade-in-section">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
                             <div>
-                                <h4 class="font-medium">오픈 카카오톡 채팅</h4>
-                                <p class="text-gray-600 dark:text-gray-400">open.kakao.com/darakbang</p>
+                                <img src="/img/main/activity/mento/2023_1_mento_menti_logo.jpeg" alt="멘토 멘티"
+                                    class="w-full h-auto rounded-lg shadow-lg">
+                            </div>
+                            <div>
+                                <h3 class="text-3xl font-bold mb-4">멘토 - 멘티</h3>
+                                <p class="text-lg mb-6">선배와 후배가 연결되어 학업, 진로, 취업 등 다양한 분야에서 조언과 도움을 주고받는 프로그램입니다. 실질적인
+                                    경험과
+                                    지식을 공유하며 함께
+                                    성장할 수 있습니다.</p>
+                                <a href="#"
+                                    class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors inline-block">자세히
+                                    보기</a>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+        </section>
+
+        <!-- Section 4: 최신 소식 -->
+        <section id="news" class="px-6 py-20 min-h-screen fade-in-section bg-gray-50 dark:bg-gray-800">
+            <div class="container mx-auto max-w-6xl">
+                <h2 class="text-4xl font-bold mb-16 text-center">최신 소식</h2>
+
+                <!-- 1열: 자주 묻는 질문 & 활동 후기 -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-12 mb-20">
+                    <!-- 자주 묻는 질문 -->
+                    <div class="bg-white dark:bg-gray-900 rounded-xl shadow-lg p-8 h-auto">
+                        <h3 class="text-2xl font-bold mb-8 flex items-center">
+                            <i class="fas fa-question-circle text-blue-500 mr-3"></i>자주 묻는 질문
+                        </h3>
+
+                        <div class="space-y-4">
+                            <!-- FAQ 아이템 1 -->
+                            <div class="faq-item border-b border-gray-200 dark:border-gray-700 pb-4">
+                                <button
+                                    class="faq-question w-full text-left font-medium py-2 flex justify-between items-center">
+                                    <span>다락방은 어떤 동아리인가요?</span>
+                                    <i class="fas fa-chevron-down text-blue-500 transition-transform duration-300"></i>
+                                </button>
+                                <div class="faq-answer hidden mt-2 pl-4 text-gray-600 dark:text-gray-400">
+                                    <p>다락방은 서울과학기술대학교 컴퓨터공학과 학술동아리로, 프로그래밍 스터디, 프로젝트 개발, 취업 준비 등 다양한 활동을 통해 회원들의 성장을 돕는
+                                        동아리입니다.</p>
+                                </div>
+                            </div>
+
+                            <!-- FAQ 아이템 2 -->
+                            <div class="faq-item border-b border-gray-200 dark:border-gray-700 pb-4">
+                                <button
+                                    class="faq-question w-full text-left font-medium py-2 flex justify-between items-center">
+                                    <span>신입 회원은 어떻게 모집하나요?</span>
+                                    <i class="fas fa-chevron-down text-blue-500 transition-transform duration-300"></i>
+                                </button>
+                                <div class="faq-answer hidden mt-2 pl-4 text-gray-600 dark:text-gray-400">
+                                    <p>매 학기 초에 신입 회원을 모집합니다. 지원서 제출 후 간단한 면접을 통해 선발하며, 프로그래밍 경험이 없어도 열정만 있다면 누구나 지원
+                                        가능합니다.</p>
+                                </div>
+                            </div>
+
+                            <!-- FAQ 아이템 3 -->
+                            <div class="faq-item border-b border-gray-200 dark:border-gray-700 pb-4">
+                                <button
+                                    class="faq-question w-full text-left font-medium py-2 flex justify-between items-center">
+                                    <span>어떤 활동을 하나요?</span>
+                                    <i class="fas fa-chevron-down text-blue-500 transition-transform duration-300"></i>
+                                </button>
+                                <div class="faq-answer hidden mt-2 pl-4 text-gray-600 dark:text-gray-400">
+                                    <p>다양한 프로그래밍 언어 스터디, 알고리즘 스터디, 프로젝트 개발, 해커톤, MT, 개강/종강 파티 등 학술적인 활동과 친목 활동을 모두
+                                        진행합니다.</p>
+                                </div>
+                            </div>
+
+                            <!-- FAQ 아이템 4 -->
+                            <div class="faq-item border-b border-gray-200 dark:border-gray-700 pb-4">
+                                <button
+                                    class="faq-question w-full text-left font-medium py-2 flex justify-between items-center">
+                                    <span>활동 시간은 어떻게 되나요?</span>
+                                    <i class="fas fa-chevron-down text-blue-500 transition-transform duration-300"></i>
+                                </button>
+                                <div class="faq-answer hidden mt-2 pl-4 text-gray-600 dark:text-gray-400">
+                                    <p>정기 모임은 목요일 격주로 진행되며, 스터디는 각 팀별로 일정을 조율하여 진행합니다. 대부분의 활동은 학업에 지장이 없도록 저녁 시간이나 주말에
+                                        이루어집니다.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 활동 후기 -->
+                    <div class="bg-white dark:bg-gray-900 rounded-xl shadow-lg p-8 h-auto">
+                        <h3 class="text-2xl font-bold mb-8 flex items-center">
+                            <i class="fas fa-comment-dots text-blue-500 mr-3"></i>활동 후기
+                        </h3>
+
+                        <div class="space-y-4">
+                            <!-- 후기 아이템 1 -->
+                            <div class="review-item border-b border-gray-200 dark:border-gray-700 pb-4">
+                                <button
+                                    class="review-toggle w-full text-left font-medium py-2 flex justify-between items-center">
+                                    <span>컴공과 3학년 김OO님의 후기</span>
+                                    <i class="fas fa-chevron-down text-blue-500 transition-transform duration-300"></i>
+                                </button>
+                                <div class="review-content hidden mt-2 pl-4 text-gray-600 dark:text-gray-400">
+                                    <p>"다락방에서 진행한 스프링 스터디를 통해 백엔드 개발에 대한 이해도가 크게 향상되었습니다. 함께 공부하는 동료들이 있어 어려운 내용도 쉽게 극복할
+                                        수
+                                        있었고, 실제 프로젝트까지
+                                        완성할 수 있었습니다."</p>
+                                </div>
+                            </div>
+
+                            <!-- 후기 아이템 2 -->
+                            <div class="review-item border-b border-gray-200 dark:border-gray-700 pb-4">
+                                <button
+                                    class="review-toggle w-full text-left font-medium py-2 flex justify-between items-center">
+                                    <span>컴공과 2학년 이OO님의 후기</span>
+                                    <i class="fas fa-chevron-down text-blue-500 transition-transform duration-300"></i>
+                                </button>
+                                <div class="review-content hidden mt-2 pl-4 text-gray-600 dark:text-gray-400">
+                                    <p>"알고리즘 스터디를 통해 코딩 테스트 준비를 할 수 있었고, 실제로 인턴 면접에서 큰 도움이 되었습니다. 선배들의 조언과 피드백이 정말 값진
+                                        경험이었습니다."</p>
+                                </div>
+                            </div>
+
+                            <!-- 후기 아이템 3 -->
+                            <div class="review-item border-b border-gray-200 dark:border-gray-700 pb-4">
+                                <button
+                                    class="review-toggle w-full text-left font-medium py-2 flex justify-between items-center">
+                                    <span>컴공과 4학년 박OO님의 후기</span>
+                                    <i class="fas fa-chevron-down text-blue-500 transition-transform duration-300"></i>
+                                </button>
+                                <div class="review-content hidden mt-2 pl-4 text-gray-600 dark:text-gray-400">
+                                    <p>"다락방에서 진행한 프로젝트를 포트폴리오로 활용해 원하던 기업에 취업할 수 있었습니다. 실무와 유사한 환경에서 팀 프로젝트를 경험할 수 있어 매우
+                                        유익했습니다."</p>
+                                </div>
+                            </div>
+
+                            <!-- 후기 아이템 4 -->
+                            <div class="review-item border-b border-gray-200 dark:border-gray-700 pb-4">
+                                <button
+                                    class="review-toggle w-full text-left font-medium py-2 flex justify-between items-center">
+                                    <span>컴공과 1학년 최OO님의 후기</span>
+                                    <i class="fas fa-chevron-down text-blue-500 transition-transform duration-300"></i>
+                                </button>
+                                <div class="review-content hidden mt-2 pl-4 text-gray-600 dark:text-gray-400">
+                                    <p>"프로그래밍을 처음 접했지만, 다락방의 기초 스터디를 통해 차근차근 배울 수 있었습니다. 선배들이 친절하게 도와주셔서 빠르게 성장할 수 있었고,
+                                        학과
+                                        공부에도 큰 도움이
+                                        되었습니다."</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2열: 인스타그램 & 연락처 -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                    <!-- 인스타그램 -->
+                    <div class="bg-white dark:bg-gray-900 rounded-xl shadow-lg p-8">
+                        <h3 class="text-2xl font-bold mb-6 flex items-center">
+                            <i class="fab fa-instagram text-pink-500 mr-3"></i>인스타그램
+                        </h3>
+                        <div class="grid grid-cols-3 gap-2">
+                            <a href="https://www.instagram.com/darak_seoultech/" target="_blank"
+                                class="block overflow-hidden rounded-lg hover:opacity-80 transition-opacity">
+                                <img src="/img/main/instagram/post1.jpg" alt="인스타그램 게시물" class="w-full h-auto">
+                            </a>
+                            <a href="https://www.instagram.com/darak_seoultech/" target="_blank"
+                                class="block overflow-hidden rounded-lg hover:opacity-80 transition-opacity">
+                                <img src="/img/main/instagram/post2.jpg" alt="인스타그램 게시물" class="w-full h-auto">
+                            </a>
+                            <a href="https://www.instagram.com/darak_seoultech/" target="_blank"
+                                class="block overflow-hidden rounded-lg hover:opacity-80 transition-opacity">
+                                <img src="/img/main/instagram/post3.jpg" alt="인스타그램 게시물" class="w-full h-auto">
+                            </a>
+                            <a href="https://www.instagram.com/darak_seoultech/" target="_blank"
+                                class="block overflow-hidden rounded-lg hover:opacity-80 transition-opacity">
+                                <img src="/img/main/instagram/post4.jpg" alt="인스타그램 게시물" class="w-full h-auto">
+                            </a>
+                            <a href="https://www.instagram.com/darak_seoultech/" target="_blank"
+                                class="block overflow-hidden rounded-lg hover:opacity-80 transition-opacity">
+                                <img src="/img/main/instagram/post5.jpg" alt="인스타그램 게시물" class="w-full h-auto">
+                            </a>
+                            <a href="https://www.instagram.com/darak_seoultech/" target="_blank"
+                                class="block overflow-hidden rounded-lg hover:opacity-80 transition-opacity">
+                                <img src="/img/main/instagram/post6.jpg" alt="인스타그램 게시물" class="w-full h-auto">
+                            </a>
+                        </div>
+                        <a href="https://www.instagram.com/darak_seoultech/" target="_blank"
+                            class="mt-6 inline-block text-blue-500 hover:text-blue-700 transition-colors">
+                            @darackbang_com <i class="fas fa-external-link-alt ml-1"></i>
+                        </a>
+                    </div>
+
+                    <!-- 연락처 -->
+                    <div class="bg-white dark:bg-gray-900 rounded-xl shadow-lg p-8">
+                        <h3 class="text-2xl font-bold mb-6 flex items-center">
+                            <i class="fas fa-envelope text-blue-500 mr-3"></i>연락처
+                        </h3>
+                        <div class="space-y-4">
+                            <div class="flex items-start">
+                                <i class="fas fa-map-marker-alt text-blue-500 mt-1 mr-4 w-5"></i>
+                                <div>
+                                    <h4 class="font-medium">위치</h4>
+                                    <p class="text-gray-600 dark:text-gray-400">서울과학기술대학교 미래관</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <i class="fas fa-envelope text-blue-500 mt-1 mr-4 w-5"></i>
+                                <div>
+                                    <h4 class="font-medium">이메일</h4>
+                                    <p class="text-gray-600 dark:text-gray-400">darak@seoultech.ac.kr</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <i class="fas fa-phone text-blue-500 mt-1 mr-4 w-5"></i>
+                                <div>
+                                    <h4 class="font-medium">전화번호</h4>
+                                    <p class="text-gray-600 dark:text-gray-400">010-1234-5678 (회장 배제훈)</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start">
+                                <i class="fab fa-discord text-blue-500 mt-1 mr-4 w-5"></i>
+                                <div>
+                                    <h4 class="font-medium">오픈 카카오톡 채팅</h4>
+                                    <p class="text-gray-600 dark:text-gray-400">open.kakao.com/darakbang</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 푸터 -->
+    <footer class="bg-gray-100 dark:bg-gray-800 py-6">
+        <div class="container max-w-4xl mx-auto px-6 text-center">
+            <p>&copy; 2025 다락방. All rights reserved.</p>
         </div>
-    </section>
-</main>
+    </footer>
 
-<!-- 푸터 -->
-<footer class="bg-gray-100 dark:bg-gray-800 py-6">
-    <div class="container max-w-4xl mx-auto px-6 text-center">
-        <p>&copy; 2025 다락방. All rights reserved.</p>
-    </div>
-</footer>
-
-<!-- 스크립트 영역 -->
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        // 다크모드 관련 함수
-        function updateDarkModeIcons() {
-            const desktopIcon = document.getElementById('darkModeToggle')?.querySelector('i');
-            const mobileIcon = document.getElementById('darkModeToggleMobile')?.querySelector('i');
-            if (document.documentElement.classList.contains('dark')) {
-                if (desktopIcon) desktopIcon.className = 'fas fa-sun text-yellow-400';
-                if (mobileIcon) mobileIcon.className = 'fas fa-sun text-yellow-400';
-            } else {
-                if (desktopIcon) desktopIcon.className = 'fas fa-moon text-gray-700';
-                if (mobileIcon) mobileIcon.className = 'fas fa-moon text-gray-700';
+    <!-- 스크립트 영역 -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // 다크모드 관련 함수
+            function updateDarkModeIcons() {
+                const desktopIcon = document.getElementById('darkModeToggle')?.querySelector('i');
+                const mobileIcon = document.getElementById('darkModeToggleMobile')?.querySelector('i');
+                if (document.documentElement.classList.contains('dark')) {
+                    if (desktopIcon) desktopIcon.className = 'fas fa-sun text-yellow-400';
+                    if (mobileIcon) mobileIcon.className = 'fas fa-sun text-yellow-400';
+                } else {
+                    if (desktopIcon) desktopIcon.className = 'fas fa-moon text-gray-700';
+                    if (mobileIcon) mobileIcon.className = 'fas fa-moon text-gray-700';
+                }
             }
-        }
 
-        function initialTheme() {
-            if (localStorage.theme === 'dark') {
-                document.documentElement.classList.add('dark');
-            } else {
-                document.documentElement.classList.remove('dark');
+            function initialTheme() {
+                if (localStorage.theme === 'dark') {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
+                updateDarkModeIcons();
             }
-            updateDarkModeIcons();
-        }
 
-        function toggleDarkMode() {
-            if (document.documentElement.classList.contains('dark')) {
-                document.documentElement.classList.remove('dark');
-                localStorage.theme = 'light';
-            } else {
-                document.documentElement.classList.add('dark');
-                localStorage.theme = 'dark';
+            function toggleDarkMode() {
+                if (document.documentElement.classList.contains('dark')) {
+                    document.documentElement.classList.remove('dark');
+                    localStorage.theme = 'light';
+                } else {
+                    document.documentElement.classList.add('dark');
+                    localStorage.theme = 'dark';
+                }
+                updateDarkModeIcons();
             }
-            updateDarkModeIcons();
-        }
 
-        // 다크모드 토글 이벤트 리스너 등록
-        document.getElementById('darkModeToggle').addEventListener('click', toggleDarkMode);
-        document.getElementById('darkModeToggleMobile').addEventListener('click', toggleDarkMode);
+            // 다크모드 토글 이벤트 리스너 등록 (안전한 방식으로 수정)
+            const darkModeToggle = document.getElementById('darkModeToggle');
+            const darkModeToggleMobile = document.getElementById('darkModeToggleMobile');
 
-        // 모바일 메뉴 토글 처리
-        const mobileMenu = document.getElementById('mobileMenu');
-        document.getElementById('menuToggle').addEventListener('click', () => {
-            mobileMenu.classList.toggle('translate-x-full');
-        });
-        document.getElementById('closeMenu').addEventListener('click', () => {
-            mobileMenu.classList.add('translate-x-full');
-        });
+            if (darkModeToggle) {
+                darkModeToggle.addEventListener('click', toggleDarkMode);
+            }
+            if (darkModeToggleMobile) {
+                darkModeToggleMobile.addEventListener('click', toggleDarkMode);
+            }
 
-        // 슬라이드 기능: 5초 간격으로 자동 전환
-        const slides = document.querySelectorAll('.slide');
-        const indicators = document.querySelectorAll('.slide-indicator');
-        let currentSlide = 0;
-
-        function showSlide(index) {
-            // 모든 슬라이드 숨기기
-            slides.forEach(slide => {
-                slide.style.opacity = '0';
-                slide.style.zIndex = '0';
+            // 모바일 메뉴 토글 처리
+            const mobileMenu = document.getElementById('mobileMenu');
+            document.getElementById('menuToggle').addEventListener('click', () => {
+                mobileMenu.classList.toggle('translate-x-full');
+            });
+            document.getElementById('closeMenu').addEventListener('click', () => {
+                mobileMenu.classList.add('translate-x-full');
             });
 
-            // 현재 슬라이드만 보이기
-            slides[index].style.opacity = '1';
-            slides[index].style.zIndex = '10';
+            // 슬라이드 기능: 5초 간격으로 자동 전환
+            const slides = document.querySelectorAll('.slide');
+            const indicators = document.querySelectorAll('.slide-indicator');
+            let currentSlide = 0;
 
-            // 인디케이터 업데이트
-            indicators.forEach(indicator => indicator.classList.remove('active', 'bg-opacity-100'));
-            indicators[index].classList.add('active', 'bg-opacity-100');
-        }
+            function showSlide(index) {
+                // 모든 슬라이드 숨기기
+                slides.forEach(slide => {
+                    slide.style.opacity = '0';
+                    slide.style.zIndex = '0';
+                });
 
-        // 슬라이드 인디케이터 클릭 이벤트
-        indicators.forEach((indicator, index) => {
-            indicator.addEventListener('click', () => {
-                currentSlide = index;
+                // 현재 슬라이드만 보이기
+                slides[index].style.opacity = '1';
+                slides[index].style.zIndex = '10';
+
+                // 인디케이터 업데이트
+                indicators.forEach(indicator => indicator.classList.remove('active', 'bg-opacity-100'));
+                indicators[index].classList.add('active', 'bg-opacity-100');
+            }
+
+            // 슬라이드 인디케이터 클릭 이벤트
+            indicators.forEach((indicator, index) => {
+                indicator.addEventListener('click', () => {
+                    currentSlide = index;
+                    showSlide(currentSlide);
+                });
+            });
+
+            // 자동 슬라이드
+            const slideInterval = setInterval(() => {
+                currentSlide = (currentSlide + 1) % slides.length;
                 showSlide(currentSlide);
+            }, 5000);
+
+            // 초기 슬라이드 설정
+            showSlide(0);
+
+            // 스크롤 시 섹션 애니메이션 처리
+            const faders = document.querySelectorAll('.fade-in-section');
+            const appearOptions = {
+                threshold: 0.2,
+                rootMargin: "0px 0px -100px 0px"
+            };
+
+            const appearOnScroll = new IntersectionObserver(function (entries, observer) {
+                entries.forEach(entry => {
+                    if (!entry.isIntersecting) return;
+
+                    // 지연 효과 추가
+                    setTimeout(() => {
+                        entry.target.classList.add('visible');
+                    }, 200);
+
+                    // 한 번 나타난 요소는 더 이상 관찰하지 않음
+                    observer.unobserve(entry.target);
+                });
+            }, appearOptions);
+
+            faders.forEach(fader => {
+                appearOnScroll.observe(fader);
             });
-        });
 
-        // 자동 슬라이드
-        const slideInterval = setInterval(() => {
-            currentSlide = (currentSlide + 1) % slides.length;
-            showSlide(currentSlide);
-        }, 5000);
+            // FAQ 토글 기능
+            const faqQuestions = document.querySelectorAll('.faq-question');
+            faqQuestions.forEach(question => {
+                question.addEventListener('click', () => {
+                    const answer = question.nextElementSibling;
+                    const icon = question.querySelector('i');
 
-        // 초기 슬라이드 설정
-        showSlide(0);
+                    // 토글 답변 표시/숨김
+                    answer.classList.toggle('hidden');
 
-        // 스크롤 시 섹션 애니메이션 처리
-        const faders = document.querySelectorAll('.fade-in-section');
-        const appearOptions = {
-            threshold: 0.2,
-            rootMargin: "0px 0px -100px 0px"
-        };
-
-        const appearOnScroll = new IntersectionObserver(function (entries, observer) {
-            entries.forEach(entry => {
-                if (!entry.isIntersecting) return;
-
-                // 지연 효과 추가
-                setTimeout(() => {
-                    entry.target.classList.add('visible');
-                }, 200);
-
-                // 한 번 나타난 요소는 더 이상 관찰하지 않음
-                observer.unobserve(entry.target);
+                    // 아이콘 회전
+                    if (answer.classList.contains('hidden')) {
+                        icon.style.transform = 'rotate(0deg)';
+                    } else {
+                        icon.style.transform = 'rotate(180deg)';
+                    }
+                });
             });
-        }, appearOptions);
 
-        faders.forEach(fader => {
-            appearOnScroll.observe(fader);
-        });
+            // 후기 토글 기능
+            const reviewToggles = document.querySelectorAll('.review-toggle');
+            reviewToggles.forEach(toggle => {
+                toggle.addEventListener('click', () => {
+                    const content = toggle.nextElementSibling;
+                    const icon = toggle.querySelector('i');
 
-        // FAQ 토글 기능
-        const faqQuestions = document.querySelectorAll('.faq-question');
-        faqQuestions.forEach(question => {
-            question.addEventListener('click', () => {
-                const answer = question.nextElementSibling;
-                const icon = question.querySelector('i');
+                    // 토글 내용 표시/숨김
+                    content.classList.toggle('hidden');
 
-                // 토글 답변 표시/숨김
-                answer.classList.toggle('hidden');
-
-                // 아이콘 회전
-                if (answer.classList.contains('hidden')) {
-                    icon.style.transform = 'rotate(0deg)';
-                } else {
-                    icon.style.transform = 'rotate(180deg)';
-                }
+                    // 아이콘 회전
+                    if (content.classList.contains('hidden')) {
+                        icon.style.transform = 'rotate(0deg)';
+                    } else {
+                        icon.style.transform = 'rotate(180deg)';
+                    }
+                });
             });
-        });
 
-        // 후기 토글 기능
-        const reviewToggles = document.querySelectorAll('.review-toggle');
-        reviewToggles.forEach(toggle => {
-            toggle.addEventListener('click', () => {
-                const content = toggle.nextElementSibling;
-                const icon = toggle.querySelector('i');
-
-                // 토글 내용 표시/숨김
-                content.classList.toggle('hidden');
-
-                // 아이콘 회전
-                if (content.classList.contains('hidden')) {
-                    icon.style.transform = 'rotate(0deg)';
-                } else {
-                    icon.style.transform = 'rotate(180deg)';
-                }
+            // 추가: Section2(다락방 소개) 스크롤에 따른 고정/확대 효과
+            const introText = document.getElementById('introText');
+            const sectionAbout = document.getElementById('about');
+            window.addEventListener('scroll', () => {
+                // Section의 시작(scrollY 기준)과 높이를 이용하여 진행도를 계산
+                const sectionTop = sectionAbout.offsetTop;
+                const sectionHeight = sectionAbout.offsetHeight;
+                const scrollY = window.scrollY;
+                // progress: Section 내에서 스크롤한 비율 (0 ~ 1)
+                const progress = Math.min(Math.max((scrollY - sectionTop) / (sectionHeight - window.innerHeight), 0), 1);
+                // scale: 1에서 시작하여 최대 1.6까지 확대 (진행도에 따라 크기 변경)
+                const scale = 1 + progress * 0.6;
+                introText.style.transform = `scale(${scale})`;
+                introText.style.opacity = progress;
             });
-        });
 
-        // 추가: Section2(다락방 소개) 스크롤에 따른 고정/확대 효과
-        const introText = document.getElementById('introText');
-        const sectionAbout = document.getElementById('about');
-        window.addEventListener('scroll', () => {
-            // Section의 시작(scrollY 기준)과 높이를 이용하여 진행도를 계산
-            const sectionTop = sectionAbout.offsetTop;
-            const sectionHeight = sectionAbout.offsetHeight;
-            const scrollY = window.scrollY;
-            // progress: Section 내에서 스크롤한 비율 (0 ~ 1)
-            const progress = Math.min(Math.max((scrollY - sectionTop) / (sectionHeight - window.innerHeight), 0), 1);
-            // scale: 1에서 시작하여 최대 1.6까지 확대 (진행도에 따라 크기 변경)
-            const scale = 1 + progress * 0.6;
-            introText.style.transform = `scale(${scale})`;
-            introText.style.opacity = progress;
+            initialTheme();
         });
-
-        initialTheme();
-    });
-</script>
+    </script>
 </body>
 
 </html>
