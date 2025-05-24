@@ -116,14 +116,34 @@
         hooks: {
           addImageBlobHook: async (blob, cb) => {
             try {
+              // 로딩 표시
+              const loadingToast = showToast('이미지 업로드 중...', 'info');
+
               const fd = new FormData();
-              fd.append('file', blob, blob.name);
-              const res = await fetch('/api/uploads/images', { method: 'POST', body: fd });
-              const { url } = await res.json();
-              cb(url, blob.name);
+              fd.append('file', blob, blob.name || 'pasted-image.png');
+
+              const res = await fetch('/api/uploads/images', {
+                method: 'POST',
+                body: fd
+              });
+
+              if (!res.ok) {
+                const errorData = await res.json();
+                throw new Error(errorData.error || '이미지 업로드에 실패했습니다.');
+              }
+
+              const data = await res.json();
+
+              // 성공 시 이미지 URL 콜백
+              cb(data.url, blob.name || 'pasted-image.png');
+
+              // 성공 토스트
+              hideToast(loadingToast);
+              showToast('이미지가 성공적으로 업로드되었습니다.', 'success');
+
             } catch (e) {
-              alert('이미지 업로드 실패');
-              console.error(e);
+              console.error('이미지 업로드 오류:', e);
+              showToast(e.message || '이미지 업로드에 실패했습니다.', 'error');
             }
           }
         }
@@ -137,6 +157,41 @@
         });
       }
     });
+
+    // 토스트 메시지 함수들
+    function showToast(message, type = 'info') {
+      const toast = document.createElement('div');
+      toast.className = `fixed top-4 right-4 px-6 py-3 rounded-lg text-white z-50 ${getToastBgColor(type)}`;
+      toast.textContent = message;
+
+      document.body.appendChild(toast);
+
+      // 애니메이션
+      setTimeout(() => toast.style.opacity = '1', 10);
+
+      // 자동 제거 (에러가 아닌 경우)
+      if (type !== 'error') {
+        setTimeout(() => hideToast(toast), 3000);
+      }
+
+      return toast;
+    }
+
+    function hideToast(toast) {
+      if (toast && toast.parentNode) {
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 300);
+      }
+    }
+
+    function getToastBgColor(type) {
+      switch (type) {
+        case 'success': return 'bg-green-500';
+        case 'error': return 'bg-red-500';
+        case 'warning': return 'bg-yellow-500';
+        default: return 'bg-blue-500';
+      }
+    }
   </script>
 
   <!-- Toast UI Viewer 초기화: post가 있을 때만 렌더링 -->

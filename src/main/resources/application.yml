@@ -10,6 +10,11 @@ spring:
     hiddenmethod:
       filter:
         enabled: true
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 5MB
+      enabled: true
 
   jpa:
     hibernate:
@@ -23,3 +28,8 @@ logging:
   level:
     org.hibernate.SQL: debug
     org.hibernate.type: trace
+
+# 파일 업로드 설정
+app:
+  upload:
+    path: uploads
