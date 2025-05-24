@@ -8,6 +8,19 @@
 <body>
     <main>
         <div class="container max-w-6xl mx-auto px-6 py-8">
+            <!-- 수정 완료 알림 메시지 -->
+            <div th:if="${param.editStatus}"
+                class="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-check-circle text-green-500"></i>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm font-medium">게시글이 성공적으로 수정되었습니다.</p>
+                    </div>
+                </div>
+            </div>
+
             <div class="flex flex-col md:flex-row gap-6">
                 <!-- 좌측: 게시판 사이드바 -->
                 <div th:replace="~{fragments/boardSidebar :: boardSidebar(${category}, ${activeBoard}, ${boards})}">
@@ -25,7 +38,7 @@
                         </h1>
                         <div class="flex justify-between items-center text-gray-600 dark:text-gray-400">
                             <div>
-                                <span>작성자: <span th:text="${post.member.name}">홍길동</span></span>
+                                <span>작성자: <span th:text="${post.anonymous ? '익명' : post.member.name}">홍길동</span></span>
                                 <span class="mx-2">|</span>
                                 <span th:text="${#temporals.format(post.createdDate, 'yyyy-MM-dd HH:mm')}">2025-01-01
                                     12:34</span>
@@ -57,13 +70,19 @@
                                 <i class="fas fa-thumbs-up"></i> <span
                                     th:text="${isLiked ? '좋아요 취소' : '좋아요'}">좋아요</span>
                             </button>
-                            <!-- 작성자만 수정/삭제 버튼 표시 -->
+                            <!-- 작성자만 수정 버튼 표시 -->
                             <th:block th:if="${member.id == post.member.id}">
                                 <a th:href="@{'/community/boards/' + ${activeBoard.id} + '/posts/' + ${post.id} + '/edit'}"
                                     class="px-4 py-2 bg-green-500 text-white rounded">수정</a>
-                                <button th:id="deleteButton" th:data-post-id="${post.id}"
-                                    class="px-4 py-2 bg-red-500 text-white rounded">삭제
-                                </button>
+                            </th:block>
+                            <!-- 작성자 또는 관리자(ADMIN/MASTER)만 삭제 버튼 표시 -->
+                            <th:block
+                                th:if="${member.id == post.member.id || member.memberGrade.name() == 'ADMIN' || member.memberGrade.name() == 'MASTER'}">
+                                <form th:action="@{'/community/boards/' + ${activeBoard.id} + '/posts/' + ${post.id}}"
+                                    th:method="DELETE" style="display: inline;"
+                                    onsubmit="return confirm('정말로 이 게시글을 삭제하시겠습니까?')">
+                                    <button type="submit" class="px-4 py-2 bg-red-500 text-white rounded">삭제</button>
+                                </form>
                             </th:block>
                         </div>
                     </div>
@@ -74,13 +93,12 @@
 
                         <!-- 댓글 작성 폼 -->
                         <div class="mb-6">
-                            <form id="commentForm" th:data-post-id="${post.id}">
-                                <textarea id="commentContent" class="w-full p-3 border rounded dark:bg-gray-700"
-                                    rows="3" placeholder="댓글을 작성해주세요"></textarea>
+                            <form th:action="@{'/community/posts/' + ${post.id} + '/comments'}" method="post">
+                                <textarea name="content" class="w-full p-3 border rounded dark:bg-gray-700" rows="3"
+                                    placeholder="댓글을 작성해주세요" required></textarea>
                                 <div class="flex justify-end mt-2">
                                     <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded">댓글
-                                        작성
-                                    </button>
+                                        작성</button>
                                 </div>
                             </form>
                         </div>
@@ -103,14 +121,19 @@
                                             th:data-comment-id="${comment.id}">
                                             좋아요 (<span th:text="${comment.likeCount}">5</span>)
                                         </button>
-                                        <!-- 댓글 작성자만 수정/삭제 버튼 표시 -->
+                                        <!-- 댓글 작성자만 수정 버튼, 작성자 또는 관리자만 삭제 버튼 표시 -->
                                         <th:block th:if="${member.id == comment.member.id}">
                                             <button class="text-sm text-gray-500 comment-edit-button"
                                                 th:data-comment-id="${comment.id}">수정
                                             </button>
-                                            <button class="text-sm text-red-500 comment-delete-button"
-                                                th:data-comment-id="${comment.id}">삭제
-                                            </button>
+                                        </th:block>
+                                        <th:block
+                                            th:if="${member.id == comment.member.id || member.memberGrade.name() == 'ADMIN' || member.memberGrade.name() == 'MASTER'}">
+                                            <form th:action="@{'/community/comments/' + ${comment.id}}"
+                                                th:method="DELETE" style="display: inline;"
+                                                onsubmit="return confirm('정말로 이 댓글을 삭제하시겠습니까?')">
+                                                <button type="submit" class="text-sm text-red-500">삭제</button>
+                                            </form>
                                         </th:block>
                                     </div>
                                 </div>
@@ -118,16 +141,17 @@
 
                                 <!-- 댓글 수정 폼 (기본적으로 숨김) -->
                                 <div th:id="'comment-edit-form-' + ${comment.id}" class="mt-2 hidden">
-                                    <textarea class="w-full p-2 border rounded" rows="2"
-                                        th:text="${comment.content}"></textarea>
-                                    <div class="flex justify-end mt-2 space-x-2">
-                                        <button class="px-3 py-1 bg-green-500 text-white rounded comment-update-button"
-                                            th:data-comment-id="${comment.id}">저장
-                                        </button>
-                                        <button class="px-3 py-1 bg-gray-500 text-white rounded comment-cancel-button"
-                                            th:data-comment-id="${comment.id}">취소
-                                        </button>
-                                    </div>
+                                    <form th:action="@{'/community/comments/' + ${comment.id}}" th:method="PUT">
+                                        <textarea name="content" class="w-full p-2 border rounded" rows="2"
+                                            th:text="${comment.content}" required></textarea>
+                                        <div class="flex justify-end mt-2 space-x-2">
+                                            <button type="submit"
+                                                class="px-3 py-1 bg-green-500 text-white rounded">저장</button>
+                                            <button type="button"
+                                                class="px-3 py-1 bg-gray-500 text-white rounded comment-cancel-button"
+                                                th:data-comment-id="${comment.id}">취소</button>
+                                        </div>
+                                    </form>
                                 </div>
                             </div>
 
@@ -145,7 +169,7 @@
         <!-- 자바스크립트 영역 -->
         <script th:inline="javascript">
             document.addEventListener('DOMContentLoaded', function () {
-                // 게시글 좋아요 기능
+                // 게시글 좋아요 기능 (API 통신 유지)
                 const likeButton = document.getElementById('likeButton');
                 if (likeButton) {
                     likeButton.addEventListener('click', function () {
@@ -180,61 +204,6 @@
                     });
                 }
 
-                // 게시글 삭제 기능
-                const deleteButton = document.getElementById('deleteButton');
-                if (deleteButton) {
-                    deleteButton.addEventListener('click', function () {
-                        if (confirm('정말로 이 게시글을 삭제하시겠습니까?')) {
-                            const postId = this.getAttribute('data-post-id');
-
-                            fetch(`/api/posts/${postId}`, {
-                                method: 'DELETE'
-                            })
-                                .then(response => response.json())
-                                .then(data => {
-                                    if (data.success) {
-                                        alert('게시글이 삭제되었습니다.');
-                                        // 게시판 목록 페이지로 이동
-                                        window.location.href = /*[[@{'/community/boards/' + ${activeBoard.id}}]]*/ '';
-                                    }
-                                })
-                                .catch(error => console.error('Error:', error));
-                        }
-                    });
-                }
-
-                // 댓글 작성 기능
-                const commentForm = document.getElementById('commentForm');
-                if (commentForm) {
-                    commentForm.addEventListener('submit', function (e) {
-                        e.preventDefault();
-
-                        const postId = this.getAttribute('data-post-id');
-                        const content = document.getElementById('commentContent').value;
-
-                        if (!content.trim()) {
-                            alert('댓글 내용을 입력해주세요.');
-                            return;
-                        }
-
-                        fetch(`/api/posts/${postId}/comments`, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({ content: content })
-                        })
-                            .then(response => response.json())
-                            .then(data => {
-                                if (data.success) {
-                                    // 댓글 작성 성공 시 페이지 새로고침
-                                    location.reload();
-                                }
-                            })
-                            .catch(error => console.error('Error:', error));
-                    });
-                }
-
                 // 댓글 수정 버튼 이벤트
                 document.querySelectorAll('.comment-edit-button').forEach(button => {
                     button.addEventListener('click', function () {
@@ -253,58 +222,7 @@
                     });
                 });
 
-                // 댓글 수정 저장 버튼 이벤트
-                document.querySelectorAll('.comment-update-button').forEach(button => {
-                    button.addEventListener('click', function () {
-                        const commentId = this.getAttribute('data-comment-id');
-                        const editForm = document.getElementById(`comment-edit-form-${commentId}`);
-                        const content = editForm.querySelector('textarea').value;
-
-                        if (!content.trim()) {
-                            alert('댓글 내용을 입력해주세요.');
-                            return;
-                        }
-
-                        fetch(`/api/comments/${commentId}`, {
-                            method: 'PUT',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({ content: content })
-                        })
-                            .then(response => response.json())
-                            .then(data => {
-                                if (data.success) {
-                                    // 댓글 수정 성공 시 페이지 새로고침
-                                    location.reload();
-                                }
-                            })
-                            .catch(error => console.error('Error:', error));
-                    });
-                });
-
-                // 댓글 삭제 버튼 이벤트
-                document.querySelectorAll('.comment-delete-button').forEach(button => {
-                    button.addEventListener('click', function () {
-                        if (confirm('정말로 이 댓글을 삭제하시겠습니까?')) {
-                            const commentId = this.getAttribute('data-comment-id');
-
-                            fetch(`/api/comments/${commentId}`, {
-                                method: 'DELETE'
-                            })
-                                .then(response => response.json())
-                                .then(data => {
-                                    if (data.success) {
-                                        // 댓글 삭제 성공 시 페이지 새로고침
-                                        location.reload();
-                                    }
-                                })
-                                .catch(error => console.error('Error:', error));
-                        }
-                    });
-                });
-
-                // 댓글 좋아요 버튼 이벤트
+                // 댓글 좋아요 버튼 이벤트 (API 통신 유지)
                 document.querySelectorAll('.comment-like-button').forEach(button => {
                     button.addEventListener('click', function () {
                         const commentId = this.getAttribute('data-comment-id');

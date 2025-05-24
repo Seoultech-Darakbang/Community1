@@ -79,4 +79,11 @@ public class Post extends BaseEntity {
     public int getViewCount() {
         return readCount != null ? readCount.intValue() : 0;
     }
+
+    public void edit(String title, String content, PostType postType, Boolean anonymous) {
+        this.title = title;
+        this.content = content;
+        this.postType = postType;
+        this.anonymous = anonymous;
+    }
 }

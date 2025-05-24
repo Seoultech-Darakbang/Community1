@@ -74,6 +74,7 @@ public class TestDataInit implements ApplicationRunner {
                 .phone("01012345678")
                 .birth(LocalDate.of(1995, 5, 15))
                 .email("testuser1@test.com")
+                .grade(MemberGrade.MEMBER)
                 .build();
         memberService.join(testMember1);
 
@@ -84,6 +85,7 @@ public class TestDataInit implements ApplicationRunner {
                 .phone("01087654321")
                 .birth(LocalDate.of(1992, 8, 20))
                 .email("testuser2@test.com")
+                .grade(MemberGrade.MEMBER)
                 .build();
         memberService.join(testMember2);
 
@@ -94,6 +96,7 @@ public class TestDataInit implements ApplicationRunner {
                 .phone("01055555555")
                 .birth(LocalDate.of(1998, 12, 3))
                 .email("testuser3@test.com")
+                .grade(MemberGrade.MEMBER)
                 .build();
         memberService.join(testMember3);
 

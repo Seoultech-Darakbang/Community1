@@ -1,8 +1,13 @@
 package darak.community.service;
 
 import darak.community.domain.Attachment;
+import darak.community.domain.DeleteLog;
 import darak.community.domain.Post;
+import darak.community.domain.PostType;
+import darak.community.domain.member.Member;
+import darak.community.domain.member.MemberGrade;
 import darak.community.repository.CommentRepository;
+import darak.community.repository.DeleteLogRepository;
 import darak.community.repository.PostRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +23,7 @@ public class PostServiceImpl implements PostService {
 
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
+    private final DeleteLogRepository deleteLogRepository;
 
     @Override
     @Transactional
@@ -32,9 +38,20 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional
-    public void deleteById(Long id) {
-        commentRepository.findByPostId(id).forEach(commentRepository::delete);
-        postRepository.deleteById(id);
+    public void deleteById(Long id, Member member) {
+        Post post = postRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글"));
+        if (!hasAuthorization(member, post)) {
+            throw new IllegalArgumentException("게시글 삭제 권한이 없습니다.");
+        }
+        DeleteLog deleteLog = DeleteLog.postDeleteLog(post, member);
+        deleteLogRepository.save(deleteLog);
+        postRepository.deleteById(post.getId());
+    }
+
+    private boolean hasAuthorization(Member member, Post post) {
+        return post.getMember() == member || post.getMember().getMemberGrade() == MemberGrade.ADMIN
+                || post.getMember().getMemberGrade() == MemberGrade.MASTER;
     }
 
     @Override
@@ -71,5 +88,16 @@ public class PostServiceImpl implements PostService {
     @Override
     public Page<Post> findByBoardIdPaged(Long boardId, Pageable pageable) {
         return postRepository.findByBoardIdPaged(boardId, pageable);
+    }
+
+    @Override
+    @Transactional
+    public void editPost(Member member, Long postId, String title, PostType postType, String content,
+                         Boolean anonymous) {
+        Post post = postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글"));
+        if (!hasAuthorization(member, post)) {
+            throw new IllegalArgumentException("게시글 수정 권한이 없습니다.");
+        }
+        post.edit(title, content, postType, anonymous);
     }
 }

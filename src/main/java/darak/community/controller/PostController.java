@@ -4,8 +4,8 @@ import darak.community.domain.Board;
 import darak.community.domain.BoardCategory;
 import darak.community.domain.Comment;
 import darak.community.domain.Post;
-import darak.community.domain.PostType;
 import darak.community.domain.member.Member;
+import darak.community.dto.PostCURequestForm;
 import darak.community.service.BoardCategoryService;
 import darak.community.service.BoardFavoriteService;
 import darak.community.service.BoardService;
@@ -13,21 +13,20 @@ import darak.community.service.CommentService;
 import darak.community.service.PostHeartService;
 import darak.community.service.PostService;
 import darak.community.web.argumentresolver.Login;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
 import java.util.List;
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequiredArgsConstructor
@@ -133,23 +132,76 @@ public class PostController {
         return "redirect:/community/boards/" + boardId + "/posts/" + post.getId();
     }
 
+    @DeleteMapping("/community/boards/{boardId}/posts/{postId}")
+    public String deletePost(@Login Member member,
+                             @PathVariable Long boardId,
+                             @PathVariable Long postId,
+                             RedirectAttributes attributes,
+                             Model model) {
+        if (member == null) {
+            return "login/loginForm";
+        }
+
+        Board board = boardService.findBoardAndCategoryWithBoardId(boardId);
+        if (board == null || board.getBoardCategory() == null) {
+            return "redirect:/error/404";
+        }
+        addSideMenuInformation(model, board.getBoardCategory(), board, board.getBoardCategory().getBoards());
+
+        postService.deleteById(postId, member);
+        attributes.addAttribute("deleteStatus", true);
+        return "redirect:/community/boards/" + boardId;
+    }
+
     private void addBoardInformation(Model model) {
         model.addAttribute("boardCategories", boardCategoryService.findAll());
     }
 
-    @Data
-    @AllArgsConstructor
-    static class PostCURequestForm {
+    @GetMapping("/community/boards/{boardId}/posts/{postId}/edit")
+    public String editPostForm(@Login Member member,
+                               @PathVariable Long boardId,
+                               @PathVariable Long postId,
+                               @ModelAttribute PostCURequestForm form,
+                               Model model) {
+        if (member == null) {
+            return "login/loginForm";
+        }
 
-        @NotEmpty
-        private String title;
+        Board board = boardService.findBoardAndCategoryWithBoardId(boardId);
+        Post post = postService.findById(postId);
 
-        @NotNull
-        private PostType postType;
+        if (board == null || board.getBoardCategory() == null) {
+            return "redirect:/error/404";
+        }
 
-        @NotEmpty
-        private String content;
-
-        private Boolean anonymous;
+        addSideMenuInformation(model, board.getBoardCategory(), board, board.getBoardCategory().getBoards());
+        model.addAttribute("form", new PostCURequestForm(post));
+        return "community/post/editPostForm";
     }
+
+    @PatchMapping("/community/boards/{boardId}/posts/{postId}/edit")
+    public String editPost(@Login Member member, @PathVariable Long boardId, @PathVariable Long postId,
+                           @ModelAttribute @Validated PostCURequestForm form, BindingResult bindingResult,
+                           RedirectAttributes attributes, Model model) {
+        if (member == null) {
+            return "login/loginForm";
+        }
+
+        Board board = boardService.findBoardAndCategoryWithBoardId(boardId);
+        if (board == null || board.getBoardCategory() == null) {
+            return "redirect:/error/404";
+        }
+        addSideMenuInformation(model, board.getBoardCategory(), board, board.getBoardCategory().getBoards());
+
+        if (bindingResult.hasErrors()) {
+            return "community/post/editPostForm";
+        }
+
+        postService.editPost(member, postId, form.getTitle(), form.getPostType(), form.getContent(),
+                form.getAnonymous());
+
+        attributes.addAttribute("editStatus", true);
+        return "redirect:/community/boards/" + boardId + "/posts/" + postId;
+    }
+
 }

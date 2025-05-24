@@ -18,11 +18,16 @@ public class BoardServiceImpl implements BoardService {
 
     private final BoardRepository boardRepository;
     private final BoardCategoryRepository boardCategoryRepository;
+    private final BoardCategoryService boardCategoryService;
 
     @Transactional
     @Override
     public void save(Board board) {
         boardRepository.save(board);
+        // Board 저장 후 BoardCategory 캐시 새로고침
+        if (boardCategoryService instanceof BoardCategoryServiceImpl) {
+            ((BoardCategoryServiceImpl) boardCategoryService).refreshCache();
+        }
     }
 
     @Override

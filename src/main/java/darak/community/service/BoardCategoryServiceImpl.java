@@ -22,13 +22,12 @@ public class BoardCategoryServiceImpl implements BoardCategoryService {
     @Transactional
     public void save(BoardCategory boardCategory) {
         boardCategoryRepository.save(boardCategory);
-        boardCategories.add(boardCategory);
-        Collections.sort(boardCategories);
+        refreshCache();
     }
 
     @Override
     public List<BoardCategory> findAll() {
-        return boardCategories;
+        return new ArrayList<>(boardCategories);
     }
 
     @Override
@@ -43,9 +42,14 @@ public class BoardCategoryServiceImpl implements BoardCategoryService {
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 카테고리입니다."));
     }
 
-    @PostConstruct
-    public void init() {
+    public void refreshCache() {
+        boardCategories.clear();
         boardCategories.addAll(boardCategoryRepository.findAll());
         Collections.sort(boardCategories);
+    }
+
+    @PostConstruct
+    public void init() {
+        refreshCache();
     }
 }
