@@ -30,45 +30,87 @@ public class BoardFavoriteController {
 
     @PostMapping("/{boardId}")
     public ResponseEntity<Map<String, Object>> addFavorite(@Login Member member, @PathVariable Long boardId) {
-        if (member == null) {
-            return ResponseEntity.badRequest().build();
-        }
-
-        Board board = boardService.findById(boardId);
-        boardFavoriteService.addFavorite(member, board);
-
         Map<String, Object> response = new HashMap<>();
-        response.put("success", true);
-        response.put("isFavorite", true);
+        
+        try {
+            if (member == null) {
+                response.put("success", false);
+                response.put("message", "로그인이 필요합니다.");
+                return ResponseEntity.status(401).body(response);
+            }
+
+            Board board = boardService.findById(boardId);
+            boardFavoriteService.addFavorite(member, board);
+
+            response.put("success", true);
+            response.put("isFavorite", true);
+            response.put("message", "즐겨찾기에 추가되었습니다.");
+            
+        } catch (IllegalStateException e) {
+            response.put("success", false);
+            response.put("message", e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        } catch (Exception e) {
+            log.error("즐겨찾기 추가 중 오류 발생", e);
+            response.put("success", false);
+            response.put("message", "즐겨찾기 추가 중 오류가 발생했습니다.");
+            return ResponseEntity.internalServerError().body(response);
+        }
 
         return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{boardId}")
     public ResponseEntity<Map<String, Object>> removeFavorite(@Login Member member, @PathVariable Long boardId) {
-        if (member == null) {
-            return ResponseEntity.badRequest().build();
-        }
-
-        boardFavoriteService.removeFavorite(member.getId(), boardId);
-
         Map<String, Object> response = new HashMap<>();
-        response.put("success", true);
-        response.put("isFavorite", false);
+        
+        try {
+            if (member == null) {
+                response.put("success", false);
+                response.put("message", "로그인이 필요합니다.");
+                return ResponseEntity.status(401).body(response);
+            }
+
+            boardFavoriteService.removeFavorite(member.getId(), boardId);
+
+            response.put("success", true);
+            response.put("isFavorite", false);
+            response.put("message", "즐겨찾기에서 제거되었습니다.");
+            
+        } catch (IllegalArgumentException e) {
+            response.put("success", false);
+            response.put("message", e.getMessage());
+            return ResponseEntity.badRequest().body(response);
+        } catch (Exception e) {
+            log.error("즐겨찾기 제거 중 오류 발생", e);
+            response.put("success", false);
+            response.put("message", "즐겨찾기 제거 중 오류가 발생했습니다.");
+            return ResponseEntity.internalServerError().body(response);
+        }
 
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{boardId}/status")
     public ResponseEntity<Map<String, Object>> getFavoriteStatus(@Login Member member, @PathVariable Long boardId) {
+        Map<String, Object> response = new HashMap<>();
+        
         if (member == null) {
-            return ResponseEntity.badRequest().build();
+            response.put("success", false);
+            response.put("message", "로그인이 필요합니다.");
+            return ResponseEntity.status(401).body(response);
         }
 
-        boolean isFavorite = boardFavoriteService.isFavorite(member.getId(), boardId);
-
-        Map<String, Object> response = new HashMap<>();
-        response.put("isFavorite", isFavorite);
+        try {
+            boolean isFavorite = boardFavoriteService.isFavorite(member.getId(), boardId);
+            response.put("success", true);
+            response.put("isFavorite", isFavorite);
+        } catch (Exception e) {
+            log.error("즐겨찾기 상태 조회 중 오류 발생", e);
+            response.put("success", false);
+            response.put("message", "즐겨찾기 상태 조회 중 오류가 발생했습니다.");
+            return ResponseEntity.internalServerError().body(response);
+        }
 
         return ResponseEntity.ok(response);
     }
