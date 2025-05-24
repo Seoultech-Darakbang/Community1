@@ -14,11 +14,15 @@ import java.time.LocalDate;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Entity
 @Getter
 @NoArgsConstructor
 public class Member extends BaseEntity {
+    private static final Logger log = LoggerFactory.getLogger(Member.class);
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_id")
@@ -62,6 +66,20 @@ public class Member extends BaseEntity {
         updatePhone(editInfoMember);
         updateBirth(editInfoMember);
         updateEmail(editInfoMember);
+    }
+
+    public void updateEmail(String email) {
+        if (email != null && !email.trim().isEmpty()) {
+            log.info("Member.updateEmail() 호출: {} -> {}", this.email, email);
+            this.email = email;
+        }
+    }
+
+    public void updatePhone(String phone) {
+        if (phone != null && !phone.trim().isEmpty()) {
+            log.info("Member.updatePhone() 호출: {} -> {}", this.phone, phone);
+            this.phone = phone;
+        }
     }
 
     private void updateEmail(Member editInfoMember) {

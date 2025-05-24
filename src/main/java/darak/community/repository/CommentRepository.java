@@ -70,4 +70,125 @@ public class CommentRepository {
                 .setParameter("memberId", memberId)
                 .getResultList();
     }
+
+    public long countByMemberId(Long memberId) {
+        return em.createQuery("select count(c) from Comment c where c.member.id = :memberId", Long.class)
+                .setParameter("memberId", memberId)
+                .getSingleResult();
+    }
+
+    public long countLikesByMemberId(Long memberId) {
+        return em.createQuery(
+                "select count(ch) from CommentHeart ch " +
+                "join ch.comment c " +
+                "where c.member.id = :memberId", Long.class)
+                .setParameter("memberId", memberId)
+                .getSingleResult();
+    }
+
+    public Page<Comment> findByMemberIdPaged(Long memberId, Pageable pageable) {
+        List<Comment> comments = em.createQuery(
+                "select c from Comment c " +
+                "join fetch c.post p " +
+                "join fetch p.board b " +
+                "where c.member.id = :memberId " +
+                "order by c.createdDate desc", Comment.class)
+                .setParameter("memberId", memberId)
+                .setFirstResult((int) pageable.getOffset())
+                .setMaxResults(pageable.getPageSize())
+                .getResultList();
+
+        Long count = em.createQuery("select count(c) from Comment c where c.member.id = :memberId", Long.class)
+                .setParameter("memberId", memberId)
+                .getSingleResult();
+
+        return new PageImpl<>(comments, pageable, count);
+    }
+
+    public Page<Comment> findLikedCommentsByMemberId(Long memberId, Pageable pageable) {
+        List<Comment> comments = em.createQuery(
+                "select c from Comment c " +
+                "join fetch c.post p " +
+                "join fetch p.board b " +
+                "join CommentHeart ch on ch.comment.id = c.id " +
+                "where ch.member.id = :memberId " +
+                "order by ch.createdDate desc", Comment.class)
+                .setParameter("memberId", memberId)
+                .setFirstResult((int) pageable.getOffset())
+                .setMaxResults(pageable.getPageSize())
+                .getResultList();
+
+        Long count = em.createQuery(
+                "select count(c) from Comment c " +
+                "join CommentHeart ch on ch.comment.id = c.id " +
+                "where ch.member.id = :memberId", Long.class)
+                .setParameter("memberId", memberId)
+                .getSingleResult();
+
+        return new PageImpl<>(comments, pageable, count);
+    }
+
+    public Page<Comment> searchMyComments(Long memberId, String keyword, String boardName, Pageable pageable) {
+        StringBuilder query = new StringBuilder(
+                "select c from Comment c " +
+                "join fetch c.post p " +
+                "join fetch p.board b " +
+                "where c.member.id = :memberId");
+
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            query.append(" and c.content like :keyword");
+        }
+
+        if (boardName != null && !boardName.trim().isEmpty()) {
+            query.append(" and b.name = :boardName");
+        }
+
+        query.append(" order by c.createdDate desc");
+
+        var jpqlQuery = em.createQuery(query.toString(), Comment.class)
+                .setParameter("memberId", memberId);
+
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            jpqlQuery.setParameter("keyword", "%" + keyword + "%");
+        }
+
+        if (boardName != null && !boardName.trim().isEmpty()) {
+            jpqlQuery.setParameter("boardName", boardName);
+        }
+
+        List<Comment> comments = jpqlQuery
+                .setFirstResult((int) pageable.getOffset())
+                .setMaxResults(pageable.getPageSize())
+                .getResultList();
+
+        // Count query
+        StringBuilder countQuery = new StringBuilder(
+                "select count(c) from Comment c " +
+                "join c.post p " +
+                "join p.board b " +
+                "where c.member.id = :memberId");
+
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            countQuery.append(" and c.content like :keyword");
+        }
+
+        if (boardName != null && !boardName.trim().isEmpty()) {
+            countQuery.append(" and b.name = :boardName");
+        }
+
+        var countJpqlQuery = em.createQuery(countQuery.toString(), Long.class)
+                .setParameter("memberId", memberId);
+
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            countJpqlQuery.setParameter("keyword", "%" + keyword + "%");
+        }
+
+        if (boardName != null && !boardName.trim().isEmpty()) {
+            countJpqlQuery.setParameter("boardName", boardName);
+        }
+
+        Long count = countJpqlQuery.getSingleResult();
+
+        return new PageImpl<>(comments, pageable, count);
+    }
 }

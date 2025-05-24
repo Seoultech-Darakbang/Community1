@@ -50,4 +50,13 @@ public class MemberRepository {
     public void withdraw(Member member) {
         em.remove(member);
     }
+
+    public void saveAndFlush(Member member) {
+        em.persist(member);
+        em.flush();
+    }
+
+    public void flush() {
+        em.flush();
+    }
 }

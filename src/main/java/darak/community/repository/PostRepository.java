@@ -133,4 +133,120 @@ public class PostRepository {
                 Long.class)
                 .getSingleResult();
     }
+
+    // 프로필 관련 메서드들 추가
+    public long countByMemberId(Long memberId) {
+        return em.createQuery("select count(p) from Post p where p.member.id = :memberId", Long.class)
+                .setParameter("memberId", memberId)
+                .getSingleResult();
+    }
+
+    public long countLikesByMemberId(Long memberId) {
+        return em.createQuery(
+                "select count(ph) from PostHeart ph " +
+                "join ph.post p " +
+                "where p.member.id = :memberId", Long.class)
+                .setParameter("memberId", memberId)
+                .getSingleResult();
+    }
+
+    public Page<Post> findByMemberIdPaged(Long memberId, Pageable pageable) {
+        List<Post> posts = em.createQuery(
+                "select p from Post p " +
+                "where p.member.id = :memberId " +
+                "order by p.createdDate desc", Post.class)
+                .setParameter("memberId", memberId)
+                .setFirstResult((int) pageable.getOffset())
+                .setMaxResults(pageable.getPageSize())
+                .getResultList();
+
+        Long count = em.createQuery("select count(p) from Post p where p.member.id = :memberId", Long.class)
+                .setParameter("memberId", memberId)
+                .getSingleResult();
+
+        return new PageImpl<>(posts, pageable, count);
+    }
+
+    public Page<Post> findLikedPostsByMemberId(Long memberId, Pageable pageable) {
+        List<Post> posts = em.createQuery(
+                "select p from Post p " +
+                "join PostHeart ph on ph.post.id = p.id " +
+                "where ph.member.id = :memberId " +
+                "order by ph.createdDate desc", Post.class)
+                .setParameter("memberId", memberId)
+                .setFirstResult((int) pageable.getOffset())
+                .setMaxResults(pageable.getPageSize())
+                .getResultList();
+
+        Long count = em.createQuery(
+                "select count(p) from Post p " +
+                "join PostHeart ph on ph.post.id = p.id " +
+                "where ph.member.id = :memberId", Long.class)
+                .setParameter("memberId", memberId)
+                .getSingleResult();
+
+        return new PageImpl<>(posts, pageable, count);
+    }
+
+    public Page<Post> searchMyPosts(Long memberId, String keyword, String boardName, Pageable pageable) {
+        StringBuilder query = new StringBuilder(
+                "select p from Post p " +
+                "join p.board b " +
+                "where p.member.id = :memberId");
+
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            query.append(" and (p.title like :keyword or p.content like :keyword)");
+        }
+
+        if (boardName != null && !boardName.trim().isEmpty()) {
+            query.append(" and b.name = :boardName");
+        }
+
+        query.append(" order by p.createdDate desc");
+
+        var jpqlQuery = em.createQuery(query.toString(), Post.class)
+                .setParameter("memberId", memberId);
+
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            jpqlQuery.setParameter("keyword", "%" + keyword + "%");
+        }
+
+        if (boardName != null && !boardName.trim().isEmpty()) {
+            jpqlQuery.setParameter("boardName", boardName);
+        }
+
+        List<Post> posts = jpqlQuery
+                .setFirstResult((int) pageable.getOffset())
+                .setMaxResults(pageable.getPageSize())
+                .getResultList();
+
+        // Count query
+        StringBuilder countQuery = new StringBuilder(
+                "select count(p) from Post p " +
+                "join p.board b " +
+                "where p.member.id = :memberId");
+
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            countQuery.append(" and (p.title like :keyword or p.content like :keyword)");
+        }
+
+        if (boardName != null && !boardName.trim().isEmpty()) {
+            countQuery.append(" and b.name = :boardName");
+        }
+
+        var countJpqlQuery = em.createQuery(countQuery.toString(), Long.class)
+                .setParameter("memberId", memberId);
+
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            countJpqlQuery.setParameter("keyword", "%" + keyword + "%");
+        }
+
+        if (boardName != null && !boardName.trim().isEmpty()) {
+            countJpqlQuery.setParameter("boardName", boardName);
+        }
+
+        Long count = countJpqlQuery.getSingleResult();
+
+        return new PageImpl<>(posts, pageable, count);
+    }
 }

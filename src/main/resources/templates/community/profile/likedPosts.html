@@ -2,7 +2,7 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: layout(~{::title}, ~{::main})}">
 
 <head>
-  <title>다락방 커뮤니티 - 작성한 게시글 목록</title>
+  <title>다락방 커뮤니티 - 좋아요 한 게시글</title>
 </head>
 
 <body>
@@ -10,29 +10,11 @@
     <div class="container max-w-6xl mx-auto px-6 py-8">
       <div class="flex flex-col md:flex-row gap-6">
         <!-- 좌측: 프로필 사이드바 -->
-        <div th:replace="~{fragments/profileSidebar :: profileSidebar('posts')}"></div>
+        <div th:replace="~{fragments/profileSidebar :: profileSidebar('liked-posts')}"></div>
 
-        <!-- 우측: 작성한 게시글 목록 -->
+        <!-- 우측: 좋아요 한 게시글 목록 -->
         <div class="w-full md:w-3/4">
-          <h1 class="text-3xl font-bold mb-6">작성한 게시글 목록</h1>
-
-          <!-- 검색 및 필터링 -->
-          <form method="get" action="/profile/posts" class="mb-6 flex flex-col md:flex-row gap-4">
-            <div class="flex-grow">
-              <input type="text" name="keyword" th:value="${keyword}" placeholder="검색어를 입력하세요"
-                class="w-full p-2 border rounded dark:bg-gray-700">
-            </div>
-            <div class="flex gap-2">
-              <select name="boardName" class="p-2 border rounded dark:bg-gray-700">
-                <option value="">전체 게시판</option>
-                <th:block th:each="category : ${boardCategories}">
-                  <option th:each="board : ${category.boards}" th:value="${board.name}"
-                    th:selected="${boardName == board.name}" th:text="${board.name}"></option>
-                </th:block>
-              </select>
-              <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">검색</button>
-            </div>
-          </form>
+          <h1 class="text-3xl font-bold mb-6">좋아요 한 게시글</h1>
 
           <!-- 게시글 목록 -->
           <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
@@ -87,7 +69,7 @@
 
             <!-- 게시글이 없을 때 -->
             <div th:if="${posts.content.isEmpty()}" class="text-center py-12">
-              <p class="text-gray-500 dark:text-gray-400">작성한 게시글이 없습니다.</p>
+              <p class="text-gray-500 dark:text-gray-400">좋아요 한 게시글이 없습니다.</p>
             </div>
           </div>
 
@@ -95,16 +77,14 @@
           <div th:if="${posts.totalPages > 1}" class="mt-6 flex justify-center">
             <nav class="flex items-center space-x-2">
               <!-- 이전 페이지 -->
-              <a th:if="${posts.hasPrevious()}"
-                th:href="@{/profile/posts(page=${posts.number - 1}, keyword=${keyword}, boardName=${boardName})}"
+              <a th:if="${posts.hasPrevious()}" th:href="@{/profile/liked-posts(page=${posts.number - 1})}"
                 class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700">
                 이전
               </a>
 
               <!-- 페이지 번호 -->
               <span th:each="pageNum : ${#numbers.sequence(0, posts.totalPages - 1)}">
-                <a th:if="${pageNum != posts.number}"
-                  th:href="@{/profile/posts(page=${pageNum}, keyword=${keyword}, boardName=${boardName})}"
+                <a th:if="${pageNum != posts.number}" th:href="@{/profile/liked-posts(page=${pageNum})}"
                   th:text="${pageNum + 1}"
                   class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700">
                 </a>
@@ -114,8 +94,7 @@
               </span>
 
               <!-- 다음 페이지 -->
-              <a th:if="${posts.hasNext()}"
-                th:href="@{/profile/posts(page=${posts.number + 1}, keyword=${keyword}, boardName=${boardName})}"
+              <a th:if="${posts.hasNext()}" th:href="@{/profile/liked-posts(page=${posts.number + 1})}"
                 class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700">
                 다음
               </a>
