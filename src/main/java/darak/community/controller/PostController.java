@@ -12,9 +12,11 @@ import darak.community.service.BoardService;
 import darak.community.service.CommentService;
 import darak.community.service.PostHeartService;
 import darak.community.service.PostService;
+import darak.community.service.CommentHeartService;
 import darak.community.web.argumentresolver.Login;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -44,6 +46,7 @@ public class PostController {
     private final PostService postService;
     private final CommentService commentService;
     private final PostHeartService postHeartService;
+    private final CommentHeartService commentHeartService;
 
     @ModelAttribute
     public void addAttributes(@Login Member member, Model model) {
@@ -83,8 +86,27 @@ public class PostController {
         model.addAttribute("commentsPage", commentsPage);
         model.addAttribute("currentCommentPage", commentPage);
 
+        // 게시글 좋아요 정보
         boolean isLiked = postHeartService.isLiked(postId, member.getId());
         model.addAttribute("isLiked", isLiked);
+        
+        // 댓글 좋아요 정보 미리 계산
+        Map<Long, Boolean> commentLikeStatusMap = new HashMap<>();
+        
+        // 부모 댓글들의 좋아요 상태 확인
+        for (Comment comment : commentsWithReplies.keySet()) {
+            commentLikeStatusMap.put(comment.getId(), commentHeartService.isLiked(comment.getId(), member.getId()));
+            
+            // 대댓글들의 좋아요 상태도 확인
+            List<Comment> replies = commentsWithReplies.get(comment);
+            if (replies != null) {
+                for (Comment reply : replies) {
+                    commentLikeStatusMap.put(reply.getId(), commentHeartService.isLiked(reply.getId(), member.getId()));
+                }
+            }
+        }
+        
+        model.addAttribute("commentLikeStatusMap", commentLikeStatusMap);
 
         return "community/post/viewPost";
     }

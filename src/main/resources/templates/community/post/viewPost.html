@@ -46,7 +46,7 @@
                             <div>
                                 <span>조회수: <span th:text="${post.viewCount}">123</span></span>
                                 <span class="mx-2">|</span>
-                                <span>좋아요: <span th:text="${post.likeCount}">45</span></span>
+                                <span>좋아요: <span class="post-like-count" th:text="${post.likeCount}">45</span></span>
                             </div>
                         </div>
                     </div>
@@ -144,16 +144,19 @@
                                             </span>
                                         </div>
                                         <div class="space-x-2">
-                                            <button class="text-sm text-blue-500 comment-like-button"
+                                            <button
+                                                th:class="${commentLikeStatusMap[comment.id] ? 'text-sm text-red-500 comment-like-button' : 'text-sm text-blue-500 comment-like-button'}"
                                                 th:data-comment-id="${comment.id}">
-                                                좋아요 (<span th:text="${comment.likeCount}">5</span>)
+                                                <span
+                                                    th:text="${commentLikeStatusMap[comment.id] ? '좋아요 취소' : '좋아요'}">좋아요</span>
+                                                (<span th:text="${comment.likeCount}">5</span>)
                                             </button>
                                             <!-- 대댓글 작성 버튼 -->
                                             <button class="text-sm text-green-500 reply-button"
                                                 th:data-comment-id="${comment.id}">답글</button>
                                             <!-- 작성자 또는 관리자만 삭제 버튼 표시 -->
                                             <th:block
-                                                th:if="${member.id == comment.member.id || member.memberGrade.name() == 'ADMIN' || member.memberGrade.name() == 'MASTER'}">
+                                                th:if="${member != null && (member.id == comment.member.id || member.memberGrade.name() == 'ADMIN' || member.memberGrade.name() == 'MASTER')}">
                                                 <form th:action="@{'/community/comments/' + ${comment.id}}"
                                                     th:method="DELETE" style="display: inline;"
                                                     onsubmit="return confirm('정말로 이 댓글을 삭제하시겠습니까?')">
@@ -211,13 +214,16 @@
                                                     </span>
                                                 </div>
                                                 <div class="space-x-2">
-                                                    <button class="text-xs text-blue-500 comment-like-button"
+                                                    <button
+                                                        th:class="${commentLikeStatusMap[reply.id] ? 'text-xs text-red-500 comment-like-button' : 'text-xs text-blue-500 comment-like-button'}"
                                                         th:data-comment-id="${reply.id}">
-                                                        좋아요 (<span th:text="${reply.likeCount}">2</span>)
+                                                        <span
+                                                            th:text="${commentLikeStatusMap[reply.id] ? '좋아요 취소' : '좋아요'}">좋아요</span>
+                                                        (<span th:text="${reply.likeCount}">2</span>)
                                                     </button>
                                                     <!-- 대댓글 작성자 또는 관리자만 삭제 버튼 표시 -->
                                                     <th:block
-                                                        th:if="${member.id == reply.member.id || member.memberGrade.name() == 'ADMIN' || member.memberGrade.name() == 'MASTER'}">
+                                                        th:if="${member != null && (member.id == reply.member.id || member.memberGrade.name() == 'ADMIN' || member.memberGrade.name() == 'MASTER')}">
                                                         <form th:action="@{'/community/comments/' + ${reply.id}}"
                                                             th:method="DELETE" style="display: inline;"
                                                             onsubmit="return confirm('정말로 이 답글을 삭제하시겠습니까?')">
@@ -279,7 +285,7 @@
         <!-- 자바스크립트 영역 -->
         <script th:inline="javascript">
             document.addEventListener('DOMContentLoaded', function () {
-                // 게시글 좋아요 기능 (API 통신 유지)
+                // 게시글 좋아요 기능 (API 통신)
                 const likeButton = document.getElementById('likeButton');
                 if (likeButton) {
                     likeButton.addEventListener('click', function () {
@@ -289,6 +295,9 @@
                         const url = isLiked
                             ? `/api/posts/${postId}/unlike`
                             : `/api/posts/${postId}/like`;
+
+                        // 버튼 비활성화 (중복 클릭 방지)
+                        this.disabled = true;
 
                         fetch(url, {
                             method: 'POST',
@@ -300,36 +309,91 @@
                             .then(data => {
                                 if (data.success) {
                                     // 버튼 상태 및 텍스트 업데이트
-                                    this.setAttribute('data-liked', !isLiked);
-                                    this.innerHTML = `<i class="fas fa-thumbs-up"></i> ${!isLiked ? '좋아요 취소' : '좋아요'}`;
-                                    this.className = !isLiked
+                                    const newLikedState = data.data.liked;
+                                    const newLikeCount = data.data.likeCount;
+
+                                    this.setAttribute('data-liked', newLikedState);
+                                    this.innerHTML = `<i class="fas fa-thumbs-up"></i> ${newLikedState ? '좋아요 취소' : '좋아요'}`;
+                                    this.className = newLikedState
                                         ? 'px-4 py-2 bg-red-500 text-white rounded'
                                         : 'px-4 py-2 bg-blue-500 text-white rounded';
 
                                     // 좋아요 수 업데이트
-                                    location.reload(); // 간단하게 페이지 새로고침
+                                    const likeCountSpan = document.querySelector('.post-like-count');
+                                    if (likeCountSpan) {
+                                        likeCountSpan.textContent = newLikeCount;
+                                    }
+
+                                    // 성공 메시지 표시 (선택사항)
+                                    showToast(data.message, 'success');
+                                } else {
+                                    showToast(data.message, 'error');
                                 }
                             })
-                            .catch(error => console.error('Error:', error));
+                            .catch(error => {
+                                console.error('Error:', error);
+                                showToast('네트워크 오류가 발생했습니다.', 'error');
+                            })
+                            .finally(() => {
+                                // 버튼 다시 활성화
+                                this.disabled = false;
+                            });
                     });
                 }
 
-                // 댓글 좋아요 버튼 이벤트 (API 통신 유지)
+                // 댓글 좋아요 버튼 이벤트 (API 통신)
                 document.querySelectorAll('.comment-like-button').forEach(button => {
                     button.addEventListener('click', function () {
                         const commentId = this.getAttribute('data-comment-id');
 
+                        // 버튼 비활성화 (중복 클릭 방지)
+                        this.disabled = true;
+
                         fetch(`/api/comments/${commentId}/like`, {
-                            method: 'POST'
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
                         })
                             .then(response => response.json())
                             .then(data => {
                                 if (data.success) {
-                                    // 좋아요 성공 시 페이지 새로고침
-                                    location.reload();
+                                    // 좋아요 수 업데이트
+                                    const likeCountSpan = this.querySelector('span:last-child');
+                                    if (likeCountSpan) {
+                                        likeCountSpan.textContent = data.data.likeCount;
+                                    }
+
+                                    // 버튼 텍스트 및 스타일 업데이트
+                                    const isLiked = data.data.liked;
+                                    const textSpan = this.querySelector('span:first-child');
+                                    if (textSpan) {
+                                        textSpan.textContent = isLiked ? '좋아요 취소' : '좋아요';
+                                    }
+
+                                    // 버튼 색상 변경
+                                    if (isLiked) {
+                                        this.classList.remove('text-blue-500');
+                                        this.classList.add('text-red-500');
+                                    } else {
+                                        this.classList.remove('text-red-500');
+                                        this.classList.add('text-blue-500');
+                                    }
+
+                                    // 성공 메시지 표시
+                                    showToast(data.message, 'success');
+                                } else {
+                                    showToast(data.message, 'error');
                                 }
                             })
-                            .catch(error => console.error('Error:', error));
+                            .catch(error => {
+                                console.error('Error:', error);
+                                showToast('네트워크 오류가 발생했습니다.', 'error');
+                            })
+                            .finally(() => {
+                                // 버튼 다시 활성화
+                                this.disabled = false;
+                            });
                     });
                 });
 
@@ -338,7 +402,9 @@
                     button.addEventListener('click', function () {
                         const commentId = this.getAttribute('data-comment-id');
                         const replyForm = document.getElementById(`reply-form-${commentId}`);
-                        replyForm.classList.remove('hidden');
+                        if (replyForm) {
+                            replyForm.classList.remove('hidden');
+                        }
                     });
                 });
 
@@ -347,14 +413,17 @@
                     button.addEventListener('click', function () {
                         const commentId = this.getAttribute('data-comment-id');
                         const replyForm = document.getElementById(`reply-form-${commentId}`);
-                        replyForm.classList.add('hidden');
+                        if (replyForm) {
+                            replyForm.classList.add('hidden');
+                        }
                     });
                 });
 
                 // Toast UI Viewer 초기화
-                if (document.querySelector('#viewer')) {
+                const viewerElement = document.querySelector('#viewer');
+                if (viewerElement) {
                     toastui.Editor.factory({
-                        el: document.getElementById('viewer'),
+                        el: viewerElement,
                         viewer: true,
                         initialValue: /*[[${post.content}]]*/ '',
                         plugins: [toastui.Editor.plugin.codeSyntaxHighlight],
@@ -362,6 +431,33 @@
                     });
                 }
             });
+
+            // 토스트 메시지 표시 함수
+            function showToast(message, type = 'info') {
+                // 기존 토스트가 있으면 제거
+                const existingToast = document.getElementById('toast');
+                if (existingToast) {
+                    existingToast.remove();
+                }
+
+                // 토스트 생성
+                const toast = document.createElement('div');
+                toast.id = 'toast';
+                toast.className = `fixed top-4 right-4 px-4 py-2 rounded shadow-lg z-50 ${type === 'success' ? 'bg-green-500 text-white' :
+                    type === 'error' ? 'bg-red-500 text-white' :
+                        'bg-blue-500 text-white'
+                    }`;
+                toast.textContent = message;
+
+                document.body.appendChild(toast);
+
+                // 3초 후 자동 제거
+                setTimeout(() => {
+                    if (toast && toast.parentNode) {
+                        toast.remove();
+                    }
+                }, 3000);
+            }
         </script>
     </main>
 </body>

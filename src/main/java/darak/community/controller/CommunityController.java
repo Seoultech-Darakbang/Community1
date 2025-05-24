@@ -47,11 +47,12 @@ public class CommunityController {
 
         model.addAttribute("boardFavorites", boardFavoriteService.findByMemberId(member.getId()));
 
-        // 최근 게시글 가져오기
+        List<BoardCategory> boardCategories = boardCategoryService.findAll();
+        model.addAttribute("allBoardCategories", boardCategories);
+
         Map<String, List<Post>> recentPostsByCategory = getRecentPostMap();
         model.addAttribute("recentPostsByCategory", recentPostsByCategory);
 
-        // 갤러리 이미지 가져오기
         List<Attachment> galleryImages = postService.findRecentGalleryImages(4);
         model.addAttribute("galleryImages", galleryImages);
 
