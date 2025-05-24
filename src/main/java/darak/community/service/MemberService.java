@@ -11,6 +11,8 @@ public interface MemberService {
 
     Member findById(Long id);
 
+    Member findByLoginId(String loginId);
+
     List<Member> findByName(String name);
 
     void validateDuplicateMember(String loginId);

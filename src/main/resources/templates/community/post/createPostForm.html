@@ -121,7 +121,7 @@
                             <div id="editor" class="bg-white"></div>
 
                             <!-- Editor 내용을 서버에 보낼 hidden 필드 -->
-                            <input type="hidden" id="hiddenContent" th:field="*{content}">
+                            <input type="hidden" th:field="*{content}" th:id="'hiddenContent'" />
                             <p th:if="${#fields.hasErrors('content')}" th:errors="*{content}"
                                 class="text-red-500 text-sm"></p>
                         </div>
@@ -143,12 +143,6 @@
             </div>
         </div>
     </main>
-
-    <script>
-        document.querySelector('form')?.addEventListener('submit', () => {
-            document.getElementById('hiddenContent').value = editor.getMarkdown();
-        });
-    </script>
 </body>
 
 </html>

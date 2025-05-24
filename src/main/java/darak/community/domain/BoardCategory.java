@@ -2,18 +2,22 @@ package darak.community.domain;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
+@NoArgsConstructor
 public class BoardCategory implements Comparable<BoardCategory> {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
@@ -22,6 +26,12 @@ public class BoardCategory implements Comparable<BoardCategory> {
 
     @OneToMany(mappedBy = "boardCategory")
     private List<Board> boards = new ArrayList<>();
+
+    @Builder
+    public BoardCategory(String name, Integer priority) {
+        this.name = name;
+        this.priority = priority;
+    }
 
     @Override
     public int compareTo(BoardCategory o) {

@@ -44,6 +44,13 @@ public class MemberServiceImpl implements MemberService {
         return memberRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
     }
 
+    // loginId로 회원 조회
+    @Override
+    public Member findByLoginId(String loginId) {
+        return memberRepository.findByLoginId(loginId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+    }
+
     // 이름으로 검색 (위임)
     @Override
     public List<Member> findByName(String name) {

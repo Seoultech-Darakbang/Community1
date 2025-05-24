@@ -128,11 +128,13 @@
         }
       });
 
-      // **폼 전송 직전에 markdown ⇢ hidden input**
-      const formEl = document.querySelector('form');
-      formEl.addEventListener('submit', () => {
-        document.getElementById('hiddenContent').value = window.editor.getMarkdown();
-      });
+      // 폼 전송 직전에 markdown ⇢ hidden input (에디터가 속한 폼 대상)
+      const formEl = editorEl.closest('form');
+      if (formEl) {
+        formEl.addEventListener('submit', () => {
+          document.getElementById('hiddenContent').value = window.editor.getMarkdown();
+        });
+      }
     });
   </script>
 

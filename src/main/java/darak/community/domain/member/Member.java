@@ -8,6 +8,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import java.time.LocalDate;
 import lombok.Builder;
@@ -19,7 +20,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class Member extends BaseEntity {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_id")
     private Long id;
 
@@ -41,14 +42,17 @@ public class Member extends BaseEntity {
 
     // Builder 패턴의 단점 : 필수값을 놓칠 수 있음
     // -> NonNull을 붙여준다.
+
     @Builder
-    public Member(String loginId, String name, String password, String phone, LocalDate birth, String email) {
+    public Member(String loginId, String name, String password, String phone, LocalDate birth, String email,
+                  MemberGrade grade) {
         this.loginId = loginId;
         this.name = name;
         this.password = new MemberPassword(password);
         this.phone = phone;
         this.birth = birth;
         this.email = email;
+        this.memberGrade = grade;
     }
 
     // 회원 정보 수정 메서드

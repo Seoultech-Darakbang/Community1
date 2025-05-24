@@ -4,6 +4,7 @@ import darak.community.domain.BaseEntity;
 import darak.community.domain.member.Member;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -14,7 +15,7 @@ import lombok.Getter;
 @Getter
 public abstract class Heart extends BaseEntity { // Like는 SQL 예약어랑 겹침..
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
