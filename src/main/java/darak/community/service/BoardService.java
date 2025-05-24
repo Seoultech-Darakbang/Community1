@@ -23,4 +23,6 @@ public interface BoardService {
     List<Board> findBoardsByCategoryId(Long categoryId);
 
     Board findBoardAndCategoryWithBoardId(Long boardId);
+
+    Board findTopPriorityBoardByCategory(Long categoryId);
 }

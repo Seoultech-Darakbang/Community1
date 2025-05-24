@@ -9,4 +9,6 @@ public interface AttachmentService {
     void delete(Long attachmentId);
 
     List<Attachment> findByPostId(Long postId);
+
+    List<Attachment> findImagesByPostId(Long postId);
 }

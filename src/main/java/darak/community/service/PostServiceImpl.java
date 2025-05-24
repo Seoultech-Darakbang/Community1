@@ -100,4 +100,29 @@ public class PostServiceImpl implements PostService {
         }
         post.edit(title, content, postType, anonymous);
     }
+
+    @Override
+    public List<Post> findRecentPostsByBoardId(Long boardId, int limit) {
+        return postRepository.findRecentPostsByBoardId(boardId, limit);
+    }
+
+    @Override
+    public List<Post> findRecentGalleryPostsWithImages(int limit) {
+        return postRepository.findRecentGalleryPostsWithImages(limit);
+    }
+
+    @Override
+    public long countGalleryBoards() {
+        return postRepository.countGalleryBoards();
+    }
+    
+    @Override
+    public long countAttachments() {
+        return postRepository.countAttachments();
+    }
+    
+    @Override
+    public long countGalleryAttachments() {
+        return postRepository.countGalleryAttachments();
+    }
 }

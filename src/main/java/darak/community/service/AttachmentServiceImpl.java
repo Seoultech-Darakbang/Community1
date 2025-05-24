@@ -3,6 +3,7 @@ package darak.community.service;
 import darak.community.domain.Attachment;
 import darak.community.repository.AttachmentRepository;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,5 +32,23 @@ public class AttachmentServiceImpl implements AttachmentService {
     @Override
     public List<Attachment> findByPostId(Long postId) {
         return attachmentRepository.findByPostId(postId);
+    }
+
+    @Override
+    public List<Attachment> findImagesByPostId(Long postId) {
+        return attachmentRepository.findByPostId(postId).stream()
+                .filter(attachment -> {
+                    if (attachment.getFileType() != null) {
+                        return attachment.getFileType().startsWith("image/");
+                    }
+                    // fileType이 없는 경우 URL 확장자로 판단
+                    String url = attachment.getUrl();
+                    return url != null && (url.toLowerCase().endsWith(".jpg") || 
+                                         url.toLowerCase().endsWith(".jpeg") || 
+                                         url.toLowerCase().endsWith(".png") || 
+                                         url.toLowerCase().endsWith(".gif") ||
+                                         url.toLowerCase().endsWith(".webp"));
+                })
+                .collect(Collectors.toList());
     }
 }

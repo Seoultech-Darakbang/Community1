@@ -38,7 +38,7 @@ public class BoardRepository {
     }
 
     public List<Board> findByBoardCategoryId(Long boardCategoryId) {
-        return em.createQuery("select b from Board b where b.boardCategory.id = :boardCategoryId order by b.id asc",
+        return em.createQuery("select b from Board b where b.boardCategory.id = :boardCategoryId order by b.priority asc, b.id asc",
                         Board.class)
                 .setParameter("boardCategoryId", boardCategoryId)
                 .getResultList();
@@ -61,7 +61,6 @@ public class BoardRepository {
         return new PageImpl<>(boards, pageable, count);
     }
 
-
     public Optional<Board> findByIdWithCategoryAndBoards(Long boardId) {
         return Optional.ofNullable(em.createQuery("select distinct b from Board b "
                         + "join fetch b.boardCategory bc "
@@ -69,5 +68,15 @@ public class BoardRepository {
                         + "where b.id = :boardId", Board.class)
                 .setParameter("boardId", boardId)
                 .getSingleResult());
+    }
+
+    public Optional<Board> findTopPriorityBoardByCategory(Long categoryId) {
+        List<Board> boards = em.createQuery(
+                "select b from Board b where b.boardCategory.id = :categoryId order by b.priority asc", 
+                Board.class)
+                .setParameter("categoryId", categoryId)
+                .setMaxResults(1)
+                .getResultList();
+        return boards.isEmpty() ? Optional.empty() : Optional.of(boards.get(0));
     }
 }

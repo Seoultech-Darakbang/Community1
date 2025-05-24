@@ -1,9 +1,11 @@
 package darak.community.controller;
 
 import darak.community.domain.Attachment;
+import darak.community.domain.Board;
 import darak.community.domain.BoardCategory;
 import darak.community.domain.Post;
 import darak.community.domain.member.Member;
+import darak.community.service.AttachmentService;
 import darak.community.service.BoardCategoryService;
 import darak.community.service.BoardFavoriteService;
 import darak.community.service.BoardService;
@@ -32,6 +34,7 @@ public class CommunityController {
     private final PostService postService;
     private final CommentService commentService;
     private final PostHeartService postHeartService;
+    private final AttachmentService attachmentService;
 
     @ModelAttribute
     public void addAttributes(@Login Member member, Model model) {
@@ -50,25 +53,52 @@ public class CommunityController {
         List<BoardCategory> boardCategories = boardCategoryService.findAll();
         model.addAttribute("allBoardCategories", boardCategories);
 
-        Map<String, List<Post>> recentPostsByCategory = getRecentPostMap();
-        model.addAttribute("recentPostsByCategory", recentPostsByCategory);
+        Map<String, Object> recentPostsData = getRecentPostMap();
+        model.addAttribute("recentPostsData", recentPostsData);
 
-        List<Attachment> galleryImages = postService.findRecentGalleryImages(4);
+        // 디버깅 정보 출력
+        log.info("=== 갤러리 디버깅 정보 ===");
+        log.info("갤러리 게시판 수: {}", postService.countGalleryBoards());
+        log.info("전체 첨부파일 수: {}", postService.countAttachments());
+        log.info("갤러리 이미지 첨부파일 수: {}", postService.countGalleryAttachments());
+        
+        // 갤러리 이미지 조회
+        List<Attachment> galleryImages = postService.findRecentGalleryImages(8);
+        log.info("조회된 갤러리 이미지 수: {} 개", galleryImages.size());
+        
+        if (!galleryImages.isEmpty()) {
+            log.info("첫 번째 갤러리 이미지 URL: {}", galleryImages.get(0).getUrl());
+            log.info("첫 번째 갤러리 이미지 파일타입: {}", galleryImages.get(0).getFileType());
+        }
+        
         model.addAttribute("galleryImages", galleryImages);
 
         return "community/communityHome";
     }
 
-
-    private Map<String, List<Post>> getRecentPostMap() {
-        Map<String, List<Post>> recentPostsByCategory = new HashMap<>();
+    private Map<String, Object> getRecentPostMap() {
+        Map<String, Object> recentPostsData = new HashMap<>();
         List<BoardCategory> categories = boardCategoryService.findAll();
+
         for (BoardCategory category : categories) {
-            String categoryName = category.getName().toLowerCase();
-            List<Post> recentPosts = postService.findRecentPostsByCategory(category.getId(), 3);
-            recentPostsByCategory.put(categoryName, recentPosts);
+            // 각 카테고리별로 우선순위 가장 높은 게시판 찾기
+            Board topPriorityBoard = boardService.findTopPriorityBoardByCategory(category.getId());
+
+            if (topPriorityBoard != null) {
+                // 해당 게시판의 최근 게시글 4개 조회
+                List<Post> recentPosts = postService.findRecentPostsByBoardId(topPriorityBoard.getId(), 4);
+
+                // 카테고리 정보와 게시판 정보, 게시글 목록을 함께 저장
+                Map<String, Object> categoryData = new HashMap<>();
+                categoryData.put("category", category);
+                categoryData.put("board", topPriorityBoard);
+                categoryData.put("posts", recentPosts);
+
+                recentPostsData.put(category.getName().toLowerCase(), categoryData);
+            }
         }
-        return recentPostsByCategory;
+
+        return recentPostsData;
     }
 
     private void addBoardInformation(Model model) {

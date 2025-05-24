@@ -78,4 +78,10 @@ public class BoardServiceImpl implements BoardService {
         return boardRepository.findByIdWithCategoryAndBoards(boardId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 카테고리 입니다")); // 한방 쿼리로 다 땡겨옴
     }
+
+    @Override
+    public Board findTopPriorityBoardByCategory(Long categoryId) {
+        return boardRepository.findTopPriorityBoardByCategory(categoryId)
+                .orElse(null);
+    }
 }

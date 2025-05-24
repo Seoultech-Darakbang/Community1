@@ -58,12 +58,12 @@ public class PostRepository {
 
     public List<Attachment> findRecentGalleryImages(int limit) {
         return em.createQuery(
-                        "select a from Attachment a " +
-                                "join a.post p " +
-                                "join p.board b " +
-                                "join b.boardCategory bc " +
-                                "where bc.name = 'gallery' " +
-                                "order by p.createdDate desc", Attachment.class)
+                "select a from Attachment a " +
+                "join a.post p " +
+                "join p.board b " +
+                "where (lower(b.name) like '%갤러리%' or lower(b.name) like '%gallery%') " +
+                "and a.fileType like 'image/%' " +
+                "order by p.createdDate desc", Attachment.class)
                 .setMaxResults(limit)
                 .getResultList();
     }
@@ -86,5 +86,51 @@ public class PostRepository {
                 .getSingleResult();
                 
         return new PageImpl<>(posts, pageable, count);
+    }
+
+    public List<Post> findRecentPostsByBoardId(Long boardId, int limit) {
+        return em.createQuery(
+                "select p from Post p where p.board.id = :boardId " +
+                "order by p.createdDate desc", Post.class)
+                .setParameter("boardId", boardId)
+                .setMaxResults(limit)
+                .getResultList();
+    }
+
+    public List<Post> findRecentGalleryPostsWithImages(int limit) {
+        return em.createQuery(
+                "select distinct p from Post p " +
+                "join p.board b " +
+                "join p.attachments a " +
+                "where (lower(b.name) like '%갤러리%' or lower(b.name) like '%gallery%') " +
+                "and a.fileType like 'image/%' " +
+                "order by p.createdDate desc", Post.class)
+                .setMaxResults(limit)
+                .getResultList();
+    }
+
+    // 디버깅용 메서드 추가
+    public long countGalleryBoards() {
+        return em.createQuery(
+                "select count(b) from Board b " +
+                "where (lower(b.name) like '%갤러리%' or lower(b.name) like '%gallery%')", 
+                Long.class)
+                .getSingleResult();
+    }
+    
+    public long countAttachments() {
+        return em.createQuery("select count(a) from Attachment a", Long.class)
+                .getSingleResult();
+    }
+    
+    public long countGalleryAttachments() {
+        return em.createQuery(
+                "select count(a) from Attachment a " +
+                "join a.post p " +
+                "join p.board b " +
+                "where (lower(b.name) like '%갤러리%' or lower(b.name) like '%gallery%') " +
+                "and a.fileType like 'image/%'", 
+                Long.class)
+                .getSingleResult();
     }
 }

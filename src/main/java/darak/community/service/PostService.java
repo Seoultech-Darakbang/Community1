@@ -30,4 +30,12 @@ public interface PostService {
     Page<Post> findByBoardIdPaged(Long boardId, Pageable pageable);
 
     void editPost(Member member, Long postId, String title, PostType postType, String content, Boolean anonymous);
+
+    List<Post> findRecentPostsByBoardId(Long boardId, int limit);
+
+    List<Post> findRecentGalleryPostsWithImages(int limit);
+
+    long countGalleryBoards();
+    long countAttachments();
+    long countGalleryAttachments();
 }
