@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: layout(~{::title}, ~{::body})}">
+
+<head>
+  <title>기프티콘 - 다락방 커뮤니티</title>
+</head>
+
+<body>
+  <section class="min-h-screen pt-20 pb-16 px-4 sm:px-6 lg:px-8 dark:bg-gray-900 bg-gray-50">
+    <div class="max-w-7xl mx-auto">
+      <!-- 뒤로가기 버튼 추가 -->
+      <div class="mb-8">
+        <a href="/community"
+          class="inline-flex items-center text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors">
+          <i class="fas fa-arrow-left mr-2"></i>커뮤니티 홈으로 돌아가기
+        </a>
+      </div>
+
+      <!-- 헤더 -->
+      <div class="text-center mb-12 fade-in-section">
+        <h1 class="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
+          <i class="fas fa-gift mr-3 text-purple-600"></i>기프티콘
+        </h1>
+        <p class="text-xl text-gray-600 dark:text-gray-300">
+          동아리 회원들을 위한 특별한 선물을 선착순으로 받아보세요!
+        </p>
+      </div>
+
+      <!-- 탭 네비게이션 -->
+      <div class="flex justify-center mb-8 fade-in-section">
+        <div class="flex bg-gray-200 dark:bg-gray-700 rounded-lg p-1">
+          <button id="activeTab"
+            class="px-6 py-2 rounded-md text-sm font-medium bg-purple-600 text-white transition-all">
+            이벤트 기프티콘
+          </button>
+          <button id="myTab"
+            class="px-6 py-2 rounded-md text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-all"
+            th:if="${member != null}">
+            내 기프티콘
+          </button>
+        </div>
+      </div>
+
+      <!-- 활성 기프티콘 목록 -->
+      <div id="activeGifticons" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 fade-in-section">
+        <div th:each="gifticon : ${gifticons}"
+          class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
+
+          <!-- 기프티콘 이미지 -->
+          <div class="relative h-48 bg-gradient-to-br from-purple-400 to-pink-400">
+            <img th:src="${gifticon.imageUrl}" th:alt="${gifticon.title}" class="w-full h-full object-cover"
+              onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+            <div class="hidden w-full h-full items-center justify-center text-white text-6xl">
+              <i class="fas fa-gift"></i>
+            </div>
+
+            <!-- 상태 배지 -->
+            <div class="absolute top-4 left-4">
+              <span th:if="${gifticon.status.name() == 'ACTIVE' && gifticon.canClaim}"
+                class="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
+                수령 가능
+              </span>
+              <span th:if="${gifticon.status.name() == 'SOLD_OUT'}"
+                class="bg-red-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
+                품절
+              </span>
+              <span th:if="${gifticon.status.name() == 'WAITING'}"
+                class="bg-yellow-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
+                대기중
+              </span>
+            </div>
+
+            <!-- 남은 수량 -->
+            <div class="absolute top-4 right-4 bg-black bg-opacity-50 text-white px-3 py-1 rounded-full text-sm">
+              <span th:text="${gifticon.remainingQuantity}">0</span>/<span th:text="${gifticon.totalQuantity}">0</span>
+            </div>
+          </div>
+
+          <!-- 기프티콘 정보 -->
+          <div class="p-6">
+            <div class="mb-2">
+              <span class="text-sm text-purple-600 dark:text-purple-400 font-semibold"
+                th:text="${gifticon.brand}">브랜드</span>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2" th:text="${gifticon.title}">기프티콘 제목</h3>
+            <p class="text-gray-600 dark:text-gray-300 mb-4 line-clamp-2" th:text="${gifticon.description}">기프티콘 설명</p>
+
+            <!-- 기간 정보 -->
+            <div class="text-sm text-gray-500 dark:text-gray-400 mb-4">
+              <div class="flex items-center mb-1">
+                <i class="fas fa-clock mr-2"></i>
+                <span th:text="'시작: ' + ${#temporals.format(gifticon.startTime, 'yyyy-MM-dd HH:mm')}">시작 시간</span>
+              </div>
+              <div class="flex items-center">
+                <i class="fas fa-clock mr-2"></i>
+                <span th:text="'종료: ' + ${#temporals.format(gifticon.endTime, 'yyyy-MM-dd HH:mm')}">종료 시간</span>
+              </div>
+            </div>
+
+            <!-- 수령 버튼 -->
+            <button th:if="${gifticon.canClaim && member != null}"
+              class="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-3 rounded-lg font-semibold hover:from-purple-700 hover:to-pink-700 transition-all duration-300 transform hover:scale-105 claim-btn"
+              th:data-gifticon-id="${gifticon.id}">
+              <i class="fas fa-hand-paper mr-2"></i>선착순 수령하기
+            </button>
+
+            <button th:if="${!gifticon.canClaim}"
+              class="w-full bg-gray-400 text-white py-3 rounded-lg font-semibold cursor-not-allowed" disabled>
+              <i class="fas fa-times mr-2"></i>수령 불가
+            </button>
+
+            <a th:if="${member == null}" href="/login"
+              class="block w-full bg-blue-600 text-white py-3 rounded-lg font-semibold text-center hover:bg-blue-700 transition-all duration-300">
+              <i class="fas fa-sign-in-alt mr-2"></i>로그인 후 수령
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 내 기프티콘 목록 -->
+      <div id="myGifticons" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 fade-in-section"
+        th:if="${member != null}">
+        <div th:each="claim : ${myClaims}" class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
+
+          <!-- 기프티콘 이미지 -->
+          <div class="relative h-48 bg-gradient-to-br from-green-400 to-blue-400">
+            <img th:src="${claim.gifticon.imageUrl}" th:alt="${claim.gifticon.title}" class="w-full h-full object-cover"
+              onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+            <div class="hidden w-full h-full items-center justify-center text-white text-6xl">
+              <i class="fas fa-gift"></i>
+            </div>
+
+            <!-- 사용 상태 -->
+            <div class="absolute top-4 left-4">
+              <span th:if="${claim.status.name() == 'CLAIMED'}"
+                class="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
+                사용 가능
+              </span>
+              <span th:if="${claim.status.name() == 'USED'}"
+                class="bg-gray-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
+                사용 완료
+              </span>
+            </div>
+          </div>
+
+          <!-- 기프티콘 정보 -->
+          <div class="p-6">
+            <div class="mb-2">
+              <span class="text-sm text-green-600 dark:text-green-400 font-semibold"
+                th:text="${claim.gifticon.brand}">브랜드</span>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2" th:text="${claim.gifticon.title}">기프티콘 제목
+            </h3>
+
+            <!-- 기프티콘 코드 -->
+            <div class="bg-gray-100 dark:bg-gray-700 p-3 rounded-lg mb-4">
+              <div class="text-sm text-gray-600 dark:text-gray-400 mb-1">기프티콘 코드</div>
+              <div class="font-mono text-lg font-bold text-gray-900 dark:text-white tracking-wider"
+                th:text="${claim.gifticonCode}">코드</div>
+              <button class="text-sm text-blue-600 dark:text-blue-400 hover:underline mt-1 copy-btn"
+                th:data-code="${claim.gifticonCode}">
+                <i class="fas fa-copy mr-1"></i>복사하기
+              </button>
+            </div>
+
+            <!-- 수령 날짜 -->
+            <div class="text-sm text-gray-500 dark:text-gray-400 mb-4">
+              <i class="fas fa-calendar mr-2"></i>
+              <span th:text="'수령일: ' + ${#temporals.format(claim.claimTime, 'yyyy-MM-dd HH:mm')}">수령일</span>
+            </div>
+
+            <!-- 사용 버튼 -->
+            <button th:if="${claim.status.name() == 'CLAIMED'}"
+              class="w-full bg-gradient-to-r from-green-600 to-blue-600 text-white py-3 rounded-lg font-semibold hover:from-green-700 hover:to-blue-700 transition-all duration-300 use-btn"
+              th:data-gifticon-code="${claim.gifticonCode}">
+              <i class="fas fa-check mr-2"></i>사용하기
+            </button>
+
+            <div th:if="${claim.status.name() == 'USED'}"
+              class="w-full bg-gray-400 text-white py-3 rounded-lg font-semibold text-center">
+              <i class="fas fa-check-circle mr-2"></i>사용 완료
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 빈 상태 -->
+      <div th:if="${#lists.isEmpty(gifticons)}" class="text-center py-16 fade-in-section">
+        <i class="fas fa-gift text-6xl text-gray-400 dark:text-gray-600 mb-4"></i>
+        <h3 class="text-2xl font-bold text-gray-600 dark:text-gray-400 mb-2">진행 중인 기프티콘이 없습니다</h3>
+        <p class="text-gray-500 dark:text-gray-500">새로운 기프티콘 이벤트를 기다려주세요!</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 페이지 전용 스크립트 -->
+  <script>
+    console.log('Gifticon list scripts loaded');
+
+    document.addEventListener('DOMContentLoaded', function () {
+      console.log('Gifticon list DOMContentLoaded');
+
+      // 탭 버튼
+      const activeTab = document.getElementById('activeTab');
+      const myTab = document.getElementById('myTab');
+
+      if (activeTab) {
+        activeTab.addEventListener('click', showActiveTab);
+      }
+      if (myTab) {
+        myTab.addEventListener('click', showMyTab);
+      }
+
+      // 수령 버튼들
+      const claimButtons = document.querySelectorAll('.claim-btn');
+      console.log('Found claim buttons:', claimButtons.length);
+      claimButtons.forEach(button => {
+        button.addEventListener('click', function () {
+          console.log('Claim button clicked');
+          claimGifticon(this);
+        });
+      });
+
+      // 사용 버튼들
+      const useButtons = document.querySelectorAll('.use-btn');
+      console.log('Found use buttons:', useButtons.length);
+      useButtons.forEach(button => {
+        button.addEventListener('click', function () {
+          console.log('Use button clicked');
+          useGifticon(this);
+        });
+      });
+
+      // 복사 버튼들
+      const copyButtons = document.querySelectorAll('.copy-btn');
+      console.log('Found copy buttons:', copyButtons.length);
+      copyButtons.forEach(button => {
+        button.addEventListener('click', function () {
+          console.log('Copy button clicked');
+          const code = this.dataset.code;
+          copyToClipboard(code);
+        });
+      });
+    });
+
+    // 활성 탭 보기
+    function showActiveTab() {
+      console.log('showActiveTab called');
+      document.getElementById('activeTab').className = 'px-6 py-2 rounded-md text-sm font-medium bg-purple-600 text-white transition-all';
+      const myTab = document.getElementById('myTab');
+      if (myTab) {
+        myTab.className = 'px-6 py-2 rounded-md text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-all';
+      }
+
+      document.getElementById('activeGifticons').classList.remove('hidden');
+      const myGifticons = document.getElementById('myGifticons');
+      if (myGifticons) {
+        myGifticons.classList.add('hidden');
+      }
+    }
+
+    // 내 기프티콘 탭 보기
+    function showMyTab() {
+      console.log('showMyTab called');
+      document.getElementById('activeTab').className = 'px-6 py-2 rounded-md text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-all';
+      document.getElementById('myTab').className = 'px-6 py-2 rounded-md text-sm font-medium bg-purple-600 text-white transition-all';
+
+      document.getElementById('activeGifticons').classList.add('hidden');
+      document.getElementById('myGifticons').classList.remove('hidden');
+    }
+
+    // 기프티콘 수령
+    function claimGifticon(button) {
+      console.log('claimGifticon function called');
+      const gifticonId = button.dataset.gifticonId;
+      console.log('Gifticon ID:', gifticonId);
+
+      if (!confirm('이 기프티콘을 수령하시겠습니까?')) {
+        return;
+      }
+
+      button.disabled = true;
+      button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>수령 중...';
+
+      fetch(`/community/gifticons/${gifticonId}/claim`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      })
+        .then(response => response.json())
+        .then(data => {
+          console.log('Response data:', data);
+          if (data.id) {
+            showListAlert('success', '기프티콘을 성공적으로 수령했습니다!', function () {
+              location.reload();
+            });
+          } else {
+            showListAlert('error', data);
+            button.disabled = false;
+            button.innerHTML = '<i class="fas fa-hand-paper mr-2"></i>선착순 수령하기';
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          showListAlert('error', '수령 중 오류가 발생했습니다.');
+          button.disabled = false;
+          button.innerHTML = '<i class="fas fa-hand-paper mr-2"></i>선착순 수령하기';
+        });
+    }
+
+    // 기프티콘 사용
+    function useGifticon(button) {
+      console.log('useGifticon function called');
+      const gifticonCode = button.dataset.gifticonCode;
+      console.log('Gifticon Code:', gifticonCode);
+
+      if (!confirm('이 기프티콘을 사용처리 하시겠습니까?\n사용 후에는 되돌릴 수 없습니다.')) {
+        return;
+      }
+
+      button.disabled = true;
+      button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>처리 중...';
+
+      fetch(`/community/gifticons/use`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ gifticonCode: gifticonCode })
+      })
+        .then(response => response.json())
+        .then(data => {
+          console.log('Response data:', data);
+          if (data.success) {
+            showListAlert('success', '기프티콘을 사용처리했습니다!', function () {
+              location.reload();
+            });
+          } else {
+            showListAlert('error', data.message || '사용 처리 중 오류가 발생했습니다.');
+            button.disabled = false;
+            button.innerHTML = '<i class="fas fa-check mr-2"></i>사용하기';
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          showListAlert('error', '사용 처리 중 오류가 발생했습니다.');
+          button.disabled = false;
+          button.innerHTML = '<i class="fas fa-check mr-2"></i>사용하기';
+        });
+    }
+
+    // 클립보드 복사
+    function copyToClipboard(text) {
+      console.log('copyToClipboard called with:', text);
+      navigator.clipboard.writeText(text).then(function () {
+        showListAlert('success', '기프티콘 코드가 클립보드에 복사되었습니다.');
+      }, function (err) {
+        console.error('복사 실패: ', err);
+        showListAlert('error', '복사에 실패했습니다.');
+      });
+    }
+
+    // 알림 표시
+    function showListAlert(type, message, callback) {
+      console.log('showListAlert called:', type, message);
+      const alertDiv = document.createElement('div');
+      alertDiv.className = `fixed top-4 right-4 px-6 py-4 rounded-lg text-white z-50 transform transition-transform duration-300 translate-x-full shadow-lg`;
+
+      if (type === 'success') {
+        alertDiv.classList.add('bg-green-500');
+      } else if (type === 'error') {
+        alertDiv.classList.add('bg-red-500');
+      } else if (type === 'info') {
+        alertDiv.classList.add('bg-blue-500');
+      }
+
+      alertDiv.innerHTML = `
+        <div class="flex items-center">
+            <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'} mr-2"></i>
+            <span>${message}</span>
+        </div>
+      `;
+
+      document.body.appendChild(alertDiv);
+
+      setTimeout(() => {
+        alertDiv.classList.remove('translate-x-full');
+      }, 100);
+
+      setTimeout(() => {
+        alertDiv.classList.add('translate-x-full');
+        setTimeout(() => {
+          document.body.removeChild(alertDiv);
+          if (callback) callback();
+        }, 300);
+      }, 3000);
+    }
+  </script>
+</body>
+
+</html>

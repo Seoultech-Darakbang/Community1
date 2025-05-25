@@ -30,7 +30,8 @@ public class WebConfig implements WebMvcConfigurer {
                 .addPathPatterns("/**")
                 .excludePathPatterns("/", "/login/home", "/login", "/logout", "/members/new",
                         "/members/new/confirmLoginId", "/css/**", "/js/**", "/img/**",
-                        "/uploads/**", "/api/uploads/**", "/error");
+                        "/uploads/**", "/api/uploads/**", "/error",
+                        "/community/gifticons/*/claim", "/community/gifticons/use");
     }
 
     @Override

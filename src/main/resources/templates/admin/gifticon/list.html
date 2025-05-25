@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org"
+  th:replace="~{fragments/layout :: layout(~{::title}, ~{::section})}">
+
+<head>
+  <title>기프티콘 관리 - 다락방 커뮤니티</title>
+</head>
+
+<body>
+  <section class="min-h-screen pt-20 pb-16 px-4 sm:px-6 lg:px-8 dark:bg-gray-900 bg-gray-50">
+    <div class="max-w-7xl mx-auto">
+      <div class="flex">
+        <!-- 사이드바 -->
+        <div th:replace="~{fragments/adminSidebar :: adminSidebar('gifticons')}" class="w-64 flex-shrink-0"></div>
+
+        <!-- 메인 콘텐츠 -->
+        <div class="flex-1 ml-8">
+          <!-- 헤더 -->
+          <div class="flex justify-between items-center mb-8">
+            <div>
+              <h1 class="text-3xl font-bold text-gray-900 dark:text-white">기프티콘 관리</h1>
+              <p class="text-gray-600 dark:text-gray-300 mt-2">동아리 회원들을 위한 기프티콘을 관리하세요</p>
+            </div>
+            <a href="/admin/gifticons/create"
+              class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-300 transform hover:scale-105">
+              <i class="fas fa-plus mr-2"></i>새 기프티콘 등록
+            </a>
+          </div>
+
+          <!-- 기프티콘 목록 -->
+          <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
+            <div class="overflow-x-auto">
+              <table class="w-full">
+                <thead class="bg-gray-50 dark:bg-gray-700">
+                  <tr>
+                    <th
+                      class="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                      기프티콘</th>
+                    <th
+                      class="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                      수량</th>
+                    <th
+                      class="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                      기간</th>
+                    <th
+                      class="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                      상태</th>
+                    <th
+                      class="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                      관리</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200 dark:divide-gray-600">
+                  <tr th:each="gifticon : ${gifticons.content}"
+                    class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                    <!-- 기프티콘 정보 -->
+                    <td class="px-6 py-4">
+                      <div class="flex items-center">
+                        <div
+                          class="w-16 h-16 bg-gradient-to-br from-purple-400 to-pink-400 rounded-lg mr-4 flex-shrink-0 flex items-center justify-center">
+                          <img th:src="${gifticon.imageUrl}" th:alt="${gifticon.title}"
+                            class="w-full h-full object-cover rounded-lg"
+                            onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                          <i class="fas fa-gift text-white text-2xl hidden"></i>
+                        </div>
+                        <div>
+                          <div class="text-sm font-medium text-gray-900 dark:text-white" th:text="${gifticon.title}">
+                            기프티콘 제목</div>
+                          <div class="text-sm text-gray-500 dark:text-gray-400" th:text="${gifticon.brand}">브랜드</div>
+                          <div class="text-xs text-gray-400 dark:text-gray-500"
+                            th:text="${#temporals.format(gifticon.createdDate, 'yyyy-MM-dd HH:mm')}">등록일</div>
+                        </div>
+                      </div>
+                    </td>
+
+                    <!-- 수량 정보 -->
+                    <td class="px-6 py-4">
+                      <div class="text-sm text-gray-900 dark:text-white">
+                        <span th:text="${gifticon.remainingQuantity}">0</span> / <span
+                          th:text="${gifticon.totalQuantity}">0</span>
+                      </div>
+                      <div class="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-2 mt-1">
+                        <div class="bg-purple-600 h-2 rounded-full"
+                          th:style="'width: ' + (${gifticon.remainingQuantity} * 100 / ${gifticon.totalQuantity}) + '%'">
+                        </div>
+                      </div>
+                    </td>
+
+                    <!-- 기간 정보 -->
+                    <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
+                      <div th:text="${#temporals.format(gifticon.startTime, 'MM-dd HH:mm')}">시작</div>
+                      <div th:text="${#temporals.format(gifticon.endTime, 'MM-dd HH:mm')}">종료</div>
+                    </td>
+
+                    <!-- 상태 -->
+                    <td class="px-6 py-4">
+                      <span th:if="${gifticon.status.name() == 'WAITING'}"
+                        class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300">
+                        대기중
+                      </span>
+                      <span th:if="${gifticon.status.name() == 'ACTIVE'}"
+                        class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">
+                        활성화
+                      </span>
+                      <span th:if="${gifticon.status.name() == 'SOLD_OUT'}"
+                        class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300">
+                        품절
+                      </span>
+                      <span th:if="${gifticon.status.name() == 'CLOSED'}"
+                        class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300">
+                        종료됨
+                      </span>
+                    </td>
+
+                    <!-- 관리 버튼 -->
+                    <td class="px-6 py-4 text-sm font-medium space-x-2">
+                      <form th:if="${gifticon.status.name() == 'WAITING'}"
+                        th:action="@{'/admin/gifticons/' + ${gifticon.id} + '/activate'}" method="post" class="inline">
+                        <button type="submit"
+                          class="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300">
+                          <i class="fas fa-play mr-1"></i>활성화
+                        </button>
+                      </form>
+
+                      <form th:if="${gifticon.status.name() == 'ACTIVE'}"
+                        th:action="@{'/admin/gifticons/' + ${gifticon.id} + '/deactivate'}" method="post"
+                        class="inline">
+                        <button type="submit"
+                          class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
+                          onclick="return confirm('기프티콘을 비활성화하시겠습니까?')">
+                          <i class="fas fa-stop mr-1"></i>비활성화
+                        </button>
+                      </form>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- 페이지네이션 -->
+          <div th:if="${gifticons.totalPages > 1}" class="flex justify-center mt-8">
+            <nav aria-label="Page navigation">
+              <ul class="flex items-center space-x-1">
+                <!-- 이전 페이지 -->
+                <li th:if="${gifticons.hasPrevious()}">
+                  <a th:href="@{/admin/gifticons(page=${gifticons.number - 1})}"
+                    class="px-3 py-2 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200">
+                    <i class="fas fa-chevron-left"></i>
+                  </a>
+                </li>
+
+                <!-- 페이지 번호 -->
+                <li th:each="pageNum : ${#numbers.sequence(0, gifticons.totalPages - 1)}">
+                  <a th:href="@{/admin/gifticons(page=${pageNum})}" th:text="${pageNum + 1}"
+                    th:class="${pageNum == gifticons.number} ? 'px-3 py-2 text-sm bg-purple-600 text-white rounded' : 'px-3 py-2 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200'">
+                  </a>
+                </li>
+
+                <!-- 다음 페이지 -->
+                <li th:if="${gifticons.hasNext()}">
+                  <a th:href="@{/admin/gifticons(page=${gifticons.number + 1})}"
+                    class="px-3 py-2 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200">
+                    <i class="fas fa-chevron-right"></i>
+                  </a>
+                </li>
+              </ul>
+            </nav>
+          </div>
+
+          <!-- 빈 상태 -->
+          <div th:if="${#lists.isEmpty(gifticons.content)}" class="text-center py-16">
+            <i class="fas fa-gift text-6xl text-gray-400 dark:text-gray-600 mb-4"></i>
+            <h3 class="text-2xl font-bold text-gray-600 dark:text-gray-400 mb-2">등록된 기프티콘이 없습니다</h3>
+            <p class="text-gray-500 dark:text-gray-500 mb-6">첫 번째 기프티콘을 등록해보세요!</p>
+            <a href="/admin/gifticons/create"
+              class="inline-flex items-center px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
+              <i class="fas fa-plus mr-2"></i>기프티콘 등록하기
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</body>
+
+</html>

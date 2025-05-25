@@ -5,11 +5,13 @@ import darak.community.domain.Board;
 import darak.community.domain.BoardCategory;
 import darak.community.domain.Post;
 import darak.community.domain.member.Member;
+import darak.community.dto.GifticonDto;
 import darak.community.service.AttachmentService;
 import darak.community.service.BoardCategoryService;
 import darak.community.service.BoardFavoriteService;
 import darak.community.service.BoardService;
 import darak.community.service.CommentService;
+import darak.community.service.GifticonService;
 import darak.community.service.PostHeartService;
 import darak.community.service.PostService;
 import darak.community.web.argumentresolver.Login;
@@ -35,6 +37,7 @@ public class CommunityController {
     private final CommentService commentService;
     private final PostHeartService postHeartService;
     private final AttachmentService attachmentService;
+    private final GifticonService gifticonService;
 
     @ModelAttribute
     public void addAttributes(@Login Member member, Model model) {
@@ -56,13 +59,15 @@ public class CommunityController {
         Map<String, Object> recentPostsData = getRecentPostMap();
         model.addAttribute("recentPostsData", recentPostsData);
 
-        // 디버깅 정보 출력
+        List<GifticonDto.Response> recentGifticons = 
+            GifticonDto.Response.from(gifticonService.getActiveGifticons().stream().limit(3).toList());
+        model.addAttribute("recentGifticons", recentGifticons);
+
         log.info("=== 갤러리 디버깅 정보 ===");
         log.info("갤러리 게시판 수: {}", postService.countGalleryBoards());
         log.info("전체 첨부파일 수: {}", postService.countAttachments());
         log.info("갤러리 이미지 첨부파일 수: {}", postService.countGalleryAttachments());
         
-        // 갤러리 이미지 조회
         List<Attachment> galleryImages = postService.findRecentGalleryImages(8);
         log.info("조회된 갤러리 이미지 수: {} 개", galleryImages.size());
         
