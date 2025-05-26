@@ -2,14 +2,14 @@ package darak.community.api;
 
 import darak.community.domain.Board;
 import darak.community.domain.member.Member;
+import darak.community.dto.ApiResponse;
 import darak.community.service.BoardFavoriteService;
 import darak.community.service.BoardService;
 import darak.community.web.argumentresolver.Login;
-import java.util.HashMap;
-import java.util.Map;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,91 +25,35 @@ public class BoardFavoriteController {
 
     private final BoardFavoriteService boardFavoriteService;
     private final BoardService boardService;
-    
+
     @PostMapping("/{boardId}")
-    public ResponseEntity<Map<String, Object>> addFavorite(@Login Member member, @PathVariable Long boardId) {
-        Map<String, Object> response = new HashMap<>();
+    public ApiResponse<FavoriteResponse> addFavorite(@Login Member member, @PathVariable Long boardId) {
+        Board board = boardService.findById(boardId);
+        boardFavoriteService.addFavorite(member, board);
 
-        try {
-            if (member == null) {
-                response.put("success", false);
-                response.put("message", "로그인이 필요합니다.");
-                return ResponseEntity.status(401).body(response);
-            }
-
-            Board board = boardService.findById(boardId);
-            boardFavoriteService.addFavorite(member, board);
-
-            response.put("success", true);
-            response.put("isFavorite", true);
-            response.put("message", "즐겨찾기에 추가되었습니다.");
-
-        } catch (IllegalStateException e) {
-            response.put("success", false);
-            response.put("message", e.getMessage());
-            return ResponseEntity.badRequest().body(response);
-        } catch (Exception e) {
-            log.error("즐겨찾기 추가 중 오류 발생", e);
-            response.put("success", false);
-            response.put("message", "즐겨찾기 추가 중 오류가 발생했습니다.");
-            return ResponseEntity.internalServerError().body(response);
-        }
-
-        return ResponseEntity.ok(response);
+        return ApiResponse.success("즐겨찾기에 추가되었습니다.",
+                new FavoriteResponse(true));
     }
 
     @DeleteMapping("/{boardId}")
-    public ResponseEntity<Map<String, Object>> removeFavorite(@Login Member member, @PathVariable Long boardId) {
-        Map<String, Object> response = new HashMap<>();
+    public ApiResponse<FavoriteResponse> removeFavorite(@Login Member member, @PathVariable Long boardId) {
+        boardFavoriteService.removeFavorite(member.getId(), boardId);
 
-        try {
-            if (member == null) {
-                response.put("success", false);
-                response.put("message", "로그인이 필요합니다.");
-                return ResponseEntity.status(401).body(response);
-            }
-
-            boardFavoriteService.removeFavorite(member.getId(), boardId);
-
-            response.put("success", true);
-            response.put("isFavorite", false);
-            response.put("message", "즐겨찾기에서 제거되었습니다.");
-
-        } catch (IllegalArgumentException e) {
-            response.put("success", false);
-            response.put("message", e.getMessage());
-            return ResponseEntity.badRequest().body(response);
-        } catch (Exception e) {
-            log.error("즐겨찾기 제거 중 오류 발생", e);
-            response.put("success", false);
-            response.put("message", "즐겨찾기 제거 중 오류가 발생했습니다.");
-            return ResponseEntity.internalServerError().body(response);
-        }
-
-        return ResponseEntity.ok(response);
+        return ApiResponse.success("즐겨찾기에서 제거되었습니다.",
+                new FavoriteResponse(false));
     }
 
     @GetMapping("/{boardId}/status")
-    public ResponseEntity<Map<String, Object>> getFavoriteStatus(@Login Member member, @PathVariable Long boardId) {
-        Map<String, Object> response = new HashMap<>();
+    public ApiResponse<FavoriteResponse> getFavoriteStatus(@Login Member member, @PathVariable Long boardId) {
+        boolean isFavorite = boardFavoriteService.isFavorite(member.getId(), boardId);
 
-        if (member == null) {
-            response.put("success", false);
-            response.put("message", "로그인이 필요합니다.");
-            return ResponseEntity.status(401).body(response);
-        }
+        return ApiResponse.success("즐겨찾기 상태 조회에 성공했습니다.",
+                new FavoriteResponse(isFavorite));
+    }
 
-        try {
-            boolean isFavorite = boardFavoriteService.isFavorite(member.getId(), boardId);
-            response.put("success", true);
-            response.put("isFavorite", isFavorite);
-        } catch (Exception e) {
-            log.error("즐겨찾기 상태 조회 중 오류 발생", e);
-            response.put("success", false);
-            response.put("message", "즐겨찾기 상태 조회 중 오류가 발생했습니다.");
-            return ResponseEntity.internalServerError().body(response);
-        }
-
-        return ResponseEntity.ok(response);
+    @Data
+    @AllArgsConstructor
+    public static class FavoriteResponse {
+        private boolean isFavorite;
     }
 }
