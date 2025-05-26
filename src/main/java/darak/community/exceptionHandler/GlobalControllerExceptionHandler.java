@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import jakarta.servlet.http.HttpServletRequest;
 
-@ControllerAdvice
+@ControllerAdvice(basePackages = "darak.community.controller")
 @Slf4j
 public class GlobalControllerExceptionHandler {
 

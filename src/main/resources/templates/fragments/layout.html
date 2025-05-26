@@ -16,7 +16,7 @@
 <head th:fragment="head(title)">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title th:text="${title}">다락방 커뮤니티</title>
+  <title th:replace="${title}">다락방 커뮤니티</title>
   <style>
     /* 초기 렌더링 시 플래시 방지용 스타일 */
     html.dark {

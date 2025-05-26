@@ -283,7 +283,7 @@
                             .then(response => response.json())
                             .then(data => {
                                 if (data.success) {
-                                    updateFavoriteButton(btn, data.isFavorite);
+                                    updateFavoriteButton(btn, data.data.isFavorite);
                                 } else {
                                     console.error('즐겨찾기 상태 조회 실패:', data.message);
                                     updateFavoriteButton(btn, false);
@@ -394,10 +394,10 @@
                             .then(data => {
                                 if (data.success) {
                                     // 모달 버튼 상태 업데이트
-                                    updateFavoriteButton(this, data.isFavorite);
+                                    updateFavoriteButton(this, data.data.isFavorite);
 
                                     // 즐겨찾기 목록 동적 업데이트
-                                    if (data.isFavorite) {
+                                    if (data.data.isFavorite) {
                                         addFavoriteToList(boardId, boardName);
                                     } else {
                                         removeFavoriteFromList(boardId);
