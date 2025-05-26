@@ -45,6 +45,10 @@ public class LoginController {
         }
 
         Member loginMember = loginService.login(loginForm.getLoginId(), loginForm.getPassword());
+        if (loginMember == null) {
+            bindingResult.reject("member.password.fail", "ID 또는 비밀번호가 일치하지 않습니다");
+            return "login/loginForm";
+        }
 
         HttpSession session = request.getSession();
         session.setAttribute(SessionConst.LOGIN_MEMBER, loginMember);

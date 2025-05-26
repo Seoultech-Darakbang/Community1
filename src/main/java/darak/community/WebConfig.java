@@ -36,15 +36,10 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        // 업로드된 파일들을 정적 리소스로 제공
+        // 1) 업로드된 파일만 커스터마이징
         registry.addResourceHandler("/uploads/**")
-                .addResourceLocations("file:" + uploadDir)  // 실제 파일 시스템 경로
-                .setCacheControl(CacheControl.maxAge(30, TimeUnit.DAYS))  // 30일 캐시
+                .addResourceLocations("file:" + uploadDir)  
+                .setCacheControl(CacheControl.maxAge(30, TimeUnit.DAYS))
                 .resourceChain(true);
-                
-        // 기본 정적 리소스
-        registry.addResourceHandler("/static/**")
-                .addResourceLocations("classpath:/static/")
-                .setCacheControl(CacheControl.maxAge(1, TimeUnit.HOURS));
     }
 }
