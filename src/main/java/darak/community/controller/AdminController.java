@@ -7,7 +7,6 @@ import darak.community.domain.member.MemberGrade;
 import darak.community.service.AdminService;
 import darak.community.service.BoardCategoryService;
 import darak.community.service.BoardService;
-import darak.community.service.MemberService;
 import darak.community.web.argumentresolver.Login;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -34,12 +33,11 @@ public class AdminController {
     private final AdminService adminService;
     private final BoardCategoryService boardCategoryService;
     private final BoardService boardService;
-    private final MemberService memberService;
 
     @ModelAttribute
     public void checkAdminAccess(@Login Member member, Model model) {
-        if (member == null || (member.getMemberGrade() != MemberGrade.ADMIN
-                && member.getMemberGrade() != MemberGrade.MASTER)) {
+        if (member.getMemberGrade() != MemberGrade.ADMIN
+                && member.getMemberGrade() != MemberGrade.MASTER) {
             throw new IllegalAccessError("관리자만 접근 가능합니다.");
         }
         model.addAttribute("member", member);
