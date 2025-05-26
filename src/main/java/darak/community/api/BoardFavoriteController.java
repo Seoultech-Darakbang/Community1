@@ -28,19 +28,27 @@ public class BoardFavoriteController {
 
     @PostMapping("/{boardId}")
     public ApiResponse<FavoriteResponse> addFavorite(@Login Member member, @PathVariable Long boardId) {
-        Board board = boardService.findById(boardId);
-        boardFavoriteService.addFavorite(member, board);
-
-        return ApiResponse.success("즐겨찾기에 추가되었습니다.",
-                new FavoriteResponse(true));
+        try {
+            Board board = boardService.findById(boardId);
+            boardFavoriteService.addFavorite(member, board);
+            
+            return ApiResponse.success("즐겨찾기에 추가되었습니다.",
+                    new FavoriteResponse(true));
+        } catch (IllegalStateException e) {
+            return ApiResponse.error(e.getMessage());
+        }
     }
 
     @DeleteMapping("/{boardId}")
     public ApiResponse<FavoriteResponse> removeFavorite(@Login Member member, @PathVariable Long boardId) {
-        boardFavoriteService.removeFavorite(member.getId(), boardId);
-
-        return ApiResponse.success("즐겨찾기에서 제거되었습니다.",
-                new FavoriteResponse(false));
+        try {
+            boardFavoriteService.removeFavorite(member.getId(), boardId);
+            
+            return ApiResponse.success("즐겨찾기에서 제거되었습니다.",
+                    new FavoriteResponse(false));
+        } catch (IllegalArgumentException e) {
+            return ApiResponse.error(e.getMessage());
+        }
     }
 
     @GetMapping("/{boardId}/status")

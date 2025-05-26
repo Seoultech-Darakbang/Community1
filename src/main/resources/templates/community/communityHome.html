@@ -277,15 +277,14 @@
                 // 모든 게시판의 즐겨찾기 상태 로드
                 function loadFavoriteStatus() {
                     favoriteToggleBtns.forEach(btn => {
-                        const boardId = btn.getAttribute('data-board-id');
-
-                        fetch(`/api/favorites/${boardId}/status`)
-                            .then(response => response.json())
-                            .then(data => {
-                                if (data.success) {
-                                    updateFavoriteButton(btn, data.data.isFavorite);
+                        fetch(`/api/favorites/${btn.dataset.boardId}/status`)
+                            .then(res => res.json())
+                            .then(json => {
+                                if (json.success) {
+                                    const isFav = json.data.favorite;
+                                    updateFavoriteButton(btn, isFav);
                                 } else {
-                                    console.error('즐겨찾기 상태 조회 실패:', data.message);
+                                    console.error('즐겨찾기 상태 조회 실패:', json.message);
                                     updateFavoriteButton(btn, false);
                                 }
                             })
@@ -394,10 +393,10 @@
                             .then(data => {
                                 if (data.success) {
                                     // 모달 버튼 상태 업데이트
-                                    updateFavoriteButton(this, data.data.isFavorite);
+                                    updateFavoriteButton(this, data.data.favorite);
 
                                     // 즐겨찾기 목록 동적 업데이트
-                                    if (data.data.isFavorite) {
+                                    if (data.data.favorite) {
                                         addFavoriteToList(boardId, boardName);
                                     } else {
                                         removeFavoriteFromList(boardId);
