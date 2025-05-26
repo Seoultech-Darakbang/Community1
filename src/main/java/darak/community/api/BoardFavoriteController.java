@@ -25,13 +25,11 @@ public class BoardFavoriteController {
 
     private final BoardFavoriteService boardFavoriteService;
     private final BoardService boardService;
-
-    // TODO: 테스트 코드 작성하고, 뷰, AJAX나 fetch 코드 작성해야 함
-
+    
     @PostMapping("/{boardId}")
     public ResponseEntity<Map<String, Object>> addFavorite(@Login Member member, @PathVariable Long boardId) {
         Map<String, Object> response = new HashMap<>();
-        
+
         try {
             if (member == null) {
                 response.put("success", false);
@@ -45,7 +43,7 @@ public class BoardFavoriteController {
             response.put("success", true);
             response.put("isFavorite", true);
             response.put("message", "즐겨찾기에 추가되었습니다.");
-            
+
         } catch (IllegalStateException e) {
             response.put("success", false);
             response.put("message", e.getMessage());
@@ -63,7 +61,7 @@ public class BoardFavoriteController {
     @DeleteMapping("/{boardId}")
     public ResponseEntity<Map<String, Object>> removeFavorite(@Login Member member, @PathVariable Long boardId) {
         Map<String, Object> response = new HashMap<>();
-        
+
         try {
             if (member == null) {
                 response.put("success", false);
@@ -76,7 +74,7 @@ public class BoardFavoriteController {
             response.put("success", true);
             response.put("isFavorite", false);
             response.put("message", "즐겨찾기에서 제거되었습니다.");
-            
+
         } catch (IllegalArgumentException e) {
             response.put("success", false);
             response.put("message", e.getMessage());
@@ -94,7 +92,7 @@ public class BoardFavoriteController {
     @GetMapping("/{boardId}/status")
     public ResponseEntity<Map<String, Object>> getFavoriteStatus(@Login Member member, @PathVariable Long boardId) {
         Map<String, Object> response = new HashMap<>();
-        
+
         if (member == null) {
             response.put("success", false);
             response.put("message", "로그인이 필요합니다.");

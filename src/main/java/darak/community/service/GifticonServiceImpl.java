@@ -108,8 +108,10 @@ public class GifticonServiceImpl implements GifticonService {
     }
 
     @Override
+    @Transactional
     public GifticonClaim claimGifticon(Long gifticonId, Member member) {
-        Gifticon gifticon = getGifticon(gifticonId);
+        Gifticon gifticon = gifticonRepository.findById(gifticonId)
+                .orElseThrow(() -> new IllegalArgumentException("기프티콘을 찾을 수 없습니다."));
         
         // 이미 수령했는지 확인
         if (gifticonClaimRepository.existsByGifticonAndMember(gifticon, member)) {
