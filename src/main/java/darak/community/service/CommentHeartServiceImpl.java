@@ -32,7 +32,6 @@ public class CommentHeartServiceImpl implements CommentHeartService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
 
-        // CommentHeart 생성 및 저장 (양방향 관계 설정은 생성자에서 처리)
         CommentHeart commentHeart = new CommentHeart(comment, member);
         commentHeartRepository.save(commentHeart);
     }
@@ -54,7 +53,7 @@ public class CommentHeartServiceImpl implements CommentHeartService {
     public int heartCountInComment(Long commentId) {
         return commentHeartRepository.countByCommentId(commentId);
     }
-    
+
     @Override
     public boolean isLiked(Long commentId, Long memberId) {
         return commentHeartRepository.findByCommentIdAndMemberId(commentId, memberId).isPresent();

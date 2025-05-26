@@ -1,11 +1,5 @@
 package darak.community.service;
 
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -14,6 +8,11 @@ import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.UUID;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @Slf4j
@@ -24,9 +23,8 @@ public class FileUploadServiceImpl implements FileUploadService {
 
     @Override
     public String uploadImage(MultipartFile file) throws Exception {
-        // 실제 파일 시스템의 업로드 디렉터리
         Path uploadPath = Paths.get(uploadDir, "images");
-        
+
         createDirectories(uploadPath);
 
         String originalFilename = file.getOriginalFilename();
@@ -34,18 +32,16 @@ public class FileUploadServiceImpl implements FileUploadService {
         String filename = generateUniqueFilename(extension);
 
         Path filePath = uploadPath.resolve(filename);
-        
+
         try {
-            // 파일 저장
             Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
             log.info("이미지 업로드 완료: {}", filePath.toAbsolutePath());
-            
-            // 브라우저가 접근할 수 있는 URL 반환 (ResourceHandler 매핑과 일치)
+
             String imageUrl = "/uploads/images/" + filename;
             log.info("이미지 URL: {}", imageUrl);
-            
+
             return imageUrl;
-            
+
         } catch (IOException e) {
             log.error("파일 저장 실패: {}", filePath, e);
             throw new RuntimeException("파일 저장에 실패했습니다.", e);

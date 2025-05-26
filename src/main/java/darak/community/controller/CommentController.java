@@ -28,10 +28,6 @@ public class CommentController {
     public String createComment(@Login Member member, @PathVariable Long boardId, @PathVariable Long postId,
                                 @ModelAttribute @Validated CommentCreateForm form, BindingResult bindingResult,
                                 Model model) {
-        if (member == null) {
-            return "login/loginForm";
-        }
-
         if (bindingResult.hasErrors()) {
             return "redirect:/community/boards/" + boardId + "/posts/" + postId;
         }
@@ -47,17 +43,11 @@ public class CommentController {
                               @ModelAttribute @Validated CommentCreateForm form, BindingResult bindingResult,
                               @RequestParam(defaultValue = "0") int commentPage,
                               Model model) {
-        if (member == null) {
-            return "login/loginForm";
-        }
-
         if (bindingResult.hasErrors()) {
             return "redirect:/community/boards/" + boardId + "/posts/" + postId + "?commentPage=" + commentPage;
         }
 
-        // 대댓글 작성
         commentService.saveReplyFromPost(member, postId, parentCommentId, form.getContent(), form.isAnonymous());
-
         return "redirect:/community/boards/" + boardId + "/posts/" + postId + "?commentPage=" + commentPage;
     }
 
@@ -67,10 +57,6 @@ public class CommentController {
                                 @RequestParam(required = false) Long postId,
                                 @RequestParam(defaultValue = "0") int commentPage,
                                 RedirectAttributes redirectAttributes) {
-        if (member == null) {
-            return "login/loginForm";
-        }
-
         try {
             commentService.deleteWithPermission(commentId, member);
             redirectAttributes.addFlashAttribute("message", "댓글이 성공적으로 삭제되었습니다.");
@@ -81,7 +67,7 @@ public class CommentController {
         if (boardId != null && postId != null) {
             return "redirect:/community/boards/" + boardId + "/posts/" + postId + "?commentPage=" + commentPage;
         }
-        
+
         return "redirect:/community";
     }
 

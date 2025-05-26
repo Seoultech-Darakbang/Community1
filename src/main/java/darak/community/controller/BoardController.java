@@ -38,9 +38,6 @@ public class BoardController {
 
     @GetMapping("/community/categories/{categoryId}")
     public String redirectFirstBoard(@Login Member member, @PathVariable Long categoryId, Model model) {
-        if (member == null) {
-            return "login/loginForm";
-        }
         BoardCategory category = boardCategoryService.findById(categoryId);
         if (category == null) {
             return "redirect:/error/404";
@@ -54,9 +51,6 @@ public class BoardController {
                         @RequestParam(defaultValue = "1") int page,
                         @RequestParam(defaultValue = "10") int size,
                         Model model) {
-        if (member == null) {
-            return "login/loginForm";
-        }
 
         Board board = boardService.findBoardAndCategoryWithBoardId(boardId);
 

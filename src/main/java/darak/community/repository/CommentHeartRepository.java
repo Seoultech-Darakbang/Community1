@@ -49,27 +49,24 @@ public class CommentHeartRepository {
     }
 
     public Page<Comment> findLikedCommentsByMember(Long memberId, Pageable pageable) {
-        // 좋아요한 댓글 조회 쿼리
         String jpql = "SELECT c FROM CommentHeart ch " +
-                     "JOIN ch.comment c " +
-                     "WHERE ch.member.id = :memberId " +
-                     "ORDER BY ch.createdDate DESC";
-        
+                "JOIN ch.comment c " +
+                "WHERE ch.member.id = :memberId " +
+                "ORDER BY ch.createdDate DESC";
+
         TypedQuery<Comment> query = em.createQuery(jpql, Comment.class)
                 .setParameter("memberId", memberId);
-        
-        // 전체 개수 조회
+
         String countJpql = "SELECT COUNT(ch) FROM CommentHeart ch WHERE ch.member.id = :memberId";
         Long totalCount = em.createQuery(countJpql, Long.class)
                 .setParameter("memberId", memberId)
                 .getSingleResult();
-        
-        // 페이지네이션 적용
+
         query.setFirstResult((int) pageable.getOffset())
-             .setMaxResults(pageable.getPageSize());
-        
+                .setMaxResults(pageable.getPageSize());
+
         List<Comment> comments = query.getResultList();
-        
+
         return new PageImpl<>(comments, pageable, totalCount);
     }
 }

@@ -32,7 +32,6 @@ public class PostHeartServiceImpl implements PostHeartService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
 
-        // PostHeart 생성 및 저장 (양방향 관계 설정은 생성자에서 처리)
         PostHeart postHeart = new PostHeart(post, member);
         postHeartRepository.save(postHeart);
     }

@@ -20,17 +20,14 @@ public class MemberServiceImpl implements MemberService {
 
     private final MemberRepository memberRepository;
 
-    // 회원 생성
     @Transactional
     @Override
     public Long join(Member member) {
-        // 중복 회원 검사
         validateDuplicateMember(member.getLoginId());
         memberRepository.save(member);
         return member.getId();
     }
 
-    // 중복 회원 검사 메서드
     public void validateDuplicateMember(String loginId) {
         Optional<Member> findMember = memberRepository.findByLoginId(loginId);
         if (findMember.isPresent()) {
@@ -38,26 +35,22 @@ public class MemberServiceImpl implements MemberService {
         }
     }
 
-    // 단건 조회 (위임)
     @Override
     public Member findById(Long id) {
         return memberRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
     }
 
-    // loginId로 회원 조회
     @Override
     public Member findByLoginId(String loginId) {
         return memberRepository.findByLoginId(loginId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
     }
 
-    // 이름으로 검색 (위임)
     @Override
     public List<Member> findByName(String name) {
         return memberRepository.findByName(name);
     }
 
-    // 회원 정보 수정
     @Transactional
     @Override
     public void update(MemberUpdateDTO memberUpdateDTO) {
@@ -69,7 +62,6 @@ public class MemberServiceImpl implements MemberService {
         member.updateMember(memberUpdateDTO.toEntity());
     }
 
-    // 회원 삭제
     @Transactional
     @Override
     public void remove(Long id) {
@@ -77,7 +69,6 @@ public class MemberServiceImpl implements MemberService {
         memberRepository.withdraw(member);
     }
 
-    // name 찾기
     @Override
     public List<String> findMemberNames(LocalDate birthDay, String phoneNumber) {
         List<Member> members = memberRepository.findByBirthAndPhone(birthDay, phoneNumber);

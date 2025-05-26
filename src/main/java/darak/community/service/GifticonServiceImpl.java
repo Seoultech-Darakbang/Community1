@@ -7,16 +7,15 @@ import darak.community.domain.member.Member;
 import darak.community.dto.GifticonDto;
 import darak.community.repository.GifticonClaimRepository;
 import darak.community.repository.GifticonRepository;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -38,20 +37,19 @@ public class GifticonServiceImpl implements GifticonService {
         log.info("  startTime: {}", request.getStartTime());
         log.info("  endTime: {}", request.getEndTime());
         log.info("  imageUrl: {}", request.getImageUrl());
-        
-        // totalQuantity 검증 추가
+
+        // totalQuantity 검증
         if (request.getTotalQuantity() == null || request.getTotalQuantity() <= 0) {
             log.error("totalQuantity 검증 실패: {}", request.getTotalQuantity());
             throw new IllegalArgumentException("총 수량은 1 이상이어야 합니다. 현재 값: " + request.getTotalQuantity());
         }
-        
+
         log.info("검증 통과, Gifticon 객체 생성 시작...");
-        
-        // imageUrl이 비어있으면 기본값 설정
-        String imageUrl = (request.getImageUrl() != null && !request.getImageUrl().trim().isEmpty()) 
-            ? request.getImageUrl() 
-            : null;
-            
+
+        String imageUrl = (request.getImageUrl() != null && !request.getImageUrl().trim().isEmpty())
+                ? request.getImageUrl()
+                : null;
+
         Gifticon gifticon = Gifticon.builder()
                 .title(request.getTitle())
                 .description(request.getDescription())
@@ -61,16 +59,16 @@ public class GifticonServiceImpl implements GifticonService {
                 .startTime(request.getStartTime())
                 .endTime(request.getEndTime())
                 .build();
-        
+
         log.info("Gifticon 객체 생성 완료");
         log.info("  - totalQuantity: {}", gifticon.getTotalQuantity());
         log.info("  - remainingQuantity: {}", gifticon.getRemainingQuantity());
         log.info("  - status: {}", gifticon.getStatus());
-        
+
         log.info("데이터베이스 저장 시작...");
         Gifticon savedGifticon = gifticonRepository.save(gifticon);
         log.info("데이터베이스 저장 완료: ID = {}", savedGifticon.getId());
-        
+
         return savedGifticon.getId();
     }
 
@@ -112,24 +110,23 @@ public class GifticonServiceImpl implements GifticonService {
     public GifticonClaim claimGifticon(Long gifticonId, Member member) {
         Gifticon gifticon = gifticonRepository.findById(gifticonId)
                 .orElseThrow(() -> new IllegalArgumentException("기프티콘을 찾을 수 없습니다."));
-        
-        // 이미 수령했는지 확인
+
         if (gifticonClaimRepository.existsByGifticonAndMember(gifticon, member)) {
             throw new IllegalStateException("이미 수령한 기프티콘입니다.");
         }
-        
-        // 수령 가능 여부 확인 및 수량 차감
+
+        // 수령 가능 여부 확인해서 수량 차감
         gifticon.claimOne();
-        
+
         // 기프티콘 코드 생성
         String gifticonCode = generateGifticonCode();
-        
+
         GifticonClaim claim = GifticonClaim.builder()
                 .gifticon(gifticon)
                 .member(member)
                 .gifticonCode(gifticonCode)
                 .build();
-        
+
         GifticonClaim savedClaim = gifticonClaimRepository.save(claim);
         log.info("기프티콘 수령됨: {} by {}", gifticon.getTitle(), member.getName());
         return savedClaim;
@@ -145,7 +142,7 @@ public class GifticonServiceImpl implements GifticonService {
     public void useGifticon(String gifticonCode, Member member) {
         GifticonClaim claim = gifticonClaimRepository.findByGifticonCodeAndMember(gifticonCode, member)
                 .orElseThrow(() -> new IllegalArgumentException("기프티콘을 찾을 수 없습니다."));
-        
+
         claim.use();
         log.info("기프티콘 사용됨: {} by {}", claim.getGifticon().getTitle(), member.getName());
     }

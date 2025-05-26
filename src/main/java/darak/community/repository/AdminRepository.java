@@ -4,13 +4,12 @@ import darak.community.domain.Board;
 import darak.community.domain.member.Member;
 import darak.community.domain.member.MemberGrade;
 import jakarta.persistence.EntityManager;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
@@ -18,7 +17,6 @@ public class AdminRepository {
 
     private final EntityManager em;
 
-    // 통계 정보
     public long getTotalMemberCount() {
         return em.createQuery("SELECT COUNT(m) FROM Member m", Long.class)
                 .getSingleResult();
@@ -44,7 +42,6 @@ public class AdminRepository {
                 .getSingleResult();
     }
 
-    // 카테고리 관리
     public void updateCategory(Long id, String name, Integer priority) {
         em.createQuery("UPDATE BoardCategory bc SET bc.name = :name, bc.priority = :priority WHERE bc.id = :id")
                 .setParameter("name", name)
@@ -59,12 +56,11 @@ public class AdminRepository {
                 .executeUpdate();
     }
 
-    // 게시판 관리
     public Page<Board> getAllBoardsPaged(Pageable pageable) {
         List<Board> boards = em.createQuery(
-                "SELECT b FROM Board b " +
-                "JOIN FETCH b.boardCategory bc " +
-                "ORDER BY bc.priority ASC, b.priority ASC", Board.class)
+                        "SELECT b FROM Board b " +
+                                "JOIN FETCH b.boardCategory bc " +
+                                "ORDER BY bc.priority ASC, b.priority ASC", Board.class)
                 .setFirstResult((int) pageable.getOffset())
                 .setMaxResults(pageable.getPageSize())
                 .getResultList();
@@ -77,7 +73,7 @@ public class AdminRepository {
 
     public void updateBoard(Long id, String name, String description, Long categoryId, Integer priority) {
         em.createQuery("UPDATE Board b SET b.name = :name, b.description = :description, " +
-                      "b.boardCategory.id = :categoryId, b.priority = :priority WHERE b.id = :id")
+                        "b.boardCategory.id = :categoryId, b.priority = :priority WHERE b.id = :id")
                 .setParameter("name", name)
                 .setParameter("description", description)
                 .setParameter("categoryId", categoryId)
@@ -102,7 +98,7 @@ public class AdminRepository {
     // 회원 관리
     public Page<Member> getAllMembersPaged(Pageable pageable) {
         List<Member> members = em.createQuery(
-                "SELECT m FROM Member m ORDER BY m.createdDate DESC", Member.class)
+                        "SELECT m FROM Member m ORDER BY m.createdDate DESC", Member.class)
                 .setFirstResult((int) pageable.getOffset())
                 .setMaxResults(pageable.getPageSize())
                 .getResultList();
@@ -113,17 +109,18 @@ public class AdminRepository {
         return new PageImpl<>(members, pageable, count);
     }
 
+    // 동적 쿼리.. 빡세다
     public Page<Member> searchMembers(String keyword, MemberGrade grade, Pageable pageable) {
         StringBuilder jpql = new StringBuilder("SELECT m FROM Member m WHERE 1=1");
-        
+
         if (keyword != null && !keyword.trim().isEmpty()) {
             jpql.append(" AND (m.name LIKE :keyword OR m.loginId LIKE :keyword OR m.email LIKE :keyword)");
         }
-        
+
         if (grade != null) {
             jpql.append(" AND m.memberGrade = :grade");
         }
-        
+
         jpql.append(" ORDER BY m.createdDate DESC");
 
         var query = em.createQuery(jpql.toString(), Member.class)
@@ -133,20 +130,19 @@ public class AdminRepository {
         if (keyword != null && !keyword.trim().isEmpty()) {
             query.setParameter("keyword", "%" + keyword + "%");
         }
-        
+
         if (grade != null) {
             query.setParameter("grade", grade);
         }
 
         List<Member> members = query.getResultList();
 
-        // Count 쿼리
         StringBuilder countJpql = new StringBuilder("SELECT COUNT(m) FROM Member m WHERE 1=1");
-        
+
         if (keyword != null && !keyword.trim().isEmpty()) {
             countJpql.append(" AND (m.name LIKE :keyword OR m.loginId LIKE :keyword OR m.email LIKE :keyword)");
         }
-        
+
         if (grade != null) {
             countJpql.append(" AND m.memberGrade = :grade");
         }
@@ -156,7 +152,7 @@ public class AdminRepository {
         if (keyword != null && !keyword.trim().isEmpty()) {
             countQuery.setParameter("keyword", "%" + keyword + "%");
         }
-        
+
         if (grade != null) {
             countQuery.setParameter("grade", grade);
         }

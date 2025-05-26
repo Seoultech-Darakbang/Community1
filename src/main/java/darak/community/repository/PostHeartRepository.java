@@ -52,25 +52,24 @@ public class PostHeartRepository {
     public Page<Post> findLikedPostsByMember(Long memberId, Pageable pageable) {
         // 좋아요한 게시글 조회 쿼리
         String jpql = "SELECT p FROM PostHeart ph " +
-                     "JOIN ph.post p " +
-                     "WHERE ph.member.id = :memberId " +
-                     "ORDER BY ph.createdDate DESC";
-        
+                "JOIN ph.post p " +
+                "WHERE ph.member.id = :memberId " +
+                "ORDER BY ph.createdDate DESC";
+
         TypedQuery<Post> query = em.createQuery(jpql, Post.class)
                 .setParameter("memberId", memberId);
-        
+
         // 전체 개수 조회
         String countJpql = "SELECT COUNT(ph) FROM PostHeart ph WHERE ph.member.id = :memberId";
         Long totalCount = em.createQuery(countJpql, Long.class)
                 .setParameter("memberId", memberId)
                 .getSingleResult();
-        
-        // 페이지네이션 적용
+
         query.setFirstResult((int) pageable.getOffset())
-             .setMaxResults(pageable.getPageSize());
-        
+                .setMaxResults(pageable.getPageSize());
+
         List<Post> posts = query.getResultList();
-        
+
         return new PageImpl<>(posts, pageable, totalCount);
     }
 }

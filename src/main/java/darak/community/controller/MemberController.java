@@ -44,14 +44,8 @@ public class MemberController {
             return "members/createMemberForm";
         }
 
-        try {
-            Member newMember = form.toEntity();
-            memberService.join(newMember);
-        } catch (IllegalStateException e) {
-            log.info("loginId {}에서 중복 발생", form.getLoginId());
-            bindingResult.rejectValue("loginId", "duplicated.member.loginId", "회원 ID가 중복되었습니다.");
-            return "members/createMemberForm";
-        }
+        Member newMember = form.toEntity();
+        memberService.join(newMember);
 
         log.info("loginId: {}, name: {} 님의 회원 가입", form.getLoginId(), form.getName());
         redirectAttributes.addAttribute("memberJoinStatus", true);
@@ -73,7 +67,7 @@ public class MemberController {
     @PostMapping("/members/password")
     public String changePassword(@Login Member member,
                                  @Validated @ModelAttribute("passwordForm") PasswordForm form,
-                                 BindingResult bindingResult) {
+                                 BindingResult bindingResult) throws PasswordFailedExceededException {
         if (member == null) {
             return "redirect:/login";
         }
@@ -81,22 +75,16 @@ public class MemberController {
             return "redirect:/";
         }
 
+        if (bindingResult.hasErrors()) {
+            return "members/expired-password";
+        }
+
         if (!form.getNewPassword().equals(form.getNewPasswordConfirm())) {
             bindingResult.reject("change.member.password.confirmFail", "새로운 비밀번호를 다시 확인해주세요.");
             return "members/expired-password";
         }
 
-        try {
-            if (!member.isMatchedPassword(form.getOldPassword())) {
-                bindingResult.rejectValue("oldPassword", "member.password.fail", "기존 비밀번호가 일치하지 않습니다.");
-                return "members/expired-password";
-            }
-            memberService.changePassword(member.getId(), form.getNewPassword(), form.getOldPassword());
-        } catch (PasswordFailedExceededException e) {
-            bindingResult.reject("member.password.fail.exceed", "비밀번호 변경 시도 횟수를 초과했습니다.");
-            return "members/expired-password";
-        }
-
+        memberService.changePassword(member.getId(), form.getNewPassword(), form.getOldPassword());
         return "redirect:/";
     }
 
@@ -114,12 +102,7 @@ public class MemberController {
             return new ResponseDto<>(-1, "아이디는 4자 이상, 20자 이하입니다", null);
         }
 
-        try {
-            memberService.validateDuplicateMember(loginId);
-        } catch (IllegalStateException e) {
-            return new ResponseDto<>(-1, "중복된 회원 ID 입니다.", null);
-        }
-
+        memberService.validateDuplicateMember(loginId);
         return new ResponseDto<>(1, "사용 가능한 회원 ID 입니다.", null);
     }
 }

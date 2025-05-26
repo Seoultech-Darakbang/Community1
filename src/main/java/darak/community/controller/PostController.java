@@ -9,14 +9,14 @@ import darak.community.dto.PostCURequestForm;
 import darak.community.service.BoardCategoryService;
 import darak.community.service.BoardFavoriteService;
 import darak.community.service.BoardService;
+import darak.community.service.CommentHeartService;
 import darak.community.service.CommentService;
 import darak.community.service.PostHeartService;
 import darak.community.service.PostService;
-import darak.community.service.CommentHeartService;
 import darak.community.web.argumentresolver.Login;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -60,9 +60,6 @@ public class PostController {
                            @PathVariable Long postId,
                            @RequestParam(defaultValue = "0") int commentPage,
                            Model model) {
-        if (member == null) {
-            return "login/loginForm";
-        }
 
         Board board = boardService.findBoardAndCategoryWithBoardId(boardId);
         Post post = postService.findById(postId);
@@ -71,7 +68,6 @@ public class PostController {
             return "redirect:/error/404";
         }
 
-        // 조회수 증가
         postService.increaseReadCount(postId);
 
         model.addAttribute("post", post);
@@ -81,23 +77,19 @@ public class PostController {
         Pageable pageable = PageRequest.of(commentPage, 5);
         Map<Comment, List<Comment>> commentsWithReplies = commentService.findCommentsWithReplies(postId, pageable);
         Page<Comment> commentsPage = commentService.findParentCommentsByPostId(postId, pageable);
-        
+
         model.addAttribute("commentsWithReplies", commentsWithReplies);
         model.addAttribute("commentsPage", commentsPage);
         model.addAttribute("currentCommentPage", commentPage);
 
-        // 게시글 좋아요 정보
         boolean isLiked = postHeartService.isLiked(postId, member.getId());
         model.addAttribute("isLiked", isLiked);
-        
-        // 댓글 좋아요 정보 미리 계산
+
         Map<Long, Boolean> commentLikeStatusMap = new HashMap<>();
-        
-        // 부모 댓글들의 좋아요 상태 확인
+
         for (Comment comment : commentsWithReplies.keySet()) {
             commentLikeStatusMap.put(comment.getId(), commentHeartService.isLiked(comment.getId(), member.getId()));
-            
-            // 대댓글들의 좋아요 상태도 확인
+
             List<Comment> replies = commentsWithReplies.get(comment);
             if (replies != null) {
                 for (Comment reply : replies) {
@@ -105,7 +97,6 @@ public class PostController {
                 }
             }
         }
-        
         model.addAttribute("commentLikeStatusMap", commentLikeStatusMap);
 
         return "community/post/viewPost";
@@ -121,9 +112,6 @@ public class PostController {
     public String writePostForm(@Login Member member,
                                 @PathVariable Long boardId, @ModelAttribute PostCURequestForm form,
                                 Model model) {
-        if (member == null) {
-            return "login/loginForm";
-        }
 
         Board board = boardService.findBoardAndCategoryWithBoardId(boardId);
 
@@ -139,9 +127,6 @@ public class PostController {
     public String writePost(@Login Member member, @PathVariable Long boardId,
                             @ModelAttribute @Validated PostCURequestForm form, BindingResult bindingResult,
                             Model model) {
-        if (member == null) {
-            return "login/loginForm";
-        }
 
         Board board = boardService.findBoardAndCategoryWithBoardId(boardId);
         if (board == null || board.getBoardCategory() == null) {
@@ -172,9 +157,6 @@ public class PostController {
                              @PathVariable Long postId,
                              RedirectAttributes attributes,
                              Model model) {
-        if (member == null) {
-            return "login/loginForm";
-        }
 
         Board board = boardService.findBoardAndCategoryWithBoardId(boardId);
         if (board == null || board.getBoardCategory() == null) {
@@ -197,9 +179,6 @@ public class PostController {
                                @PathVariable Long postId,
                                @ModelAttribute PostCURequestForm form,
                                Model model) {
-        if (member == null) {
-            return "login/loginForm";
-        }
 
         Board board = boardService.findBoardAndCategoryWithBoardId(boardId);
         Post post = postService.findById(postId);
@@ -217,9 +196,6 @@ public class PostController {
     public String editPost(@Login Member member, @PathVariable Long boardId, @PathVariable Long postId,
                            @ModelAttribute @Validated PostCURequestForm form, BindingResult bindingResult,
                            RedirectAttributes attributes, Model model) {
-        if (member == null) {
-            return "login/loginForm";
-        }
 
         Board board = boardService.findBoardAndCategoryWithBoardId(boardId);
         if (board == null || board.getBoardCategory() == null) {

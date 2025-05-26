@@ -37,24 +37,14 @@ public class LoginController {
 
     @PostMapping("/login")
     public String login(@Validated @ModelAttribute LoginForm loginForm, BindingResult bindingResult,
-                        @RequestParam(defaultValue = "/") String redirectURL, HttpServletRequest request) {
+                        @RequestParam(defaultValue = "/") String redirectURL, HttpServletRequest request)
+            throws PasswordFailedExceededException {
 
         if (bindingResult.hasErrors()) {
             return "login/loginForm";
         }
 
-        Member loginMember;
-
-        try {
-            loginMember = loginService.login(loginForm.getLoginId(), loginForm.getPassword());
-            if (loginMember == null) {
-                bindingResult.reject("loginFail", "아이디 또는 비밀번호가 맞지 않습니다");
-                return "login/loginForm";
-            }
-        } catch (PasswordFailedExceededException e) {
-            bindingResult.reject("password.failed.exceed", "로그인 시도 회수를 초과하였습니다");
-            return "login/loginForm";
-        }
+        Member loginMember = loginService.login(loginForm.getLoginId(), loginForm.getPassword());
 
         HttpSession session = request.getSession();
         session.setAttribute(SessionConst.LOGIN_MEMBER, loginMember);
@@ -62,7 +52,7 @@ public class LoginController {
         if (loginMember.isPasswordExpired()) {
             return "redirect:/members/expired-password?redirectURL=" + redirectURL;
         }
-        
+
         return "redirect:" + redirectURL;
     }
 

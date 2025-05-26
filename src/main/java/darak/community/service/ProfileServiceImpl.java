@@ -1,16 +1,18 @@
 package darak.community.service;
 
+import darak.community.domain.Comment;
+import darak.community.domain.Post;
+import darak.community.domain.member.Member;
 import darak.community.dto.MyCommentDto;
 import darak.community.dto.MyPostDto;
 import darak.community.dto.ProfileDto;
-import darak.community.domain.Post;
-import darak.community.domain.Comment;
-import darak.community.domain.member.Member;
-import darak.community.repository.PostRepository;
-import darak.community.repository.CommentRepository;
-import darak.community.repository.PostHeartRepository;
 import darak.community.repository.CommentHeartRepository;
+import darak.community.repository.CommentRepository;
 import darak.community.repository.MemberRepository;
+import darak.community.repository.PostHeartRepository;
+import darak.community.repository.PostRepository;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -18,9 +20,6 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -38,14 +37,9 @@ public class ProfileServiceImpl implements ProfileService {
     public ProfileDto getProfile(Long memberId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
-        
-        // 작성한 게시글 수
+
         long postCount = postRepository.countByMemberId(memberId);
-        
-        // 작성한 댓글 수
         long commentCount = commentRepository.countByMemberId(memberId);
-        
-        // 받은 좋아요 수 (게시글 + 댓글)
         long postLikeCount = postRepository.countLikesByMemberId(memberId);
         long commentLikeCount = commentRepository.countLikesByMemberId(memberId);
         long receivedLikeCount = postLikeCount + commentLikeCount;
@@ -59,7 +53,7 @@ public class ProfileServiceImpl implements ProfileService {
         List<MyPostDto> postDtos = posts.getContent().stream()
                 .map(MyPostDto::new)
                 .collect(Collectors.toList());
-        
+
         return new PageImpl<>(postDtos, pageable, posts.getTotalElements());
     }
 
@@ -69,7 +63,7 @@ public class ProfileServiceImpl implements ProfileService {
         List<MyCommentDto> commentDtos = comments.getContent().stream()
                 .map(MyCommentDto::new)
                 .collect(Collectors.toList());
-        
+
         return new PageImpl<>(commentDtos, pageable, comments.getTotalElements());
     }
 
@@ -79,7 +73,7 @@ public class ProfileServiceImpl implements ProfileService {
         List<MyPostDto> postDtos = likedPosts.getContent().stream()
                 .map(MyPostDto::new)
                 .collect(Collectors.toList());
-        
+
         return new PageImpl<>(postDtos, pageable, likedPosts.getTotalElements());
     }
 
@@ -89,7 +83,7 @@ public class ProfileServiceImpl implements ProfileService {
         List<MyCommentDto> commentDtos = likedComments.getContent().stream()
                 .map(MyCommentDto::new)
                 .collect(Collectors.toList());
-        
+
         return new PageImpl<>(commentDtos, pageable, likedComments.getTotalElements());
     }
 
@@ -99,7 +93,7 @@ public class ProfileServiceImpl implements ProfileService {
         List<MyPostDto> postDtos = posts.getContent().stream()
                 .map(MyPostDto::new)
                 .collect(Collectors.toList());
-        
+
         return new PageImpl<>(postDtos, pageable, posts.getTotalElements());
     }
 
@@ -109,7 +103,7 @@ public class ProfileServiceImpl implements ProfileService {
         List<MyCommentDto> commentDtos = comments.getContent().stream()
                 .map(MyCommentDto::new)
                 .collect(Collectors.toList());
-        
+
         return new PageImpl<>(commentDtos, pageable, comments.getTotalElements());
     }
 
@@ -118,50 +112,45 @@ public class ProfileServiceImpl implements ProfileService {
     public void updateProfile(Long memberId, String email, String phone) {
         log.info("=== 프로필 업데이트 시작 ===");
         log.info("memberId: {}, email: {}, phone: {}", memberId, email, phone);
-        
+
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
-        
+
         log.info("=== 업데이트 전 ===");
         log.info("현재 email: [{}]", member.getEmail());
         log.info("현재 phone: [{}]", member.getPhone());
-        
-        // 업데이트 전 값 저장
+
         String beforeEmail = member.getEmail();
         String beforePhone = member.getPhone();
-        
-        // 업데이트 수행
+
         if (email != null && !email.trim().isEmpty() && !email.equals(beforeEmail)) {
             log.info("이메일 업데이트 수행: [{}] -> [{}]", beforeEmail, email);
             member.updateEmail(email);
         } else {
             log.info("이메일 업데이트 스킵: email={}, beforeEmail={}", email, beforeEmail);
         }
-        
+
         if (phone != null && !phone.trim().isEmpty() && !phone.equals(beforePhone)) {
             log.info("전화번호 업데이트 수행: [{}] -> [{}]", beforePhone, phone);
             member.updatePhone(phone);
         } else {
             log.info("전화번호 업데이트 스킵: phone={}, beforePhone={}", phone, beforePhone);
         }
-        
-        // 즉시 플러시하여 DB에 반영
+
         log.info("=== flush 실행 ===");
         memberRepository.saveAndFlush(member);
-        
-        // 메소드 호출 후 값 확인
+
         log.info("=== 업데이트 후 (메모리) ===");
         log.info("업데이트 후 email: [{}]", member.getEmail());
         log.info("업데이트 후 phone: [{}]", member.getPhone());
-        
-        // 트랜잭션 내에서 DB 재조회로 확인
+
         log.info("=== DB 재조회 확인 ===");
         memberRepository.flush(); // 혹시 모를 플러시
         Member reloaded = memberRepository.findById(memberId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
         log.info("DB에서 재조회한 email: [{}]", reloaded.getEmail());
         log.info("DB에서 재조회한 phone: [{}]", reloaded.getPhone());
-        
+
         log.info("=== 프로필 업데이트 완료 ===");
     }
 } 

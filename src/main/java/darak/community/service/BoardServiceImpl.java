@@ -24,7 +24,7 @@ public class BoardServiceImpl implements BoardService {
     @Override
     public void save(Board board) {
         boardRepository.save(board);
-        // Board 저장 후 BoardCategory 캐시 새로고침
+        // Board 저장 후 BoardCategory 캐시 새로고침해야 함. board 는 메모리에서 조회할거임
         if (boardCategoryService instanceof BoardCategoryServiceImpl) {
             ((BoardCategoryServiceImpl) boardCategoryService).refreshCache();
         }

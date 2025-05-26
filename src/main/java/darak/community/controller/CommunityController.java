@@ -6,13 +6,10 @@ import darak.community.domain.BoardCategory;
 import darak.community.domain.Post;
 import darak.community.domain.member.Member;
 import darak.community.dto.GifticonDto;
-import darak.community.service.AttachmentService;
 import darak.community.service.BoardCategoryService;
 import darak.community.service.BoardFavoriteService;
 import darak.community.service.BoardService;
-import darak.community.service.CommentService;
 import darak.community.service.GifticonService;
-import darak.community.service.PostHeartService;
 import darak.community.service.PostService;
 import darak.community.web.argumentresolver.Login;
 import java.util.HashMap;
@@ -34,9 +31,6 @@ public class CommunityController {
     private final BoardCategoryService boardCategoryService;
     private final BoardFavoriteService boardFavoriteService;
     private final PostService postService;
-    private final CommentService commentService;
-    private final PostHeartService postHeartService;
-    private final AttachmentService attachmentService;
     private final GifticonService gifticonService;
 
     @ModelAttribute
@@ -47,9 +41,6 @@ public class CommunityController {
 
     @GetMapping("/community")
     public String communityHome(@Login Member member, Model model) {
-        if (member == null) {
-            return "login/loginForm";
-        }
 
         model.addAttribute("boardFavorites", boardFavoriteService.findByMemberId(member.getId()));
 
@@ -59,23 +50,11 @@ public class CommunityController {
         Map<String, Object> recentPostsData = getRecentPostMap();
         model.addAttribute("recentPostsData", recentPostsData);
 
-        List<GifticonDto.Response> recentGifticons = 
-            GifticonDto.Response.from(gifticonService.getActiveGifticons().stream().limit(3).toList());
+        List<GifticonDto.Response> recentGifticons =
+                GifticonDto.Response.from(gifticonService.getActiveGifticons().stream().limit(3).toList());
         model.addAttribute("recentGifticons", recentGifticons);
 
-        log.info("=== 갤러리 디버깅 정보 ===");
-        log.info("갤러리 게시판 수: {}", postService.countGalleryBoards());
-        log.info("전체 첨부파일 수: {}", postService.countAttachments());
-        log.info("갤러리 이미지 첨부파일 수: {}", postService.countGalleryAttachments());
-        
         List<Attachment> galleryImages = postService.findRecentGalleryImages(8);
-        log.info("조회된 갤러리 이미지 수: {} 개", galleryImages.size());
-        
-        if (!galleryImages.isEmpty()) {
-            log.info("첫 번째 갤러리 이미지 URL: {}", galleryImages.get(0).getUrl());
-            log.info("첫 번째 갤러리 이미지 파일타입: {}", galleryImages.get(0).getFileType());
-        }
-        
         model.addAttribute("galleryImages", galleryImages);
 
         return "community/communityHome";
@@ -86,14 +65,11 @@ public class CommunityController {
         List<BoardCategory> categories = boardCategoryService.findAll();
 
         for (BoardCategory category : categories) {
-            // 각 카테고리별로 우선순위 가장 높은 게시판 찾기
             Board topPriorityBoard = boardService.findTopPriorityBoardByCategory(category.getId());
 
             if (topPriorityBoard != null) {
-                // 해당 게시판의 최근 게시글 4개 조회
                 List<Post> recentPosts = postService.findRecentPostsByBoardId(topPriorityBoard.getId(), 4);
 
-                // 카테고리 정보와 게시판 정보, 게시글 목록을 함께 저장
                 Map<String, Object> categoryData = new HashMap<>();
                 categoryData.put("category", category);
                 categoryData.put("board", topPriorityBoard);

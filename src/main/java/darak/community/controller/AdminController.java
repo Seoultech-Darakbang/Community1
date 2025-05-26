@@ -45,7 +45,6 @@ public class AdminController {
 
     @GetMapping
     public String adminHome(Model model) {
-        // 통계 정보
         long totalMembers = adminService.getTotalMemberCount();
         long totalPosts = adminService.getTotalPostCount();
         long totalComments = adminService.getTotalCommentCount();
@@ -214,13 +213,7 @@ public class AdminController {
                              @RequestParam(required = false) MemberGrade grade,
                              Model model) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Member> members;
-
-        if ((keyword != null && !keyword.trim().isEmpty()) || grade != null) {
-            members = adminService.searchMembers(keyword, grade, pageable);
-        } else {
-            members = adminService.getAllMembersPaged(pageable);
-        }
+        Page<Member> members = getMembers(keyword, grade, pageable);
 
         model.addAttribute("members", members);
         model.addAttribute("keyword", keyword);
@@ -228,6 +221,13 @@ public class AdminController {
         model.addAttribute("grades", MemberGrade.values());
         model.addAttribute("active", "members");
         return "admin/members/list";
+    }
+
+    private Page<Member> getMembers(String keyword, MemberGrade grade, Pageable pageable) {
+        if ((keyword != null && !keyword.trim().isEmpty()) || grade != null) {
+            return adminService.searchMembers(keyword, grade, pageable);
+        }
+        return adminService.getAllMembersPaged(pageable);
     }
 
     @PostMapping("/members/{id}/grade")

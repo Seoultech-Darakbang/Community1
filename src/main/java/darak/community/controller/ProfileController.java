@@ -41,9 +41,6 @@ public class ProfileController {
 
     @GetMapping
     public String profile(@Login Member member, Model model) {
-        if (member == null) {
-            return "redirect:/login";
-        }
 
         ProfileDto profile = profileService.getProfile(member.getId());
         model.addAttribute("profile", profile);
@@ -54,6 +51,7 @@ public class ProfileController {
 
     @GetMapping("/{memberId}")
     public String memberProfile(@PathVariable Long memberId, Model model) {
+
         ProfileDto profile = profileService.getProfile(memberId);
         model.addAttribute("profile", profile);
         model.addAttribute("active", "profile");
@@ -68,19 +66,9 @@ public class ProfileController {
                           @RequestParam(required = false) String keyword,
                           @RequestParam(required = false) String boardName,
                           Model model) {
-        if (member == null) {
-            return "redirect:/login";
-        }
 
         Pageable pageable = PageRequest.of(page, size);
-        Page<MyPostDto> posts;
-
-        if ((keyword != null && !keyword.trim().isEmpty()) ||
-                (boardName != null && !boardName.trim().isEmpty())) {
-            posts = profileService.searchMyPosts(member.getId(), keyword, boardName, pageable);
-        } else {
-            posts = profileService.getMyPosts(member.getId(), pageable);
-        }
+        Page<MyPostDto> posts = getMyPostDtos(member, keyword, boardName, pageable);
 
         model.addAttribute("posts", posts);
         model.addAttribute("keyword", keyword);
@@ -90,6 +78,14 @@ public class ProfileController {
         return "community/profile/myPosts";
     }
 
+    private Page<MyPostDto> getMyPostDtos(Member member, String keyword, String boardName, Pageable pageable) {
+        if ((keyword != null && !keyword.trim().isEmpty()) ||
+                (boardName != null && !boardName.trim().isEmpty())) {
+            return profileService.searchMyPosts(member.getId(), keyword, boardName, pageable);
+        }
+        return profileService.getMyPosts(member.getId(), pageable);
+    }
+
     @GetMapping("/comments")
     public String myComments(@Login Member member,
                              @RequestParam(defaultValue = "0") int page,
@@ -97,19 +93,9 @@ public class ProfileController {
                              @RequestParam(required = false) String keyword,
                              @RequestParam(required = false) String boardName,
                              Model model) {
-        if (member == null) {
-            return "redirect:/login";
-        }
 
         Pageable pageable = PageRequest.of(page, size);
-        Page<MyCommentDto> comments;
-
-        if ((keyword != null && !keyword.trim().isEmpty()) ||
-                (boardName != null && !boardName.trim().isEmpty())) {
-            comments = profileService.searchMyComments(member.getId(), keyword, boardName, pageable);
-        } else {
-            comments = profileService.getMyComments(member.getId(), pageable);
-        }
+        Page<MyCommentDto> comments = getMyCommentDtos(member, keyword, boardName, pageable);
 
         model.addAttribute("comments", comments);
         model.addAttribute("keyword", keyword);
@@ -119,14 +105,20 @@ public class ProfileController {
         return "community/profile/myComments";
     }
 
+    private Page<MyCommentDto> getMyCommentDtos(Member member, String keyword, String boardName, Pageable pageable) {
+        Page<MyCommentDto> comments;
+        if ((keyword != null && !keyword.trim().isEmpty()) ||
+                (boardName != null && !boardName.trim().isEmpty())) {
+            return profileService.searchMyComments(member.getId(), keyword, boardName, pageable);
+        }
+        return profileService.getMyComments(member.getId(), pageable);
+    }
+
     @GetMapping("/liked-posts")
     public String likedPosts(@Login Member member,
                              @RequestParam(defaultValue = "0") int page,
                              @RequestParam(defaultValue = "10") int size,
                              Model model) {
-        if (member == null) {
-            return "redirect:/login";
-        }
 
         Pageable pageable = PageRequest.of(page, size);
         Page<MyPostDto> likedPosts = profileService.getLikedPosts(member.getId(), pageable);
@@ -157,9 +149,6 @@ public class ProfileController {
 
     @GetMapping("/edit")
     public String editProfile(@Login Member member, Model model) {
-        if (member == null) {
-            return "redirect:/login";
-        }
 
         model.addAttribute("member", member);
         model.addAttribute("active", "edit");
@@ -179,10 +168,10 @@ public class ProfileController {
 
         try {
             profileService.updateProfile(member.getId(), email, phone);
-            
+
             Member updatedMember = memberService.findById(member.getId());
             session.setAttribute(SessionConst.LOGIN_MEMBER, updatedMember);
-            
+
             redirectAttributes.addFlashAttribute("message", "프로필이 성공적으로 수정되었습니다.");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "프로필 수정 중 오류가 발생했습니다: " + e.getMessage());
@@ -197,10 +186,6 @@ public class ProfileController {
                                  @RequestParam String newPassword,
                                  @RequestParam String confirmPassword,
                                  RedirectAttributes redirectAttributes) {
-        if (member == null) {
-            return "redirect:/login";
-        }
-
         if (!newPassword.equals(confirmPassword)) {
             redirectAttributes.addFlashAttribute("error", "새 비밀번호가 일치하지 않습니다.");
             return "redirect:/profile/edit";

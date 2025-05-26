@@ -5,17 +5,18 @@ import darak.community.domain.member.Member;
 import darak.community.dto.GifticonDto;
 import darak.community.service.GifticonService;
 import darak.community.web.argumentresolver.Login;
+import jakarta.servlet.http.HttpSession;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import jakarta.servlet.http.HttpSession;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 @RequestMapping("/community/gifticons")
@@ -26,50 +27,32 @@ public class GifticonController {
 
     @GetMapping
     public String gifticonList(@Login Member member, Model model, HttpSession session) {
-        List<GifticonDto.Response> activeGifticons = 
-            GifticonDto.Response.from(gifticonService.getActiveGifticons());
-        
+        List<GifticonDto.Response> activeGifticons =
+                GifticonDto.Response.from(gifticonService.getActiveGifticons());
+
         model.addAttribute("gifticons", activeGifticons);
         model.addAttribute("member", member);
-        
-        // 세션에 로그인 상태 추가
-        if (member != null) {
-            session.setAttribute("loginId", member.getId());
-            // 로그인된 사용자의 수령 내역도 추가
-            List<GifticonDto.ClaimResponse> myClaims = 
+        List<GifticonDto.ClaimResponse> myClaims =
                 GifticonDto.ClaimResponse.from(gifticonService.getMemberClaims(member));
-            model.addAttribute("myClaims", myClaims);
-        } else {
-            session.removeAttribute("loginId");
-        }
-        
+        model.addAttribute("myClaims", myClaims);
+
         return "gifticon/list";
     }
 
     @GetMapping("/{id}")
     public String gifticonDetail(@Login Member member, @PathVariable Long id, Model model, HttpSession session) {
-        GifticonDto.Response gifticon = 
-            GifticonDto.Response.from(gifticonService.getGifticon(id));
+        GifticonDto.Response gifticon =
+                GifticonDto.Response.from(gifticonService.getGifticon(id));
         model.addAttribute("gifticon", gifticon);
         model.addAttribute("member", member);
-        
-        // 세션에 로그인 상태 추가
-        if (member != null) {
-            session.setAttribute("loginId", member.getId());
-        } else {
-            session.removeAttribute("loginId");
-        }
-        
+
         return "gifticon/detail";
     }
 
     @PostMapping("/{id}/claim")
     @ResponseBody
     public ResponseEntity<?> claimGifticon(@Login Member member, @PathVariable Long id) {
-        if (member == null) {
-            return ResponseEntity.badRequest().body("로그인이 필요합니다.");
-        }
-        
+
         try {
             GifticonClaim claim = gifticonService.claimGifticon(id, member);
             return ResponseEntity.ok(GifticonDto.ClaimResponse.from(claim));
@@ -82,13 +65,10 @@ public class GifticonController {
 
     @GetMapping("/my")
     public String myGifticons(@Login Member member, Model model) {
-        if (member == null) {
-            return "redirect:/login?redirectURL=/community/gifticons/my";
-        }
-
-        List<GifticonDto.ClaimResponse> myClaims = 
-            GifticonDto.ClaimResponse.from(gifticonService.getMemberClaims(member));
         
+        List<GifticonDto.ClaimResponse> myClaims =
+                GifticonDto.ClaimResponse.from(gifticonService.getMemberClaims(member));
+
         model.addAttribute("myClaims", myClaims);
         model.addAttribute("member", member);
         return "gifticon/my";
@@ -100,7 +80,7 @@ public class GifticonController {
         if (member == null) {
             return ResponseEntity.badRequest().body("로그인이 필요합니다.");
         }
-        
+
         try {
             gifticonService.useGifticon(gifticonCode, member);
             return ResponseEntity.ok("기프티콘이 사용되었습니다.");
