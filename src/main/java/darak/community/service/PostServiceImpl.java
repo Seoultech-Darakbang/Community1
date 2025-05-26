@@ -11,11 +11,13 @@ import darak.community.repository.DeleteLogRepository;
 import darak.community.repository.PostRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -46,12 +48,12 @@ public class PostServiceImpl implements PostService {
         }
         DeleteLog deleteLog = DeleteLog.postDeleteLog(post, member);
         deleteLogRepository.save(deleteLog);
-        postRepository.deleteById(post.getId());
+        postRepository.delete(post);
     }
 
     private boolean hasAuthorization(Member member, Post post) {
-        return post.getMember() == member || post.getMember().getMemberGrade() == MemberGrade.ADMIN
-                || post.getMember().getMemberGrade() == MemberGrade.MASTER;
+        return post.getMember().equals(member) || member.getMemberGrade() == MemberGrade.ADMIN
+                || member.getMemberGrade() == MemberGrade.MASTER;
     }
 
     @Override
@@ -115,12 +117,12 @@ public class PostServiceImpl implements PostService {
     public long countGalleryBoards() {
         return postRepository.countGalleryBoards();
     }
-    
+
     @Override
     public long countAttachments() {
         return postRepository.countAttachments();
     }
-    
+
     @Override
     public long countGalleryAttachments() {
         return postRepository.countGalleryAttachments();

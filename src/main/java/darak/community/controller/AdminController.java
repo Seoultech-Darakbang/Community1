@@ -9,6 +9,7 @@ import darak.community.service.BoardCategoryService;
 import darak.community.service.BoardService;
 import darak.community.service.MemberService;
 import darak.community.web.argumentresolver.Login;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -16,10 +17,13 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import java.util.List;
 
 @Controller
 @RequestMapping("/admin")
@@ -34,13 +38,13 @@ public class AdminController {
 
     @ModelAttribute
     public void checkAdminAccess(@Login Member member, Model model) {
-        if (member == null || (member.getMemberGrade() != MemberGrade.ADMIN && member.getMemberGrade() != MemberGrade.MASTER)) {
+        if (member == null || (member.getMemberGrade() != MemberGrade.ADMIN
+                && member.getMemberGrade() != MemberGrade.MASTER)) {
             throw new IllegalAccessError("관리자만 접근 가능합니다.");
         }
         model.addAttribute("member", member);
     }
 
-    // ===== 관리자 메인 페이지 =====
     @GetMapping
     public String adminHome(Model model) {
         // 통계 정보
@@ -60,7 +64,6 @@ public class AdminController {
         return "admin/dashboard";
     }
 
-    // ===== 게시판 카테고리 관리 =====
     @GetMapping("/categories")
     public String categoryList(Model model) {
         List<BoardCategory> categories = boardCategoryService.findAll();
@@ -77,8 +80,8 @@ public class AdminController {
 
     @PostMapping("/categories")
     public String createCategory(@RequestParam String name,
-                                @RequestParam Integer priority,
-                                RedirectAttributes redirectAttributes) {
+                                 @RequestParam Integer priority,
+                                 RedirectAttributes redirectAttributes) {
         try {
             adminService.createCategory(name, priority);
             redirectAttributes.addFlashAttribute("message", "카테고리가 성공적으로 생성되었습니다.");
@@ -98,9 +101,9 @@ public class AdminController {
 
     @PostMapping("/categories/{id}")
     public String updateCategory(@PathVariable Long id,
-                                @RequestParam String name,
-                                @RequestParam Integer priority,
-                                RedirectAttributes redirectAttributes) {
+                                 @RequestParam String name,
+                                 @RequestParam Integer priority,
+                                 RedirectAttributes redirectAttributes) {
         try {
             adminService.updateCategory(id, name, priority);
             redirectAttributes.addFlashAttribute("message", "카테고리가 성공적으로 수정되었습니다.");
@@ -124,21 +127,21 @@ public class AdminController {
     // ===== 게시판 관리 =====
     @GetMapping("/boards")
     public String boardList(@RequestParam(defaultValue = "0") int page,
-                           @RequestParam(defaultValue = "10") int size,
-                           @RequestParam(required = false) Long categoryId,
-                           Model model) {
+                            @RequestParam(defaultValue = "10") int size,
+                            @RequestParam(required = false) Long categoryId,
+                            Model model) {
         Pageable pageable = PageRequest.of(page, size);
         Page<Board> boards;
-        
+
         if (categoryId != null) {
             boards = adminService.getBoardsByCategoryPaged(categoryId, pageable);
             model.addAttribute("selectedCategoryId", categoryId);
         } else {
             boards = adminService.getAllBoardsPaged(pageable);
         }
-        
+
         List<BoardCategory> categories = boardCategoryService.findAll();
-        
+
         model.addAttribute("boards", boards);
         model.addAttribute("categories", categories);
         model.addAttribute("active", "boards");
@@ -155,10 +158,10 @@ public class AdminController {
 
     @PostMapping("/boards")
     public String createBoard(@RequestParam String name,
-                             @RequestParam String description,
-                             @RequestParam Long categoryId,
-                             @RequestParam Integer priority,
-                             RedirectAttributes redirectAttributes) {
+                              @RequestParam String description,
+                              @RequestParam Long categoryId,
+                              @RequestParam Integer priority,
+                              RedirectAttributes redirectAttributes) {
         try {
             adminService.createBoard(name, description, categoryId, priority);
             redirectAttributes.addFlashAttribute("message", "게시판이 성공적으로 생성되었습니다.");
@@ -180,11 +183,11 @@ public class AdminController {
 
     @PostMapping("/boards/{id}")
     public String updateBoard(@PathVariable Long id,
-                             @RequestParam String name,
-                             @RequestParam String description,
-                             @RequestParam Long categoryId,
-                             @RequestParam Integer priority,
-                             RedirectAttributes redirectAttributes) {
+                              @RequestParam String name,
+                              @RequestParam String description,
+                              @RequestParam Long categoryId,
+                              @RequestParam Integer priority,
+                              RedirectAttributes redirectAttributes) {
         try {
             adminService.updateBoard(id, name, description, categoryId, priority);
             redirectAttributes.addFlashAttribute("message", "게시판이 성공적으로 수정되었습니다.");
@@ -208,19 +211,19 @@ public class AdminController {
     // ===== 회원 관리 =====
     @GetMapping("/members")
     public String memberList(@RequestParam(defaultValue = "0") int page,
-                            @RequestParam(defaultValue = "10") int size,
-                            @RequestParam(required = false) String keyword,
-                            @RequestParam(required = false) MemberGrade grade,
-                            Model model) {
+                             @RequestParam(defaultValue = "10") int size,
+                             @RequestParam(required = false) String keyword,
+                             @RequestParam(required = false) MemberGrade grade,
+                             Model model) {
         Pageable pageable = PageRequest.of(page, size);
         Page<Member> members;
-        
+
         if ((keyword != null && !keyword.trim().isEmpty()) || grade != null) {
             members = adminService.searchMembers(keyword, grade, pageable);
         } else {
             members = adminService.getAllMembersPaged(pageable);
         }
-        
+
         model.addAttribute("members", members);
         model.addAttribute("keyword", keyword);
         model.addAttribute("selectedGrade", grade);
@@ -231,8 +234,8 @@ public class AdminController {
 
     @PostMapping("/members/{id}/grade")
     public String updateMemberGrade(@PathVariable Long id,
-                                   @RequestParam MemberGrade grade,
-                                   RedirectAttributes redirectAttributes) {
+                                    @RequestParam MemberGrade grade,
+                                    RedirectAttributes redirectAttributes) {
         try {
             adminService.updateMemberGrade(id, grade);
             redirectAttributes.addFlashAttribute("message", "회원 등급이 성공적으로 변경되었습니다.");
