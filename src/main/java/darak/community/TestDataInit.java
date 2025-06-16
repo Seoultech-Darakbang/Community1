@@ -30,7 +30,7 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-@Profile("local")
+@Profile("localPC")
 public class TestDataInit implements ApplicationRunner {
 
     private final MemberService memberService;
