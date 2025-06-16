@@ -1,9 +1,4 @@
 spring:
-  datasource:
-    url: jdbc:h2:tcp://localhost/~/community
-    username: sa
-    password:
-    driver-class-name: org.h2.Driver
   messages:
     basename: messages, errors
   mvc:
@@ -16,20 +11,19 @@ spring:
       max-request-size: 5MB
       enabled: true
 
-  jpa:
-    hibernate:
-      ddl-auto: create-drop
-    properties:
-      hibernate:
-        format_sql: true
-#        show_sql: true
-
-logging:
-  level:
-    org.hibernate.SQL: debug
-    org.hibernate.type: trace
-
 # 파일 업로드 설정
 app:
   upload:
     dir: ${user.home}/darak-uploads/ # 사용자 홈 디렉터리에 업로드 폴더 생성
+
+---
+
+spring:
+  profiles:
+    active: dev
+
+---
+
+spring:
+  profiles:
+    active: local
