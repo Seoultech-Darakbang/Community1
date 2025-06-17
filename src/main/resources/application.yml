@@ -20,14 +20,38 @@ server:
   servlet:
     session:
       tracking-modes: cookie
----
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, prometheus, metrics
+      base-path: /actuator
+  endpoint:
+    health:
+      show-details: always
+      show-components: always
+    prometheus:
+      cache:
+        time-to-live: 1s
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+      percentiles:
+        http.server.requests: 0.5, 0.95, 0.99
+    tags:
+      application: darak-community
+      environment: cloudtype
+
+---
 spring:
   profiles:
     active: dev
-
 ---
-
 spring:
   profiles:
     active: local
