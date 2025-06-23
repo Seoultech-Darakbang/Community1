@@ -14,13 +14,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import darak.community.controller.community.event.GifticonController;
 import darak.community.domain.gifticon.Gifticon;
 import darak.community.domain.gifticon.GifticonClaim;
 import darak.community.domain.member.Member;
 import darak.community.domain.member.MemberGrade;
 import darak.community.service.GifticonService;
 import darak.community.web.argumentresolver.LoginMemberArgumentResolver;
+import darak.community.web.controller.community.event.GifticonController;
 import darak.community.web.interceptor.LoginCheckInterceptor;
 import darak.community.web.session.SessionConst;
 import java.time.LocalDate;
