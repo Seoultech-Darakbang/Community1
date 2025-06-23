@@ -1,6 +1,6 @@
 package darak.community.repository;
 
-import darak.community.domain.Comment;
+import darak.community.domain.comment.Comment;
 import darak.community.domain.heart.CommentHeart;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;

@@ -1,6 +1,6 @@
 package darak.community.repository;
 
-import darak.community.domain.Board;
+import darak.community.domain.board.Board;
 import darak.community.domain.member.Member;
 import darak.community.domain.member.MemberGrade;
 import jakarta.persistence.EntityManager;

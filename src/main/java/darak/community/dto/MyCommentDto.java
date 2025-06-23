@@ -1,6 +1,6 @@
 package darak.community.dto;
 
-import darak.community.domain.Comment;
+import darak.community.domain.comment.Comment;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 

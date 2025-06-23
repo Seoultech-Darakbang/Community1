@@ -1,4 +1,4 @@
-package darak.community.domain;
+package darak.community.domain.board;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -22,7 +22,7 @@ public class Board implements Comparable<Board> {
     private String name;
 
     private String description;
-    
+
     private Integer priority;
 
     @ManyToOne(fetch = FetchType.LAZY)

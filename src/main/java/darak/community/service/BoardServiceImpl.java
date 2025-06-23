@@ -1,7 +1,7 @@
 package darak.community.service;
 
-import darak.community.domain.Board;
-import darak.community.domain.BoardCategory;
+import darak.community.domain.board.Board;
+import darak.community.domain.board.BoardCategory;
 import darak.community.repository.BoardCategoryRepository;
 import darak.community.repository.BoardRepository;
 import java.util.List;

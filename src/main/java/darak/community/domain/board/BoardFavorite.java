@@ -1,4 +1,4 @@
-package darak.community.domain;
+package darak.community.domain.board;
 
 import darak.community.domain.member.Member;
 import jakarta.persistence.Entity;

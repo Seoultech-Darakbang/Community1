@@ -1,9 +1,9 @@
 package darak.community.dto;
 
-import darak.community.domain.ClaimStatus;
-import darak.community.domain.Gifticon;
-import darak.community.domain.GifticonClaim;
-import darak.community.domain.GifticonStatus;
+import darak.community.domain.gifticon.ClaimStatus;
+import darak.community.domain.gifticon.Gifticon;
+import darak.community.domain.gifticon.GifticonClaim;
+import darak.community.domain.gifticon.GifticonStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

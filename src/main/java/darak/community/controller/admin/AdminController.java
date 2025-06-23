@@ -1,7 +1,7 @@
 package darak.community.controller.admin;
 
-import darak.community.domain.Board;
-import darak.community.domain.BoardCategory;
+import darak.community.domain.board.Board;
+import darak.community.domain.board.BoardCategory;
 import darak.community.domain.member.Member;
 import darak.community.domain.member.MemberGrade;
 import darak.community.service.AdminService;

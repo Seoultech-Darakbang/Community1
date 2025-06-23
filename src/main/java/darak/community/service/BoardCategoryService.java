@@ -1,6 +1,6 @@
 package darak.community.service;
 
-import darak.community.domain.BoardCategory;
+import darak.community.domain.board.BoardCategory;
 import java.util.List;
 
 public interface BoardCategoryService {

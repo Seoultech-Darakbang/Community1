@@ -1,6 +1,6 @@
 package darak.community.service;
 
-import darak.community.domain.Comment;
+import darak.community.domain.comment.Comment;
 import darak.community.domain.heart.CommentHeart;
 import darak.community.domain.member.Member;
 import darak.community.repository.CommentHeartRepository;

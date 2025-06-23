@@ -1,6 +1,6 @@
-package darak.community.domain;
+package darak.community.domain.gifticon;
 
-import darak.community.domain.member.Member;
+import darak.community.domain.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -47,18 +47,18 @@ public class Gifticon extends BaseEntity {
     private GifticonStatus status;
 
     @Builder
-    public Gifticon(String title, String description, String imageUrl, String brand, 
-                   Integer totalQuantity, LocalDateTime startTime, LocalDateTime endTime) {
+    public Gifticon(String title, String description, String imageUrl, String brand,
+                    Integer totalQuantity, LocalDateTime startTime, LocalDateTime endTime) {
         this.title = title;
         this.description = description;
         this.imageUrl = imageUrl;
         this.brand = brand;
         this.totalQuantity = totalQuantity;
-        
+
         if (totalQuantity == null) {
             throw new IllegalArgumentException("totalQuantity는 null일 수 없습니다.");
         }
-        
+
         this.remainingQuantity = totalQuantity;
         this.startTime = startTime;
         this.endTime = endTime;
@@ -67,10 +67,10 @@ public class Gifticon extends BaseEntity {
 
     public boolean canClaim() {
         LocalDateTime now = LocalDateTime.now();
-        return status == GifticonStatus.ACTIVE && 
-               remainingQuantity > 0 && 
-               now.isAfter(startTime) && 
-               now.isBefore(endTime);
+        return status == GifticonStatus.ACTIVE &&
+                remainingQuantity > 0 &&
+                now.isAfter(startTime) &&
+                now.isBefore(endTime);
     }
 
     public void claimOne() {

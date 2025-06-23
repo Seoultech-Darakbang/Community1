@@ -1,6 +1,6 @@
 package darak.community.service;
 
-import darak.community.domain.Attachment;
+import darak.community.domain.post.Attachment;
 import java.util.List;
 
 public interface AttachmentService {

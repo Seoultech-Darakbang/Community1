@@ -1,7 +1,7 @@
 package darak.community.dto;
 
-import darak.community.domain.Post;
-import darak.community.domain.PostType;
+import darak.community.domain.post.Post;
+import darak.community.domain.post.PostType;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;

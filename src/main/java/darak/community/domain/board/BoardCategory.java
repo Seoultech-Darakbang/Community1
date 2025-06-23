@@ -1,4 +1,4 @@
-package darak.community.domain;
+package darak.community.domain.board;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

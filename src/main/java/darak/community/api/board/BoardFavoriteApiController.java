@@ -1,6 +1,6 @@
 package darak.community.api.board;
 
-import darak.community.domain.Board;
+import darak.community.domain.board.Board;
 import darak.community.domain.member.Member;
 import darak.community.dto.ApiResponse;
 import darak.community.service.BoardFavoriteService;

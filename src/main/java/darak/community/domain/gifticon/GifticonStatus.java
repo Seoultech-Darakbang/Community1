@@ -1,4 +1,4 @@
-package darak.community.domain;
+package darak.community.domain.gifticon;
 
 public enum GifticonStatus {
     WAITING,

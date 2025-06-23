@@ -1,6 +1,6 @@
 package darak.community.repository;
 
-import darak.community.domain.DeleteLog;
+import darak.community.domain.log.DeleteLog;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;

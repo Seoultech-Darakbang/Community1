@@ -1,8 +1,8 @@
 package darak.community.service;
 
-import darak.community.domain.Attachment;
-import darak.community.domain.Post;
-import darak.community.domain.PostType;
+import darak.community.domain.post.Attachment;
+import darak.community.domain.post.Post;
+import darak.community.domain.post.PostType;
 import darak.community.domain.member.Member;
 import java.util.List;
 import org.springframework.data.domain.Page;
@@ -36,6 +36,8 @@ public interface PostService {
     List<Post> findRecentGalleryPostsWithImages(int limit);
 
     long countGalleryBoards();
+
     long countAttachments();
+
     long countGalleryAttachments();
 }

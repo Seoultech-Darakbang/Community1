@@ -1,5 +1,6 @@
-package darak.community.domain;
+package darak.community.domain.post;
 
+import darak.community.domain.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -22,7 +23,7 @@ public class Attachment extends BaseEntity {
     private String url;
 
     private Long size;
-    
+
     private String fileType;  // MIME 타입 (예: image/jpeg, image/png)
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -36,7 +37,7 @@ public class Attachment extends BaseEntity {
         this.fileType = fileType;
         this.post = post;
     }
-    
+
     public boolean isImage() {
         return fileType != null && fileType.startsWith("image/");
     }

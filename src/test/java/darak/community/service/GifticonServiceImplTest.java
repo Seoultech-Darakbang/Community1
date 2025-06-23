@@ -1,9 +1,9 @@
 package darak.community.service;
 
-import darak.community.domain.Gifticon;
-import darak.community.domain.GifticonClaim;
-import darak.community.domain.GifticonStatus;
-import darak.community.domain.ClaimStatus;
+import darak.community.domain.gifticon.Gifticon;
+import darak.community.domain.gifticon.GifticonClaim;
+import darak.community.domain.gifticon.GifticonStatus;
+import darak.community.domain.gifticon.ClaimStatus;
 import darak.community.domain.member.Member;
 import darak.community.domain.member.MemberGrade;
 import darak.community.dto.GifticonDto;
@@ -45,7 +45,7 @@ class GifticonServiceImplTest {
         // given
         GifticonDto.CreateRequest request = createTestRequest();
         Gifticon gifticon = createTestGifticon();
-        
+
         given(gifticonRepository.save(any(Gifticon.class))).willReturn(gifticon);
 
         // when
@@ -178,7 +178,7 @@ class GifticonServiceImplTest {
         Member member = createTestMember();
         Gifticon gifticon = createTestGifticon();
         gifticon.activate(); // 활성화
-        
+
         GifticonClaim claim = createTestClaim(member, "TEST1234567890AB");
 
         given(gifticonRepository.findById(gifticonId)).willReturn(Optional.of(gifticon));
@@ -223,7 +223,7 @@ class GifticonServiceImplTest {
                 createTestClaim(member, "CODE1"),
                 createTestClaim(member, "CODE2")
         );
-        
+
         given(gifticonClaimRepository.findByMemberOrderByCreatedDateDesc(member))
                 .willReturn(claims);
 
@@ -243,7 +243,7 @@ class GifticonServiceImplTest {
         String gifticonCode = "TEST1234567890AB";
         Member member = createTestMember();
         GifticonClaim claim = createTestClaim(member, gifticonCode);
-        
+
         given(gifticonClaimRepository.findByGifticonCodeAndMember(gifticonCode, member))
                 .willReturn(Optional.of(claim));
 
@@ -260,7 +260,7 @@ class GifticonServiceImplTest {
         // given
         String gifticonCode = "INVALID_CODE";
         Member member = createTestMember();
-        
+
         given(gifticonClaimRepository.findByGifticonCodeAndMember(gifticonCode, member))
                 .willReturn(Optional.empty());
 
@@ -294,7 +294,7 @@ class GifticonServiceImplTest {
                 .startTime(LocalDateTime.now().plusDays(1))
                 .endTime(LocalDateTime.now().plusDays(7))
                 .build();
-        
+
         // ID 설정 (테스트용)
         try {
             java.lang.reflect.Field idField = Gifticon.class.getDeclaredField("id");
@@ -303,7 +303,7 @@ class GifticonServiceImplTest {
         } catch (Exception e) {
             // ID 설정 실패 시 무시
         }
-        
+
         return gifticon;
     }
 

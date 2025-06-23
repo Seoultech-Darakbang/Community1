@@ -1,7 +1,7 @@
 package darak.community.domain.heart;
 
 import darak.community.domain.BaseEntity;
-import darak.community.domain.Post;
+import darak.community.domain.post.Post;
 import darak.community.domain.member.Member;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;

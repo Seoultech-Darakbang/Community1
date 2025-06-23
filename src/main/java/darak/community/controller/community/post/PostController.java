@@ -1,9 +1,9 @@
 package darak.community.controller.community.post;
 
-import darak.community.domain.Board;
-import darak.community.domain.BoardCategory;
-import darak.community.domain.Comment;
-import darak.community.domain.Post;
+import darak.community.domain.board.Board;
+import darak.community.domain.board.BoardCategory;
+import darak.community.domain.comment.Comment;
+import darak.community.domain.post.Post;
 import darak.community.domain.member.Member;
 import darak.community.dto.PostCURequestForm;
 import darak.community.service.BoardCategoryService;

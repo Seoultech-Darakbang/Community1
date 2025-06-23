@@ -1,7 +1,7 @@
 package darak.community.service;
 
-import darak.community.domain.Comment;
-import darak.community.domain.Post;
+import darak.community.domain.comment.Comment;
+import darak.community.domain.post.Post;
 import darak.community.domain.member.Member;
 import darak.community.dto.MyCommentDto;
 import darak.community.dto.MyPostDto;

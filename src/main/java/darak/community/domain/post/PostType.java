@@ -1,4 +1,4 @@
-package darak.community.domain;
+package darak.community.domain.post;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -12,5 +12,5 @@ public enum PostType {
 
     private final String key;
     private final String value;
-    
+
 }

@@ -1,6 +1,6 @@
 package darak.community.service;
 
-import darak.community.domain.BoardCategory;
+import darak.community.domain.board.BoardCategory;
 import darak.community.repository.BoardCategoryRepository;
 import jakarta.annotation.PostConstruct;
 import java.util.ArrayList;

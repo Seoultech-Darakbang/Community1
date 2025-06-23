@@ -1,6 +1,6 @@
 package darak.community.repository;
 
-import darak.community.domain.Post;
+import darak.community.domain.post.Post;
 import darak.community.domain.heart.PostHeart;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;

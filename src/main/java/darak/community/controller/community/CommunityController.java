@@ -1,9 +1,9 @@
 package darak.community.controller.community;
 
-import darak.community.domain.Attachment;
-import darak.community.domain.Board;
-import darak.community.domain.BoardCategory;
-import darak.community.domain.Post;
+import darak.community.domain.post.Attachment;
+import darak.community.domain.board.Board;
+import darak.community.domain.board.BoardCategory;
+import darak.community.domain.post.Post;
 import darak.community.domain.member.Member;
 import darak.community.dto.GifticonDto;
 import darak.community.service.BoardCategoryService;

@@ -1,6 +1,6 @@
 package darak.community.repository;
 
-import darak.community.domain.Attachment;
+import darak.community.domain.post.Attachment;
 import jakarta.persistence.EntityManager;
 import java.util.List;
 import java.util.Optional;

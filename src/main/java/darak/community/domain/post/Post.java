@@ -1,5 +1,8 @@
-package darak.community.domain;
+package darak.community.domain.post;
 
+import darak.community.domain.BaseEntity;
+import darak.community.domain.board.Board;
+import darak.community.domain.comment.Comment;
 import darak.community.domain.heart.PostHeart;
 import darak.community.domain.member.Member;
 import jakarta.persistence.CascadeType;

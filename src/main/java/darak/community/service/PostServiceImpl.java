@@ -1,9 +1,9 @@
 package darak.community.service;
 
-import darak.community.domain.Attachment;
-import darak.community.domain.DeleteLog;
-import darak.community.domain.Post;
-import darak.community.domain.PostType;
+import darak.community.domain.post.Attachment;
+import darak.community.domain.log.DeleteLog;
+import darak.community.domain.post.Post;
+import darak.community.domain.post.PostType;
 import darak.community.domain.member.Member;
 import darak.community.domain.member.MemberGrade;
 import darak.community.repository.CommentRepository;

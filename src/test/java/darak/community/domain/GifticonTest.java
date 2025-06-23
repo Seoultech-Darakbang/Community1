@@ -1,10 +1,10 @@
 package darak.community.domain;
 
+import darak.community.domain.gifticon.Gifticon;
+import darak.community.domain.gifticon.GifticonStatus;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 
 import java.time.LocalDateTime;
 
@@ -82,7 +82,7 @@ class GifticonTest {
                 .build())
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("totalQuantity는 null일 수 없습니다.");
-        
+
         // totalQuantity가 0인 경우는 현재 구현에서 허용됨 (테스트 제거)
         // 만약 0 이하 값도 막으려면 도메인 클래스에 추가 검증 필요
     }

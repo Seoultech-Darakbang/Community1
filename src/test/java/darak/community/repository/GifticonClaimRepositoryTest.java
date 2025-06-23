@@ -1,7 +1,7 @@
 package darak.community.repository;
 
-import darak.community.domain.Gifticon;
-import darak.community.domain.GifticonClaim;
+import darak.community.domain.gifticon.Gifticon;
+import darak.community.domain.gifticon.GifticonClaim;
 import darak.community.domain.member.Member;
 import darak.community.domain.member.MemberGrade;
 import org.junit.jupiter.api.DisplayName;

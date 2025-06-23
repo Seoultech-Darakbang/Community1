@@ -1,6 +1,6 @@
 package darak.community.repository;
 
-import darak.community.domain.BoardCategory;
+import darak.community.domain.board.BoardCategory;
 import jakarta.persistence.EntityManager;
 import java.util.List;
 import java.util.Optional;
@@ -23,7 +23,7 @@ public class BoardCategoryRepository {
 
     public List<BoardCategory> findAll() {
         return em.createQuery(
-                "select distinct bc from BoardCategory bc left join fetch bc.boards", BoardCategory.class)
+                        "select distinct bc from BoardCategory bc left join fetch bc.boards", BoardCategory.class)
                 .getResultList();
     }
 

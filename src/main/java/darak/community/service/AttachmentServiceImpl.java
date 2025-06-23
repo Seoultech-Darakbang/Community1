@@ -1,6 +1,6 @@
 package darak.community.service;
 
-import darak.community.domain.Attachment;
+import darak.community.domain.post.Attachment;
 import darak.community.repository.AttachmentRepository;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -43,11 +43,11 @@ public class AttachmentServiceImpl implements AttachmentService {
                     }
                     // fileType이 없는 경우 URL 확장자로 판단
                     String url = attachment.getUrl();
-                    return url != null && (url.toLowerCase().endsWith(".jpg") || 
-                                         url.toLowerCase().endsWith(".jpeg") || 
-                                         url.toLowerCase().endsWith(".png") || 
-                                         url.toLowerCase().endsWith(".gif") ||
-                                         url.toLowerCase().endsWith(".webp"));
+                    return url != null && (url.toLowerCase().endsWith(".jpg") ||
+                            url.toLowerCase().endsWith(".jpeg") ||
+                            url.toLowerCase().endsWith(".png") ||
+                            url.toLowerCase().endsWith(".gif") ||
+                            url.toLowerCase().endsWith(".webp"));
                 })
                 .collect(Collectors.toList());
     }

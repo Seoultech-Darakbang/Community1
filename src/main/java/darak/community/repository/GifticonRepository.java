@@ -1,7 +1,7 @@
 package darak.community.repository;
 
-import darak.community.domain.Gifticon;
-import darak.community.domain.GifticonStatus;
+import darak.community.domain.gifticon.Gifticon;
+import darak.community.domain.gifticon.GifticonStatus;
 import jakarta.persistence.LockModeType;
 import java.time.LocalDateTime;
 import java.util.List;

@@ -1,5 +1,6 @@
-package darak.community.domain;
+package darak.community.domain.gifticon;
 
+import darak.community.domain.BaseEntity;
 import darak.community.domain.member.Member;
 import jakarta.persistence.*;
 import lombok.Builder;

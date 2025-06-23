@@ -1,9 +1,9 @@
 package darak.community.integration;
 
-import darak.community.domain.Gifticon;
-import darak.community.domain.GifticonClaim;
-import darak.community.domain.GifticonStatus;
-import darak.community.domain.ClaimStatus;
+import darak.community.domain.gifticon.Gifticon;
+import darak.community.domain.gifticon.GifticonClaim;
+import darak.community.domain.gifticon.GifticonStatus;
+import darak.community.domain.gifticon.ClaimStatus;
 import darak.community.domain.member.Member;
 import darak.community.domain.member.MemberGrade;
 import darak.community.dto.GifticonDto;
@@ -53,7 +53,7 @@ class GifticonIntegrationTest {
     void setUp() {
         // 각 테스트 전에 데이터 정리
         cleanupData();
-        
+
         testMember = createAndSaveMember("testuser");
     }
 
@@ -69,13 +69,13 @@ class GifticonIntegrationTest {
         for (GifticonClaim claim : claims) {
             gifticonClaimRepository.delete(claim);
         }
-        
+
         // 기프티콘 삭제
         List<Gifticon> gifticons = gifticonRepository.findAll();
         for (Gifticon gifticon : gifticons) {
             gifticonRepository.delete(gifticon);
         }
-        
+
         // 멤버 삭제
         List<Member> members = memberRepository.findAll();
         for (Member member : members) {
@@ -179,13 +179,13 @@ class GifticonIntegrationTest {
 
         // then
         System.out.println("성공: " + successCount.get() + ", 실패: " + failCount.get());
-        
+
         assertThat(successCount.get()).isEqualTo(5); // 5명만 성공
         assertThat(failCount.get()).isEqualTo(5); // 5명은 실패
 
         Gifticon finalGifticon = gifticonService.getGifticon(gifticonId);
         assertThat(finalGifticon.getRemainingQuantity()).isEqualTo(0);
-        
+
         // 실제로 수령된 클레임 수 확인
         List<GifticonClaim> claims = gifticonClaimRepository.findAll();
         assertThat(claims).hasSize(5);
@@ -258,7 +258,7 @@ class GifticonIntegrationTest {
 
         // when
         Long gifticonId = gifticonService.createGifticon(createRequest);
-        
+
         // then
         Gifticon gifticon = gifticonService.getGifticon(gifticonId);
         assertThat(gifticon.getTitle()).isEqualTo("테스트 기프티콘");
@@ -290,7 +290,7 @@ class GifticonIntegrationTest {
         assertThat(claim).isNotNull();
         assertThat(claim.getMember()).isEqualTo(testMember);
         assertThat(claim.getGifticonCode()).isNotNull();
-        
+
         Gifticon updatedGifticon = gifticonService.getGifticon(gifticonId);
         assertThat(updatedGifticon.getRemainingQuantity()).isEqualTo(2);
     }
@@ -305,7 +305,7 @@ class GifticonIntegrationTest {
                 .email(loginId + "@example.com")
                 .grade(MemberGrade.MEMBER)
                 .build();
-        
+
         memberRepository.save(member);
         memberRepository.flush(); // 즉시 DB에 반영
         return member;

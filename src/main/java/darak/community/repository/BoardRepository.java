@@ -1,6 +1,6 @@
 package darak.community.repository;
 
-import darak.community.domain.Board;
+import darak.community.domain.board.Board;
 import jakarta.persistence.EntityManager;
 import java.util.List;
 import java.util.Optional;
@@ -38,7 +38,8 @@ public class BoardRepository {
     }
 
     public List<Board> findByBoardCategoryId(Long boardCategoryId) {
-        return em.createQuery("select b from Board b where b.boardCategory.id = :boardCategoryId order by b.priority asc, b.id asc",
+        return em.createQuery(
+                        "select b from Board b where b.boardCategory.id = :boardCategoryId order by b.priority asc, b.id asc",
                         Board.class)
                 .setParameter("boardCategoryId", boardCategoryId)
                 .getResultList();
@@ -72,8 +73,8 @@ public class BoardRepository {
 
     public Optional<Board> findTopPriorityBoardByCategory(Long categoryId) {
         List<Board> boards = em.createQuery(
-                "select b from Board b where b.boardCategory.id = :categoryId order by b.priority asc", 
-                Board.class)
+                        "select b from Board b where b.boardCategory.id = :categoryId order by b.priority asc",
+                        Board.class)
                 .setParameter("categoryId", categoryId)
                 .setMaxResults(1)
                 .getResultList();

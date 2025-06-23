@@ -1,6 +1,6 @@
 package darak.community.controller.community.event;
 
-import darak.community.domain.GifticonClaim;
+import darak.community.domain.gifticon.GifticonClaim;
 import darak.community.domain.member.Member;
 import darak.community.dto.GifticonDto;
 import darak.community.service.GifticonService;

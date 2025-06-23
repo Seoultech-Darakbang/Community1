@@ -1,6 +1,6 @@
 package darak.community.service;
 
-import darak.community.domain.Board;
+import darak.community.domain.board.Board;
 import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
