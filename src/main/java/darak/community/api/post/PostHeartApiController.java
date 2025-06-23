@@ -1,4 +1,4 @@
-package darak.community.api;
+package darak.community.api.post;
 
 import darak.community.domain.member.Member;
 import darak.community.dto.ApiResponse;

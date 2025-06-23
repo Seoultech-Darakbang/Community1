@@ -1,4 +1,4 @@
-package darak.community.api;
+package darak.community.api.post;
 
 import darak.community.dto.ApiResponse;
 import darak.community.service.FileUploadService;
@@ -17,7 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/api/uploads")
 @RequiredArgsConstructor
 @Slf4j
-public class FileUploadController {
+public class FileUploadApiController {
 
     private final FileUploadService fileUploadService;
 
@@ -61,6 +61,6 @@ public class FileUploadController {
     @AllArgsConstructor
     public static class ServiceStatusResponse {
         private String status;
-        
+
     }
 }

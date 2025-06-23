@@ -1,4 +1,4 @@
-package darak.community.api;
+package darak.community.api.board;
 
 import darak.community.domain.Board;
 import darak.community.domain.member.Member;
@@ -21,34 +21,28 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/favorites")
-public class BoardFavoriteController {
+public class BoardFavoriteApiController {
 
     private final BoardFavoriteService boardFavoriteService;
     private final BoardService boardService;
 
     @PostMapping("/{boardId}")
     public ApiResponse<FavoriteResponse> addFavorite(@Login Member member, @PathVariable Long boardId) {
-        try {
-            Board board = boardService.findById(boardId);
-            boardFavoriteService.addFavorite(member, board);
-            
-            return ApiResponse.success("즐겨찾기에 추가되었습니다.",
-                    new FavoriteResponse(true));
-        } catch (IllegalStateException e) {
-            return ApiResponse.error(e.getMessage());
-        }
+
+        Board board = boardService.findById(boardId);
+        boardFavoriteService.addFavorite(member, board);
+
+        return ApiResponse.success("즐겨찾기에 추가되었습니다.",
+                new FavoriteResponse(true));
+
     }
 
     @DeleteMapping("/{boardId}")
     public ApiResponse<FavoriteResponse> removeFavorite(@Login Member member, @PathVariable Long boardId) {
-        try {
-            boardFavoriteService.removeFavorite(member.getId(), boardId);
-            
-            return ApiResponse.success("즐겨찾기에서 제거되었습니다.",
-                    new FavoriteResponse(false));
-        } catch (IllegalArgumentException e) {
-            return ApiResponse.error(e.getMessage());
-        }
+        boardFavoriteService.removeFavorite(member.getId(), boardId);
+
+        return ApiResponse.success("즐겨찾기에서 제거되었습니다.",
+                new FavoriteResponse(false));
     }
 
     @GetMapping("/{boardId}/status")
