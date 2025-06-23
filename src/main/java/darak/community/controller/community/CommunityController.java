@@ -1,4 +1,4 @@
-package darak.community.controller;
+package darak.community.controller.community;
 
 import darak.community.domain.Attachment;
 import darak.community.domain.Board;

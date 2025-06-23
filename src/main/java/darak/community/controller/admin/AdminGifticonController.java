@@ -1,4 +1,4 @@
-package darak.community.controller;
+package darak.community.controller.admin;
 
 import darak.community.domain.member.Member;
 import darak.community.domain.member.MemberGrade;

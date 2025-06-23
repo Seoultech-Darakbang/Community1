@@ -14,10 +14,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import darak.community.controller.community.event.GifticonController;
 import darak.community.domain.Gifticon;
 import darak.community.domain.GifticonClaim;
-import darak.community.domain.GifticonStatus;
-import darak.community.domain.ClaimStatus;
 import darak.community.domain.member.Member;
 import darak.community.domain.member.MemberGrade;
 import darak.community.service.GifticonService;
@@ -93,7 +92,7 @@ class GifticonControllerTest {
                 createTestGifticon(2L, "맥도날드 빅맥세트", "MCDONALDS")
         );
         List<GifticonClaim> claims = Arrays.asList();
-        
+
         given(gifticonService.getActiveGifticons()).willReturn(gifticons);
         given(gifticonService.getMemberClaims(testMember)).willReturn(claims);
 
@@ -129,7 +128,7 @@ class GifticonControllerTest {
                 .member(testMember)
                 .gifticonCode("TEST1234567890AB")
                 .build();
-        
+
         given(gifticonService.claimGifticon(gifticonId, testMember)).willReturn(claim);
 
         // when & then
@@ -245,7 +244,7 @@ class GifticonControllerTest {
                 .startTime(LocalDateTime.now().minusDays(1))
                 .endTime(LocalDateTime.now().plusDays(30))
                 .build();
-        
+
         // 리플렉션을 사용하여 ID 설정 (테스트용)
         try {
             java.lang.reflect.Field idField = Gifticon.class.getDeclaredField("id");
@@ -254,7 +253,7 @@ class GifticonControllerTest {
         } catch (Exception e) {
             // 테스트에서는 무시
         }
-        
+
         return gifticon;
     }
 } 

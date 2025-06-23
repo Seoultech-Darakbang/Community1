@@ -1,4 +1,4 @@
-package darak.community.controller;
+package darak.community.controller.community.comment;
 
 import darak.community.domain.member.Member;
 import darak.community.service.CommentService;

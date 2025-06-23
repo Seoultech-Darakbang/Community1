@@ -1,4 +1,4 @@
-package darak.community.controller;
+package darak.community.controller.community.post;
 
 import darak.community.domain.Board;
 import darak.community.domain.BoardCategory;

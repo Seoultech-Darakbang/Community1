@@ -1,4 +1,4 @@
-package darak.community.controller;
+package darak.community.controller.community.event;
 
 import darak.community.domain.GifticonClaim;
 import darak.community.domain.member.Member;
@@ -65,7 +65,7 @@ public class GifticonController {
 
     @GetMapping("/my")
     public String myGifticons(@Login Member member, Model model) {
-        
+
         List<GifticonDto.ClaimResponse> myClaims =
                 GifticonDto.ClaimResponse.from(gifticonService.getMemberClaims(member));
 
