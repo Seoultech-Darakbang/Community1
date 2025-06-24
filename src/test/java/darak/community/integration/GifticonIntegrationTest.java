@@ -1,16 +1,26 @@
 package darak.community.integration;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+
+import darak.community.domain.gifticon.ClaimStatus;
 import darak.community.domain.gifticon.Gifticon;
 import darak.community.domain.gifticon.GifticonClaim;
 import darak.community.domain.gifticon.GifticonStatus;
-import darak.community.domain.gifticon.ClaimStatus;
 import darak.community.domain.member.Member;
 import darak.community.domain.member.MemberGrade;
 import darak.community.dto.GifticonDto;
 import darak.community.infra.repository.GifticonClaimRepository;
 import darak.community.infra.repository.GifticonRepository;
 import darak.community.infra.repository.MemberRepository;
-import darak.community.service.GifticonService;
+import darak.community.service.event.gifticon.GifticonService;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -19,16 +29,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import static org.assertj.core.api.Assertions.*;
 
 @SpringBootTest
 @ActiveProfiles("test")
