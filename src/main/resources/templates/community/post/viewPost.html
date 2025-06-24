@@ -345,12 +345,16 @@
                 document.querySelectorAll('.comment-like-button').forEach(button => {
                     button.addEventListener('click', function () {
                         const commentId = this.getAttribute('data-comment-id');
+                        const isLiked = this.classList.contains('text-red-500');
 
                         // 버튼 비활성화 (중복 클릭 방지)
                         this.disabled = true;
 
-                        fetch(`/api/comments/${commentId}/like`, {
-                            method: 'POST',
+                        const url = `/api/comments/${commentId}/like`;
+                        const method = isLiked ? 'DELETE' : 'POST';
+
+                        fetch(url, {
+                            method: method,
                             headers: {
                                 'Content-Type': 'application/json'
                             }
@@ -365,14 +369,14 @@
                                     }
 
                                     // 버튼 텍스트 및 스타일 업데이트
-                                    const isLiked = data.data.liked;
+                                    const newIsLiked = data.data.isLiked;
                                     const textSpan = this.querySelector('span:first-child');
                                     if (textSpan) {
-                                        textSpan.textContent = isLiked ? '좋아요 취소' : '좋아요';
+                                        textSpan.textContent = newIsLiked ? '좋아요 취소' : '좋아요';
                                     }
 
                                     // 버튼 색상 변경
-                                    if (isLiked) {
+                                    if (newIsLiked) {
                                         this.classList.remove('text-blue-500');
                                         this.classList.add('text-red-500');
                                     } else {

@@ -1,14 +1,13 @@
 package darak.community.service.comment;
 
-import darak.community.domain.heart.CommentHeart;
-import java.util.List;
+import darak.community.service.comment.response.CommentHeartServiceResponse;
 
 public interface CommentHeartService {
-    void save(Long commentId, Long memberId);
+    CommentHeartServiceResponse addLike(Long commentId, Long memberId);
 
-    void cancel(Long commentId, Long memberId);
+    CommentHeartServiceResponse removeLike(Long commentId, Long memberId);
 
-    List<CommentHeart> findByMemberId(Long memberId);
+    CommentHeartServiceResponse getLikeStatus(Long commentId, Long memberId);
 
     int heartCountInComment(Long commentId);
 

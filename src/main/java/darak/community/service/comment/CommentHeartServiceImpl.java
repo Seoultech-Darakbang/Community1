@@ -6,7 +6,7 @@ import darak.community.domain.member.Member;
 import darak.community.infra.repository.CommentHeartRepository;
 import darak.community.infra.repository.CommentRepository;
 import darak.community.infra.repository.MemberRepository;
-import java.util.List;
+import darak.community.service.comment.response.CommentHeartServiceResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,31 +22,34 @@ public class CommentHeartServiceImpl implements CommentHeartService {
 
     @Override
     @Transactional
-    public void save(Long commentId, Long memberId) {
-        if (commentHeartRepository.findByCommentIdAndMemberId(commentId, memberId).isPresent()) {
-            throw new IllegalStateException("이미 좋아요를 누른 댓글입니다.");
-        }
+    public CommentHeartServiceResponse addLike(Long commentId, Long memberId) {
+        Comment comment = findCommentBy(commentId);
+        Member member = findMemberBy(memberId);
 
-        Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 댓글입니다."));
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+        validateLikeNotExists(commentId, memberId);
 
         CommentHeart commentHeart = new CommentHeart(comment, member);
         commentHeartRepository.save(commentHeart);
+
+        int likeCount = heartCountInComment(commentId);
+        return new CommentHeartServiceResponse(true, likeCount);
     }
 
     @Override
     @Transactional
-    public void cancel(Long commentId, Long memberId) {
-        CommentHeart commentHeart = commentHeartRepository.findByCommentIdAndMemberId(commentId, memberId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 댓글에 좋아요를 누르지 않았습니다."));
+    public CommentHeartServiceResponse removeLike(Long commentId, Long memberId) {
+        CommentHeart commentHeart = findCommentHeartBy(commentId, memberId);
         commentHeartRepository.delete(commentHeart);
+
+        int likeCount = heartCountInComment(commentId);
+        return new CommentHeartServiceResponse(false, likeCount);
     }
 
     @Override
-    public List<CommentHeart> findByMemberId(Long memberId) {
-        return commentHeartRepository.findByMemberId(memberId);
+    public CommentHeartServiceResponse getLikeStatus(Long commentId, Long memberId) {
+        boolean isLiked = isLiked(commentId, memberId);
+        int likeCount = heartCountInComment(commentId);
+        return new CommentHeartServiceResponse(isLiked, likeCount);
     }
 
     @Override
@@ -57,5 +60,26 @@ public class CommentHeartServiceImpl implements CommentHeartService {
     @Override
     public boolean isLiked(Long commentId, Long memberId) {
         return commentHeartRepository.findByCommentIdAndMemberId(commentId, memberId).isPresent();
+    }
+
+    private void validateLikeNotExists(Long commentId, Long memberId) {
+        if (commentHeartRepository.findByCommentIdAndMemberId(commentId, memberId).isPresent()) {
+            throw new IllegalStateException("이미 좋아요를 누른 댓글입니다.");
+        }
+    }
+
+    private Comment findCommentBy(Long commentId) {
+        return commentRepository.findById(commentId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 댓글입니다."));
+    }
+
+    private Member findMemberBy(Long memberId) {
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+    }
+
+    private CommentHeart findCommentHeartBy(Long commentId, Long memberId) {
+        return commentHeartRepository.findByCommentIdAndMemberId(commentId, memberId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 댓글에 좋아요를 누르지 않았습니다."));
     }
 }
