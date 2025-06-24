@@ -1,6 +1,6 @@
 package darak.community.core.interceptor;
 
-import darak.community.core.session.SessionConst;
+import darak.community.core.session.constant.SessionConst;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -18,7 +18,7 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
         log.info("인증 체크 인터셉터 실행 {}", requestURI);
 
         HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute(SessionConst.LOGIN_MEMBER) == null) {
+        if (session == null || session.getAttribute(SessionConst.LOGIN_MEMBER_ID) == null) {
             response.sendRedirect("/login?redirectURL=" + requestURI);
             return false;
         }

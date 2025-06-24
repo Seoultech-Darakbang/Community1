@@ -1,7 +1,7 @@
 package darak.community.core.argumentresolver;
 
-import darak.community.core.session.SessionConst;
-import darak.community.domain.member.Member;
+import darak.community.core.session.constant.SessionConst;
+import darak.community.core.session.dto.LoginMember;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.core.MethodParameter;
@@ -15,9 +15,9 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
         boolean hasLoginAnnotation = parameter.hasParameterAnnotation(Login.class);
-        boolean hasMemberType = Member.class.isAssignableFrom(parameter.getParameterType());
+        boolean hasLoginMemberType = LoginMember.class.isAssignableFrom(parameter.getParameterType());
 
-        return hasLoginAnnotation && hasMemberType;
+        return hasLoginAnnotation && hasLoginMemberType;
     }
 
     @Override
@@ -28,7 +28,12 @@ public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolve
             return null;
         }
 
-        return session.getAttribute(SessionConst.LOGIN_MEMBER);
+        LoginMember loginMember = (LoginMember) session.getAttribute(SessionConst.LOGIN_MEMBER_ID);
+        if (loginMember == null || loginMember.getId() == null) {
+            return null;
+        }
+
+        return loginMember;
     }
 
     private HttpSession getSession(NativeWebRequest webRequest) {
