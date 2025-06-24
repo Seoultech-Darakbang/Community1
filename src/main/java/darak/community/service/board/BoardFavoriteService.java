@@ -1,17 +1,12 @@
 package darak.community.service.board;
 
-import darak.community.domain.board.Board;
-import darak.community.domain.board.BoardFavorite;
-import darak.community.domain.member.Member;
-import java.util.List;
+import darak.community.service.board.response.FavoriteServiceResponse;
 
 public interface BoardFavoriteService {
 
-    void addFavorite(Member member, Board board);
+    void addFavorite(Long memberId, Long boardId);
 
     void removeFavorite(Long memberId, Long boardId);
-
-    List<BoardFavorite> findByMemberId(Long memberId);
-
-    boolean isFavorite(Long memberId, Long boardId);
-} 
+    
+    FavoriteServiceResponse isFavorite(Long memberId, Long boardId);
+}

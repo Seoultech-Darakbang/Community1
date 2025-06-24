@@ -1,6 +1,8 @@
 package darak.community.infra.repository;
 
+import darak.community.domain.board.Board;
 import darak.community.domain.board.BoardFavorite;
+import darak.community.domain.member.Member;
 import jakarta.persistence.EntityManager;
 import java.util.List;
 import java.util.Optional;
@@ -50,4 +52,13 @@ public class BoardFavoriteRepository {
                 .getSingleResult()
                 .intValue();
     }
-} 
+
+    public boolean existsByMemberAndBoard(Member member, Board board) {
+        return em.createQuery("select bf from BoardFavorite bf "
+                        + "where bf.member = :member "
+                        + "and bf.board = :board", BoardFavorite.class)
+                .setParameter("member", member)
+                .setParameter("board", board)
+                .getSingleResult() != null;
+    }
+}

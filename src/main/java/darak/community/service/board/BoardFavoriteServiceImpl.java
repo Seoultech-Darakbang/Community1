@@ -4,7 +4,9 @@ import darak.community.domain.board.Board;
 import darak.community.domain.board.BoardFavorite;
 import darak.community.domain.member.Member;
 import darak.community.infra.repository.BoardFavoriteRepository;
-import java.util.List;
+import darak.community.infra.repository.BoardRepository;
+import darak.community.infra.repository.MemberRepository;
+import darak.community.service.board.response.FavoriteServiceResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,18 +17,19 @@ import org.springframework.transaction.annotation.Transactional;
 public class BoardFavoriteServiceImpl implements BoardFavoriteService {
 
     private final BoardFavoriteRepository boardFavoriteRepository;
+    private final MemberRepository memberRepository;
+    private final BoardRepository boardRepository;
 
     @Override
     @Transactional
-    public void addFavorite(Member member, Board board) {
-        if (isFavorite(member.getId(), board.getId())) {
-            throw new IllegalStateException("이미 즐겨찾기에 추가된 게시판입니다.");
-        }
+    public void addFavorite(Long memberId, Long boardId) {
+        Member member = findMemberBy(memberId);
+        Board board = findBoardBy(boardId);
 
-        BoardFavorite boardFavorite = new BoardFavorite(member, board);
+        validateFavoriteNotExists(member, board);
 
-        int currentCount = boardFavoriteRepository.countByMemberId(member.getId());
-        boardFavorite.setPriority(currentCount + 1);
+        BoardFavorite boardFavorite = BoardFavorite.of(member, board);
+        boardFavorite.setPriority(boardFavoriteRepository.countByMemberId(member.getId()) + 1);
 
         boardFavoriteRepository.save(boardFavorite);
     }
@@ -34,19 +37,34 @@ public class BoardFavoriteServiceImpl implements BoardFavoriteService {
     @Override
     @Transactional
     public void removeFavorite(Long memberId, Long boardId) {
-        BoardFavorite boardFavorite = boardFavoriteRepository.findByMemberIdAndBoardId(memberId, boardId)
-                .orElseThrow(() -> new IllegalArgumentException("즐겨찾기에 추가되지 않은 게시판입니다."));
-
+        BoardFavorite boardFavorite = findBoardFavoriteBy(memberId, boardId);
         boardFavoriteRepository.delete(boardFavorite);
     }
 
     @Override
-    public List<BoardFavorite> findByMemberId(Long memberId) {
-        return boardFavoriteRepository.findByMemberId(memberId);
+    public FavoriteServiceResponse isFavorite(Long memberId, Long boardId) {
+        boolean present = boardFavoriteRepository.findByMemberIdAndBoardId(memberId, boardId).isPresent();
+        return new FavoriteServiceResponse(present);
     }
 
-    @Override
-    public boolean isFavorite(Long memberId, Long boardId) {
-        return boardFavoriteRepository.findByMemberIdAndBoardId(memberId, boardId).isPresent();
+    private void validateFavoriteNotExists(Member member, Board board) {
+        if (boardFavoriteRepository.existsByMemberAndBoard(member, board)) {
+            throw new IllegalStateException("이미 즐겨찾기에 추가된 게시판입니다.");
+        }
     }
-} 
+
+    private Board findBoardBy(Long boardId) {
+        return boardRepository.findById(boardId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시판입니다"));
+    }
+
+    private Member findMemberBy(Long memberId) {
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+    }
+
+    private BoardFavorite findBoardFavoriteBy(Long memberId, Long boardId) {
+        return boardFavoriteRepository.findByMemberIdAndBoardId(memberId, boardId)
+                .orElseThrow(() -> new IllegalArgumentException("즐겨찾기에 추가되지 않은 게시판입니다."));
+    }
+}

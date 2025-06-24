@@ -37,9 +37,13 @@ public class BoardFavorite {
 
     private Integer priority;
 
-    public BoardFavorite(Member member, Board board) {
+    private BoardFavorite(Member member, Board board) {
         this.member = member;
         this.board = board;
+    }
+
+    public static BoardFavorite of(Member member, Board board) {
+        return new BoardFavorite(member, board);
     }
 
     public void setPriority(Integer priority) {

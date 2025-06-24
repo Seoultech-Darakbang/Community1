@@ -942,7 +942,7 @@ public class TestDataInit implements ApplicationRunner {
             try {
                 String boardName = boardNames[random.nextInt(boardNames.length)];
                 Board board = boardService.findByName(boardName);
-                boardFavoriteService.addFavorite(member, board);
+                boardFavoriteService.addFavorite(member.getId(), board.getId());
             } catch (Exception e) {
                 // 중복 즐겨찾기 등의 예외는 무시
             }
