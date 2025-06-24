@@ -1,13 +1,16 @@
 package darak.community.service.post;
 
 import darak.community.domain.heart.PostHeart;
+import darak.community.service.post.response.PostHeartServiceResponse;
 import java.util.List;
 
 public interface PostHeartService {
 
-    void save(Long postId, Long memberId);
+    PostHeartServiceResponse addLike(Long postId, Long memberId);
 
-    void cancel(Long postId, Long memberId);
+    PostHeartServiceResponse removeLike(Long postId, Long memberId);
+
+    PostHeartServiceResponse getLikeStatus(Long postId, Long memberId);
 
     List<PostHeart> findByMemberId(Long memberId);
 

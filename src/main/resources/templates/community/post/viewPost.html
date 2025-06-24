@@ -292,15 +292,14 @@
                         const postId = this.getAttribute('data-post-id');
                         const isLiked = this.getAttribute('data-liked') === 'true';
 
-                        const url = isLiked
-                            ? `/api/posts/${postId}/unlike`
-                            : `/api/posts/${postId}/like`;
+                        const url = `/api/posts/${postId}/like`;
+                        const method = isLiked ? 'DELETE' : 'POST';
 
                         // 버튼 비활성화 (중복 클릭 방지)
                         this.disabled = true;
 
                         fetch(url, {
-                            method: 'POST',
+                            method: method,
                             headers: {
                                 'Content-Type': 'application/json'
                             }
@@ -309,7 +308,7 @@
                             .then(data => {
                                 if (data.success) {
                                     // 버튼 상태 및 텍스트 업데이트
-                                    const newLikedState = data.data.liked;
+                                    const newLikedState = data.data.isLiked;
                                     const newLikeCount = data.data.likeCount;
 
                                     this.setAttribute('data-liked', newLikedState);
@@ -324,7 +323,7 @@
                                         likeCountSpan.textContent = newLikeCount;
                                     }
 
-                                    // 성공 메시지 표시 (선택사항)
+                                    // 성공 메시지 표시
                                     showToast(data.message, 'success');
                                 } else {
                                     showToast(data.message, 'error');

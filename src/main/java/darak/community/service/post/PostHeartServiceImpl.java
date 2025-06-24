@@ -6,6 +6,7 @@ import darak.community.domain.post.Post;
 import darak.community.infra.repository.MemberRepository;
 import darak.community.infra.repository.PostHeartRepository;
 import darak.community.infra.repository.PostRepository;
+import darak.community.service.post.response.PostHeartServiceResponse;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,26 +23,34 @@ public class PostHeartServiceImpl implements PostHeartService {
 
     @Override
     @Transactional
-    public void save(Long postId, Long memberId) {
-        if (postHeartRepository.findByPostIdAndMemberId(postId, memberId).isPresent()) {
-            throw new IllegalStateException("이미 좋아요를 누른 게시글입니다.");
-        }
+    public PostHeartServiceResponse addLike(Long postId, Long memberId) {
+        Post post = findPostBy(postId);
+        Member member = findMemberBy(memberId);
 
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글입니다."));
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+        validateLikeNotExists(postId, memberId);
 
         PostHeart postHeart = new PostHeart(post, member);
         postHeartRepository.save(postHeart);
+
+        int likeCount = heartCountInPost(postId);
+        return new PostHeartServiceResponse(true, likeCount);
     }
 
     @Override
     @Transactional
-    public void cancel(Long postId, Long memberId) {
-        PostHeart postHeart = postHeartRepository.findByPostIdAndMemberId(postId, memberId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 게시글에 좋아요를 누르지 않았습니다."));
+    public PostHeartServiceResponse removeLike(Long postId, Long memberId) {
+        PostHeart postHeart = findPostHeartBy(postId, memberId);
         postHeartRepository.delete(postHeart);
+
+        int likeCount = heartCountInPost(postId);
+        return new PostHeartServiceResponse(false, likeCount);
+    }
+
+    @Override
+    public PostHeartServiceResponse getLikeStatus(Long postId, Long memberId) {
+        boolean isLiked = isLiked(postId, memberId);
+        int likeCount = heartCountInPost(postId);
+        return new PostHeartServiceResponse(isLiked, likeCount);
     }
 
     @Override
@@ -57,5 +66,26 @@ public class PostHeartServiceImpl implements PostHeartService {
     @Override
     public boolean isLiked(Long postId, Long memberId) {
         return postHeartRepository.findByPostIdAndMemberId(postId, memberId).isPresent();
+    }
+
+    private void validateLikeNotExists(Long postId, Long memberId) {
+        if (postHeartRepository.findByPostIdAndMemberId(postId, memberId).isPresent()) {
+            throw new IllegalStateException("이미 좋아요를 누른 게시글입니다.");
+        }
+    }
+
+    private Post findPostBy(Long postId) {
+        return postRepository.findById(postId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글입니다."));
+    }
+
+    private Member findMemberBy(Long memberId) {
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+    }
+
+    private PostHeart findPostHeartBy(Long postId, Long memberId) {
+        return postHeartRepository.findByPostIdAndMemberId(postId, memberId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 게시글에 좋아요를 누르지 않았습니다."));
     }
 }
