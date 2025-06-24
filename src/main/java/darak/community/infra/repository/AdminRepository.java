@@ -1,4 +1,4 @@
-package darak.community.repository;
+package darak.community.infra.repository;
 
 import darak.community.domain.board.Board;
 import darak.community.domain.member.Member;

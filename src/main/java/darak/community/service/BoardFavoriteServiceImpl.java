@@ -3,7 +3,7 @@ package darak.community.service;
 import darak.community.domain.board.Board;
 import darak.community.domain.board.BoardFavorite;
 import darak.community.domain.member.Member;
-import darak.community.repository.BoardFavoriteRepository;
+import darak.community.infra.repository.BoardFavoriteRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

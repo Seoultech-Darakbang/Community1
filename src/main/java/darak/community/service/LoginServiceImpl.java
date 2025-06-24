@@ -1,8 +1,8 @@
 package darak.community.service;
 
+import darak.community.core.exception.PasswordFailedExceededException;
 import darak.community.domain.member.Member;
-import darak.community.exception.PasswordFailedExceededException;
-import darak.community.repository.MemberRepository;
+import darak.community.infra.repository.MemberRepository;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

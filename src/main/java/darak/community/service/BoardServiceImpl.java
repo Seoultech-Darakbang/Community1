@@ -2,8 +2,8 @@ package darak.community.service;
 
 import darak.community.domain.board.Board;
 import darak.community.domain.board.BoardCategory;
-import darak.community.repository.BoardCategoryRepository;
-import darak.community.repository.BoardRepository;
+import darak.community.infra.repository.BoardCategoryRepository;
+import darak.community.infra.repository.BoardRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

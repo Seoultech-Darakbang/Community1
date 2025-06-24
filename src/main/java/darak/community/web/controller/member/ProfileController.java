@@ -1,5 +1,7 @@
 package darak.community.web.controller.member;
 
+import darak.community.core.argumentresolver.Login;
+import darak.community.core.session.SessionConst;
 import darak.community.domain.member.Member;
 import darak.community.dto.MyCommentDto;
 import darak.community.dto.MyPostDto;
@@ -7,8 +9,6 @@ import darak.community.dto.ProfileDto;
 import darak.community.service.BoardCategoryService;
 import darak.community.service.MemberService;
 import darak.community.service.ProfileService;
-import darak.community.web.argumentresolver.Login;
-import darak.community.web.session.SessionConst;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

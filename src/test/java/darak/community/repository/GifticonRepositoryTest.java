@@ -2,6 +2,7 @@ package darak.community.repository;
 
 import darak.community.domain.gifticon.Gifticon;
 import darak.community.domain.gifticon.GifticonStatus;
+import darak.community.infra.repository.GifticonRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,6 +1,6 @@
 package darak.community.domain.member;
 
-import darak.community.exception.PasswordFailedExceededException;
+import darak.community.core.exception.PasswordFailedExceededException;
 import jakarta.persistence.Embeddable;
 import java.time.LocalDateTime;
 import lombok.Builder;

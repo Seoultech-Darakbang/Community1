@@ -1,9 +1,9 @@
 package darak.community.web.exceptionHandler;
 
-import darak.community.exception.DuplicateMemberException;
-import darak.community.exception.LoginFailedException;
-import darak.community.exception.PasswordFailedExceededException;
-import darak.community.exception.PasswordMismatchException;
+import darak.community.core.exception.DuplicateMemberException;
+import darak.community.core.exception.LoginFailedException;
+import darak.community.core.exception.PasswordFailedExceededException;
+import darak.community.core.exception.PasswordMismatchException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ui.Model;

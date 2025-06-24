@@ -1,6 +1,6 @@
-package darak.community.web.interceptor;
+package darak.community.core.interceptor;
 
-import darak.community.web.session.SessionConst;
+import darak.community.core.session.SessionConst;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;

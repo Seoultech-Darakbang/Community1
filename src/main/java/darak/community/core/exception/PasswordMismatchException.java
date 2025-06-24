@@ -1,4 +1,4 @@
-package darak.community.exception;
+package darak.community.core.exception;
 
 public class PasswordMismatchException extends RuntimeException {
     public PasswordMismatchException(String message) {

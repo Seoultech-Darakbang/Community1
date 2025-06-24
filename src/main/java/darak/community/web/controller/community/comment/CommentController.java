@@ -1,8 +1,8 @@
 package darak.community.web.controller.community.comment;
 
+import darak.community.core.argumentresolver.Login;
 import darak.community.domain.member.Member;
 import darak.community.service.CommentService;
-import darak.community.web.argumentresolver.Login;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -1,4 +1,4 @@
-package darak.community.repository;
+package darak.community.infra.repository;
 
 import darak.community.domain.log.DeleteLog;
 import jakarta.persistence.EntityManager;

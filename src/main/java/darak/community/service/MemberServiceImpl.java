@@ -1,9 +1,9 @@
 package darak.community.service;
 
+import darak.community.core.exception.PasswordFailedExceededException;
 import darak.community.domain.member.Member;
 import darak.community.dto.MemberUpdateDTO;
-import darak.community.exception.PasswordFailedExceededException;
-import darak.community.repository.MemberRepository;
+import darak.community.infra.repository.MemberRepository;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.NoSuchElementException;

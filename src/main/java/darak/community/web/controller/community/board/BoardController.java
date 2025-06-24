@@ -1,5 +1,6 @@
 package darak.community.web.controller.community.board;
 
+import darak.community.core.argumentresolver.Login;
 import darak.community.domain.board.Board;
 import darak.community.domain.board.BoardCategory;
 import darak.community.domain.member.Member;
@@ -7,7 +8,6 @@ import darak.community.domain.post.Post;
 import darak.community.service.BoardCategoryService;
 import darak.community.service.BoardService;
 import darak.community.service.PostService;
-import darak.community.web.argumentresolver.Login;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;

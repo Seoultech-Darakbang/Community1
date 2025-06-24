@@ -4,6 +4,7 @@ import darak.community.domain.gifticon.Gifticon;
 import darak.community.domain.gifticon.GifticonClaim;
 import darak.community.domain.member.Member;
 import darak.community.domain.member.MemberGrade;
+import darak.community.infra.repository.GifticonClaimRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

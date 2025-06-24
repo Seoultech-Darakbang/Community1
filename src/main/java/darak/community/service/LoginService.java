@@ -1,7 +1,7 @@
 package darak.community.service;
 
+import darak.community.core.exception.PasswordFailedExceededException;
 import darak.community.domain.member.Member;
-import darak.community.exception.PasswordFailedExceededException;
 
 public interface LoginService {
 

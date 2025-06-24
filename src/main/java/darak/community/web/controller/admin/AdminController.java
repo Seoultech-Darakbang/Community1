@@ -1,5 +1,6 @@
 package darak.community.web.controller.admin;
 
+import darak.community.core.argumentresolver.Login;
 import darak.community.domain.board.Board;
 import darak.community.domain.board.BoardCategory;
 import darak.community.domain.member.Member;
@@ -7,7 +8,6 @@ import darak.community.domain.member.MemberGrade;
 import darak.community.service.AdminService;
 import darak.community.service.BoardCategoryService;
 import darak.community.service.BoardService;
-import darak.community.web.argumentresolver.Login;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

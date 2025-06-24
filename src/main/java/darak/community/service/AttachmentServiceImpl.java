@@ -1,7 +1,7 @@
 package darak.community.service;
 
 import darak.community.domain.post.Attachment;
-import darak.community.repository.AttachmentRepository;
+import darak.community.infra.repository.AttachmentRepository;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;

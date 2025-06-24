@@ -1,11 +1,11 @@
 package darak.community.web.api.board;
 
+import darak.community.core.argumentresolver.Login;
 import darak.community.domain.board.Board;
 import darak.community.domain.member.Member;
 import darak.community.dto.ApiResponse;
 import darak.community.service.BoardFavoriteService;
 import darak.community.service.BoardService;
-import darak.community.web.argumentresolver.Login;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;

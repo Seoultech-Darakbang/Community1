@@ -1,5 +1,6 @@
 package darak.community.web.controller.community.post;
 
+import darak.community.core.argumentresolver.Login;
 import darak.community.domain.board.Board;
 import darak.community.domain.board.BoardCategory;
 import darak.community.domain.comment.Comment;
@@ -13,7 +14,6 @@ import darak.community.service.CommentHeartService;
 import darak.community.service.CommentService;
 import darak.community.service.PostHeartService;
 import darak.community.service.PostService;
-import darak.community.web.argumentresolver.Login;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

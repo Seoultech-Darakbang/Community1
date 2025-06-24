@@ -1,4 +1,4 @@
-package darak.community.exception;
+package darak.community.core.exception;
 
 public class PasswordFailedExceededException extends Exception {
     public PasswordFailedExceededException() {

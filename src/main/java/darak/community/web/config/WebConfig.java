@@ -1,7 +1,7 @@
 package darak.community.web.config;
 
-import darak.community.web.argumentresolver.LoginMemberArgumentResolver;
-import darak.community.web.interceptor.LoginCheckInterceptor;
+import darak.community.core.argumentresolver.LoginMemberArgumentResolver;
+import darak.community.core.interceptor.LoginCheckInterceptor;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import org.springframework.beans.factory.annotation.Value;

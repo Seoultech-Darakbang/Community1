@@ -2,7 +2,7 @@ package darak.community.service;
 
 import darak.community.domain.member.Member;
 import darak.community.domain.member.MemberGrade;
-import darak.community.repository.MemberRepository;
+import darak.community.infra.repository.MemberRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

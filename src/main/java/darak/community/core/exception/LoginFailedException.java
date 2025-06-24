@@ -1,4 +1,4 @@
-package darak.community.exception;
+package darak.community.core.exception;
 
 public class LoginFailedException extends RuntimeException {
     public LoginFailedException(String message) {

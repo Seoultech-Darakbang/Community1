@@ -1,7 +1,7 @@
 package darak.community.domain.member;
 
+import darak.community.core.exception.PasswordFailedExceededException;
 import darak.community.domain.BaseEntity;
-import darak.community.exception.PasswordFailedExceededException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;

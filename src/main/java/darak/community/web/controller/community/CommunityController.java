@@ -1,5 +1,6 @@
 package darak.community.web.controller.community;
 
+import darak.community.core.argumentresolver.Login;
 import darak.community.domain.board.Board;
 import darak.community.domain.board.BoardCategory;
 import darak.community.domain.member.Member;
@@ -11,7 +12,6 @@ import darak.community.service.BoardFavoriteService;
 import darak.community.service.BoardService;
 import darak.community.service.GifticonService;
 import darak.community.service.PostService;
-import darak.community.web.argumentresolver.Login;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

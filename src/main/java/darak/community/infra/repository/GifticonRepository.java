@@ -1,4 +1,4 @@
-package darak.community.repository;
+package darak.community.infra.repository;
 
 import darak.community.domain.gifticon.Gifticon;
 import darak.community.domain.gifticon.GifticonStatus;
