@@ -6,7 +6,7 @@ import darak.community.domain.member.Member;
 import darak.community.dto.MemberCreateForm;
 import darak.community.dto.PasswordForm;
 import darak.community.dto.ResponseDto;
-import darak.community.service.MemberService;
+import darak.community.service.member.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;

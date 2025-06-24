@@ -4,7 +4,7 @@ import darak.community.core.argumentresolver.Login;
 import darak.community.domain.gifticon.GifticonClaim;
 import darak.community.domain.member.Member;
 import darak.community.dto.GifticonDto;
-import darak.community.service.GifticonService;
+import darak.community.service.event.gifticon.GifticonService;
 import jakarta.servlet.http.HttpSession;
 import java.util.List;
 import lombok.RequiredArgsConstructor;

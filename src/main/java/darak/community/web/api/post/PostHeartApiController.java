@@ -3,7 +3,7 @@ package darak.community.web.api.post;
 import darak.community.core.argumentresolver.Login;
 import darak.community.domain.member.Member;
 import darak.community.dto.ApiResponse;
-import darak.community.service.PostHeartService;
+import darak.community.service.post.PostHeartService;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;

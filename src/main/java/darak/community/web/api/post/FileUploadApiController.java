@@ -1,7 +1,7 @@
 package darak.community.web.api.post;
 
 import darak.community.dto.ApiResponse;
-import darak.community.service.FileUploadService;
+import darak.community.service.post.FileUploadService;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;

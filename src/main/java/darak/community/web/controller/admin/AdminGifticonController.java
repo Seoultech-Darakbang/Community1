@@ -4,7 +4,7 @@ import darak.community.core.argumentresolver.Login;
 import darak.community.domain.member.Member;
 import darak.community.domain.member.MemberGrade;
 import darak.community.dto.GifticonDto;
-import darak.community.service.GifticonService;
+import darak.community.service.event.gifticon.GifticonService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;

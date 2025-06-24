@@ -16,12 +16,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import darak.community.core.argumentresolver.LoginMemberArgumentResolver;
 import darak.community.core.interceptor.LoginCheckInterceptor;
-import darak.community.core.session.SessionConst;
+import darak.community.core.session.constant.SessionConst;
 import darak.community.domain.gifticon.Gifticon;
 import darak.community.domain.gifticon.GifticonClaim;
 import darak.community.domain.member.Member;
 import darak.community.domain.member.MemberGrade;
-import darak.community.service.GifticonService;
+import darak.community.service.event.gifticon.GifticonService;
 import darak.community.web.controller.community.event.GifticonController;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -72,7 +72,7 @@ class GifticonControllerTest {
     void setUp() throws Exception {
         testMember = createTestMember();
         session = new MockHttpSession();
-        session.setAttribute(SessionConst.LOGIN_MEMBER, testMember);
+        session.setAttribute(SessionConst.LOGIN_MEMBER_ID, testMember);
 
         // LoginCheckInterceptor Mock 설정 - 기본적으로 통과
         given(loginCheckInterceptor.preHandle(any(), any(), any())).willReturn(true);

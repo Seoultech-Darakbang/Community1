@@ -1,9 +1,9 @@
 package darak.community.web.api.comment;
 
 import darak.community.core.argumentresolver.Login;
-import darak.community.domain.member.Member;
+import darak.community.core.session.dto.LoginMember;
 import darak.community.dto.ApiResponse;
-import darak.community.service.CommentHeartService;
+import darak.community.service.comment.CommentHeartService;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +22,7 @@ public class CommentHeartApiController {
     private final CommentHeartService commentHeartService;
 
     @PostMapping("/{commentId}/like")
-    public ApiResponse<LikeResponse> toggleCommentLike(@Login Member member, @PathVariable Long commentId) {
+    public ApiResponse<LikeResponse> toggleCommentLike(@Login LoginMember loginMember, @PathVariable Long commentId) {
         boolean isCurrentlyLiked = commentHeartService.isLiked(commentId, member.getId());
 
         if (isCurrentlyLiked) {

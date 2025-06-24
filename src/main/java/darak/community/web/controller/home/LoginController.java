@@ -2,10 +2,10 @@ package darak.community.web.controller.home;
 
 import darak.community.core.argumentresolver.Login;
 import darak.community.core.exception.PasswordFailedExceededException;
-import darak.community.core.session.SessionConst;
+import darak.community.core.session.constant.SessionConst;
 import darak.community.domain.member.Member;
 import darak.community.dto.LoginForm;
-import darak.community.service.LoginService;
+import darak.community.service.login.LoginService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -51,7 +51,7 @@ public class LoginController {
         }
 
         HttpSession session = request.getSession();
-        session.setAttribute(SessionConst.LOGIN_MEMBER, loginMember);
+        session.setAttribute(SessionConst.LOGIN_MEMBER_ID, loginMember);
 
         if (loginMember.isPasswordExpired()) {
             return "redirect:/members/expired-password?redirectURL=" + redirectURL;
