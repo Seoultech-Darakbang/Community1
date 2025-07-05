@@ -2,6 +2,7 @@ package darak.community.service.member;
 
 import darak.community.core.exception.PasswordFailedExceededException;
 import darak.community.domain.member.Member;
+import darak.community.domain.member.MemberGrade;
 import darak.community.dto.MemberUpdateDTO;
 import java.time.LocalDate;
 import java.util.List;
@@ -24,4 +25,6 @@ public interface MemberService {
     List<String> findMemberNames(LocalDate birthDay, String phoneNumber);
 
     void changePassword(Long id, String oldPassword, String newPassword) throws PasswordFailedExceededException;
+
+    boolean isMemberGradeOrHigher(Long memberId, MemberGrade value);
 }

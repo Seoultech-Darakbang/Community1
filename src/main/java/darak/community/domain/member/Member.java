@@ -129,4 +129,8 @@ public class Member extends BaseEntity {
         return password.isPasswordExpired();
     }
 
+    public boolean isAtLeastThan(MemberGrade target) {
+        return this.memberGrade.isAtLeast(target);
+    }
+
 }
