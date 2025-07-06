@@ -1,8 +1,8 @@
 package darak.community.core.interceptor;
 
-import darak.community.core.auth.Auth;
+import darak.community.core.auth.ServiceAuth;
 import darak.community.core.session.constant.SessionConst;
-import darak.community.service.member.MemberService;
+import darak.community.core.session.dto.LoginMember;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -16,9 +16,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 @Slf4j
 @RequiredArgsConstructor
 @Component
-public class AuthCheckInterceptor implements HandlerInterceptor {
-
-    private final MemberService memberService;
+public class WebAuthCheckInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
@@ -31,34 +29,34 @@ public class AuthCheckInterceptor implements HandlerInterceptor {
             return false;
         }
 
-        Long memberId = (Long) session.getAttribute(SessionConst.LOGIN_MEMBER_ID);
-        if (memberId == null) {
-            log.info("AuthCheck 시도: memberID is Empty");
+        LoginMember loginMember = (LoginMember) session.getAttribute(SessionConst.LOGIN_MEMBER);
+        if (loginMember == null) {
+            log.info("AuthCheck 시도: session is Empty");
             response.sendRedirect("/login?redirectURL=" + request.getRequestURI());
             return false;
         }
 
         HandlerMethod handlerMethod = (HandlerMethod) handler;
-        Auth auth = getAuthAnnotation(handlerMethod);
+        ServiceAuth serviceAuth = getAuthAnnotation(handlerMethod);
 
-        if (auth == null || memberHasPermission(memberId, auth)) {
+        if (serviceAuth == null || memberHasPermission(loginMember, serviceAuth)) {
             return true;
         }
 
-        response.sendError(HttpStatus.FORBIDDEN.value(), auth.message());
+        response.sendError(HttpStatus.FORBIDDEN.value(), serviceAuth.message());
         return false;
     }
 
-    private boolean memberHasPermission(Long memberId, Auth auth) {
-        return memberService.isMemberGradeOrHigher(memberId, auth.value());
+    private boolean memberHasPermission(LoginMember loginMember, ServiceAuth serviceAuth) {
+        return loginMember.getMemberGrade().isAtLeastThan(serviceAuth.value());
     }
 
-    private Auth getAuthAnnotation(HandlerMethod handlerMethod) {
-        Auth methodAuth = handlerMethod.getMethodAnnotation(Auth.class);
-        if (methodAuth != null) {
-            return methodAuth;
+    private ServiceAuth getAuthAnnotation(HandlerMethod handlerMethod) {
+        ServiceAuth methodServiceAuth = handlerMethod.getMethodAnnotation(ServiceAuth.class);
+        if (methodServiceAuth != null) {
+            return methodServiceAuth;
         }
 
-        return handlerMethod.getBeanType().getAnnotation(Auth.class);
+        return handlerMethod.getBeanType().getAnnotation(ServiceAuth.class);
     }
 }
