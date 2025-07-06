@@ -1,8 +1,9 @@
 package darak.community.web.config;
 
 import darak.community.core.argumentresolver.LoginMemberArgumentResolver;
-import darak.community.core.interceptor.AuthCheckInterceptor;
 import darak.community.core.interceptor.LoginCheckInterceptor;
+import darak.community.core.interceptor.UserContextInterceptor;
+import darak.community.core.interceptor.WebAuthCheckInterceptor;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +22,8 @@ public class WebConfig implements WebMvcConfigurer {
     @Value("${app.upload.dir}")
     private String uploadDir;
 
-    private final AuthCheckInterceptor authCheckInterceptor;
+    private final WebAuthCheckInterceptor webAuthCheckInterceptor;
+    private final UserContextInterceptor userContextInterceptor;
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
@@ -30,6 +32,7 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
+
         registry.addInterceptor(new LoginCheckInterceptor())
                 .order(1)
                 .addPathPatterns("/**")
@@ -38,7 +41,15 @@ public class WebConfig implements WebMvcConfigurer {
                         "/uploads/**", "/api/uploads/**", "/error",
                         "/community/gifticons/*/claim", "/community/gifticons/use");
 
-        registry.addInterceptor(authCheckInterceptor)
+        registry.addInterceptor(userContextInterceptor)
+                .order(2)
+                .addPathPatterns("/**")
+                .excludePathPatterns("/", "/login/home", "/login", "/logout", "/members/new",
+                        "/members/new/confirmLoginId", "/css/**", "/js/**", "/img/**",
+                        "/uploads/**", "/api/uploads/**", "/error",
+                        "/community/gifticons/*/claim", "/community/gifticons/use");
+
+        registry.addInterceptor(webAuthCheckInterceptor)
                 .order(2)
                 .addPathPatterns("/**")
                 .excludePathPatterns("/", "/login/**", "/logout", "/members/**",
