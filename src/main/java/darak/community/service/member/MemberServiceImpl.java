@@ -2,7 +2,6 @@ package darak.community.service.member;
 
 import darak.community.core.exception.PasswordFailedExceededException;
 import darak.community.domain.member.Member;
-import darak.community.domain.member.MemberGrade;
 import darak.community.dto.MemberUpdateDTO;
 import darak.community.infra.repository.MemberRepository;
 import java.time.LocalDate;
@@ -87,12 +86,5 @@ public class MemberServiceImpl implements MemberService {
         Member findMember = memberRepository.findById(id)
                 .orElseThrow(() -> new IllegalStateException("존재하지 않는 회원 비밀번호 변경 시도"));
         findMember.changePassword(newPassword, oldPassword);
-    }
-
-    @Override
-    public boolean isMemberGradeOrHigher(Long memberId, MemberGrade target) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
-        return member.isAtLeastThan(target);
     }
 }

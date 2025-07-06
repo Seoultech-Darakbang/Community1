@@ -9,7 +9,7 @@ public enum MemberGrade {
         this.precedence = precedence;
     }
 
-    public boolean isAtLeast(MemberGrade other) {
+    public boolean isAtLeastThan(MemberGrade other) {
         return this.precedence >= other.precedence;
     }
 }

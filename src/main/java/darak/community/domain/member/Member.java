@@ -130,7 +130,7 @@ public class Member extends BaseEntity {
     }
 
     public boolean isAtLeastThan(MemberGrade target) {
-        return this.memberGrade.isAtLeast(target);
+        return this.memberGrade.isAtLeastThan(target);
     }
 
 }
