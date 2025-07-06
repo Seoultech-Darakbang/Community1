@@ -170,7 +170,7 @@ public class ProfileController {
             profileService.updateProfile(member.getId(), email, phone);
 
             Member updatedMember = memberService.findById(member.getId());
-            session.setAttribute(SessionConst.LOGIN_MEMBER_ID, updatedMember);
+            session.setAttribute(SessionConst.LOGIN_MEMBER, updatedMember);
 
             redirectAttributes.addFlashAttribute("message", "프로필이 성공적으로 수정되었습니다.");
         } catch (Exception e) {

@@ -51,7 +51,7 @@ public class LoginController {
         }
 
         HttpSession session = request.getSession();
-        session.setAttribute(SessionConst.LOGIN_MEMBER_ID, loginMember);
+        session.setAttribute(SessionConst.LOGIN_MEMBER, loginMember);
 
         if (loginMember.isPasswordExpired()) {
             return "redirect:/members/expired-password?redirectURL=" + redirectURL;

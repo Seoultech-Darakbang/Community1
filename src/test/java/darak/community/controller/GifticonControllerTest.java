@@ -72,7 +72,7 @@ class GifticonControllerTest {
     void setUp() throws Exception {
         testMember = createTestMember();
         session = new MockHttpSession();
-        session.setAttribute(SessionConst.LOGIN_MEMBER_ID, testMember);
+        session.setAttribute(SessionConst.LOGIN_MEMBER, testMember);
 
         // LoginCheckInterceptor Mock 설정 - 기본적으로 통과
         given(loginCheckInterceptor.preHandle(any(), any(), any())).willReturn(true);
