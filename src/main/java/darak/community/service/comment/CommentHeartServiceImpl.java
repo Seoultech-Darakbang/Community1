@@ -6,7 +6,7 @@ import darak.community.domain.member.Member;
 import darak.community.infra.repository.CommentHeartRepository;
 import darak.community.infra.repository.CommentRepository;
 import darak.community.infra.repository.MemberRepository;
-import darak.community.service.comment.response.CommentHeartServiceResponse;
+import darak.community.service.comment.response.MyCommentHeartResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,7 +22,7 @@ public class CommentHeartServiceImpl implements CommentHeartService {
 
     @Override
     @Transactional
-    public CommentHeartServiceResponse addLike(Long commentId, Long memberId) {
+    public MyCommentHeartResponse addLike(Long commentId, Long memberId) {
         Comment comment = findCommentBy(commentId);
         Member member = findMemberBy(memberId);
 
@@ -32,24 +32,24 @@ public class CommentHeartServiceImpl implements CommentHeartService {
         commentHeartRepository.save(commentHeart);
 
         int likeCount = heartCountInComment(commentId);
-        return new CommentHeartServiceResponse(true, likeCount);
+        return new MyCommentHeartResponse(true, likeCount);
     }
 
     @Override
     @Transactional
-    public CommentHeartServiceResponse removeLike(Long commentId, Long memberId) {
+    public MyCommentHeartResponse removeLike(Long commentId, Long memberId) {
         CommentHeart commentHeart = findCommentHeartBy(commentId, memberId);
         commentHeartRepository.delete(commentHeart);
 
         int likeCount = heartCountInComment(commentId);
-        return new CommentHeartServiceResponse(false, likeCount);
+        return new MyCommentHeartResponse(false, likeCount);
     }
 
     @Override
-    public CommentHeartServiceResponse getLikeStatus(Long commentId, Long memberId) {
+    public MyCommentHeartResponse getLikeStatus(Long commentId, Long memberId) {
         boolean isLiked = isLiked(commentId, memberId);
         int likeCount = heartCountInComment(commentId);
-        return new CommentHeartServiceResponse(isLiked, likeCount);
+        return new MyCommentHeartResponse(isLiked, likeCount);
     }
 
     @Override

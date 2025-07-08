@@ -31,7 +31,17 @@ public class CommentRepository {
                 .getResultList();
     }
 
-    public List<Comment> findParentCommentsByPostId(Long postId) {
+    public List<Comment> findByPostId(Long postId, Pageable pageable) {
+        return em.createQuery(
+                        "select c from Comment c join fetch c.member where c.post.id = :postId order by c.createdDate",
+                        Comment.class)
+                .setParameter("postId", postId)
+                .setFirstResult((int) pageable.getOffset())
+                .setMaxResults(pageable.getPageSize())
+                .getResultList();
+    }
+
+    public List<Comment> findParentCommentsByPostIdPaged(Long postId) {
         return em.createQuery(
                         "select c from Comment c join fetch c.member where c.post.id = :postId and c.parent is null order by c.createdDate",
                         Comment.class)
@@ -39,7 +49,7 @@ public class CommentRepository {
                 .getResultList();
     }
 
-    public Page<Comment> findParentCommentsByPostId(Long postId, Pageable pageable) {
+    public Page<Comment> findParentCommentsByPostIdPaged(Long postId, Pageable pageable) {
         Long totalCount = em.createQuery(
                         "select count(c) from Comment c where c.post.id = :postId and c.parent is null", Long.class)
                 .setParameter("postId", postId)
@@ -200,5 +210,17 @@ public class CommentRepository {
         Long count = countJpqlQuery.getSingleResult();
 
         return new PageImpl<>(comments, pageable, count);
+    }
+
+    public List<Comment> findChildCommentsByParentIds(List<Long> parentCommentIds) {
+        String jpql = """
+                select c from Comment c
+                join fetch c.member
+                where c.parent.id in :parentCommentIds
+                """;
+
+        return em.createQuery(jpql, Comment.class)
+                .setParameter("parentCommentIds", parentCommentIds)
+                .getResultList();
     }
 }

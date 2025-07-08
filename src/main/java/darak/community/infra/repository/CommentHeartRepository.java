@@ -31,6 +31,14 @@ public class CommentHeartRepository {
                 .getResultList();
     }
 
+    public List<CommentHeart> findByMemberIdFetchComments(Long memberId) {
+        return em.createQuery(
+                        "select ch from CommentHeart ch join fetch ch.comment c where ch.member.id = :memberId",
+                        CommentHeart.class)
+                .setParameter("memberId", memberId)
+                .getResultList();
+    }
+
     public Optional<CommentHeart> findByCommentIdAndMemberId(Long commentId, Long memberId) {
         List<CommentHeart> result = em.createQuery(
                         "select ch from CommentHeart ch where ch.comment.id = :commentId and ch.member.id = :memberId",

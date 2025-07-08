@@ -1,30 +1,22 @@
 package darak.community.service.comment;
 
-import darak.community.domain.comment.Comment;
-import darak.community.domain.member.Member;
-import java.util.List;
-import java.util.Map;
+import darak.community.service.comment.request.CommentCreateServiceRequest;
+import darak.community.service.comment.request.ReplyCreateServiceRequest;
+import darak.community.service.comment.response.CommentResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface CommentService {
-    void save(Comment comment);
 
-    void saveFromPost(Member member, Long postId, String content, boolean anonymous);
+    void createFromPost(CommentCreateServiceRequest request);
 
-    void saveReplyFromPost(Member member, Long postId, Long parentCommentId, String content, boolean anonymous);
+    void createReplyFromPost(ReplyCreateServiceRequest request);
 
-    void delete(Long commentId);
+    void deleteCommentBy(Long commentId, Long memberId);
 
-    void deleteWithPermission(Long commentId, Member member);
+    Page<CommentResponse> findCommentsWithReplyBy(Long memberId, Long postId, Pageable pageable);
 
-    List<Comment> findByPostId(Long postId);
+    Page<CommentResponse> findCommentsBy(Long memberId, Pageable pageable);
 
-    List<Comment> findByMemberId(Long memberId);
-
-    Map<Comment, List<Comment>> findCommentsWithReplies(Long postId);
-
-    Map<Comment, List<Comment>> findCommentsWithReplies(Long postId, Pageable pageable);
-
-    Page<Comment> findParentCommentsByPostId(Long postId, Pageable pageable);
+    Page<CommentResponse> findHeartCommentsBy(Long memberId, Pageable pageable);
 }
