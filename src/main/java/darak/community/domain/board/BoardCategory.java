@@ -4,10 +4,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import java.util.ArrayList;
-import java.util.List;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -24,13 +20,17 @@ public class BoardCategory implements Comparable<BoardCategory> {
 
     private Integer priority;
 
-    @OneToMany(mappedBy = "boardCategory")
-    private List<Board> boards = new ArrayList<>();
+//    @OneToMany(mappedBy = "boardCategory")
+//    private List<Board> boards = new ArrayList<>();
+    // BoardCateegory를 별도의 Aggregate로 분리함.
 
-    @Builder
-    public BoardCategory(String name, Integer priority) {
+    private BoardCategory(String name, Integer priority) {
         this.name = name;
         this.priority = priority;
+    }
+
+    public static BoardCategory create(String name, Integer priority) {
+        return new BoardCategory(name, priority != null ? priority : 999);
     }
 
     @Override
@@ -38,14 +38,6 @@ public class BoardCategory implements Comparable<BoardCategory> {
         return this.priority - o.priority;
     }
 
-    public void addBoard(Board board) {
-        boards.add(board);
-        board.setBoardCategory(this);
-    }
-
-    public Long getFirstBoardId() {
-        return boards.getFirst().getId();
-    }
 
     public void updateCategory(String name, Integer priority) {
         this.name = name;

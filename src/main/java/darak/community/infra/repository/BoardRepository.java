@@ -24,6 +24,13 @@ public class BoardRepository {
         return Optional.ofNullable(board);
     }
 
+    public Optional<Board> findByIdFetchCategory(Long id) {
+        return Optional.ofNullable(
+                em.createQuery("select b from Board b join fetch b.boardCategory where b.id = :id", Board.class)
+                        .setParameter("id", id)
+                        .getSingleResult());
+    }
+
     public Optional<Board> findByName(String name) {
         return em.createQuery("select b from Board b where b.name = :name", Board.class)
                 .setParameter("name", name)
@@ -61,15 +68,7 @@ public class BoardRepository {
 
         return new PageImpl<>(boards, pageable, count);
     }
-
-    public Optional<Board> findByIdWithCategoryAndBoards(Long boardId) {
-        return Optional.ofNullable(em.createQuery("select distinct b from Board b "
-                        + "join fetch b.boardCategory bc "
-                        + "join fetch bc.boards bcc "
-                        + "where b.id = :boardId", Board.class)
-                .setParameter("boardId", boardId)
-                .getSingleResult());
-    }
+    
 
     public Optional<Board> findTopPriorityBoardByCategory(Long categoryId) {
         List<Board> boards = em.createQuery(

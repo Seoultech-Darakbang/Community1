@@ -1,28 +1,18 @@
 package darak.community.service.board;
 
-import darak.community.domain.board.Board;
+import darak.community.service.board.request.BoardCreateServiceRequest;
+import darak.community.service.board.response.BoardResponse;
 import java.util.List;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
 public interface BoardService {
-    void save(Board board);
 
-    Board findById(Long boardId);
+    void createBoard(BoardCreateServiceRequest request);
 
-    Board findByName(String name);
+    BoardResponse findBoardBy(Long boardId);
 
-    List<Board> findAll();
+    List<BoardResponse> findBoardsBy(Long categoryId);
 
-    List<Board> findByBoardCategoryId(Long categoryId);
+    List<BoardResponse> findOrderedBoardsBy(Long categoryId);
 
-    List<Board> findBoardsByCategory(String categoryName);
-
-    Page<Board> findBoardsByCategoryPaged(String categoryName, Pageable pageable);
-
-    List<Board> findBoardsByCategoryId(Long categoryId);
-
-    Board findBoardAndCategoryWithBoardId(Long boardId);
-
-    Board findTopPriorityBoardByCategory(Long categoryId);
+    BoardResponse findTopPriorityBoardBy(Long categoryId);
 }
