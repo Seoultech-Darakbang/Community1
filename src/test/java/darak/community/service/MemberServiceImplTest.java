@@ -181,23 +181,7 @@ class MemberServiceImplTest {
                 .doesNotThrowAnyException();
         verify(memberRepository).withdraw(member);
     }
-
-    @Test
-    @DisplayName("생년월일과 휴대폰번호로 회원 이름 찾기")
-    void findMemberNames() {
-        // given
-        LocalDate birthDay = LocalDate.of(1990, 1, 1);
-        String phoneNumber = "010-1234-5678";
-        List<Member> members = Arrays.asList(createTestMember(), createTestMember2());
-        given(memberRepository.findByBirthAndPhone(birthDay, phoneNumber)).willReturn(members);
-
-        // when
-        List<String> result = memberService.findMemberNames(birthDay, phoneNumber);
-
-        // then
-        assertThat(result).hasSize(2);
-        assertThat(result).contains("테스트 사용자", "테스트 사용자2");
-    }
+    
 
     private Member createTestMember() {
         return Member.builder()

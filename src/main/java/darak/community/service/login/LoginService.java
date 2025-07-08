@@ -1,10 +1,11 @@
 package darak.community.service.login;
 
 import darak.community.core.exception.PasswordFailedExceededException;
-import darak.community.domain.member.Member;
+import darak.community.service.login.request.LoginServiceRequest;
+import darak.community.service.login.response.MemberLoginResponse;
 
 public interface LoginService {
 
-    Member login(String loginId, String password)
-            throws PasswordFailedExceededException; // Form 객체는 Controller 에서만 사용하자
+    MemberLoginResponse login(LoginServiceRequest request)
+            throws PasswordFailedExceededException;
 }

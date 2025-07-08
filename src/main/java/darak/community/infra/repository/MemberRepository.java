@@ -14,12 +14,19 @@ public class MemberRepository {
 
     private final EntityManager em;
 
-    public void save(Member member) {
+    public Member save(Member member) {
         if (member.getId() == null) {
             em.persist(member);
         } else {
             em.merge(member);
         }
+        return member;
+    }
+
+    public boolean existsByLoginId(String loginId) {
+        return em.createQuery("SELECT COUNT(m) FROM Member m WHERE m.loginId = :loginId", Long.class)
+                .setParameter("loginId", loginId)
+                .getSingleResult() > 0;
     }
 
     public Optional<Member> findById(Long id) {

@@ -3,7 +3,8 @@ package darak.community.service.login;
 import darak.community.core.exception.PasswordFailedExceededException;
 import darak.community.domain.member.Member;
 import darak.community.infra.repository.MemberRepository;
-import java.util.Optional;
+import darak.community.service.login.request.LoginServiceRequest;
+import darak.community.service.login.response.MemberLoginResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -18,18 +19,12 @@ public class LoginServiceImpl implements LoginService {
 
     @Override
     @Transactional
-    public Member login(String loginId, String password) throws PasswordFailedExceededException {
-        Optional<Member> byLoginId = memberRepository.findByLoginId(loginId);
-
-        if (byLoginId.isEmpty()) {
-            return null;
-        }
-
-        Member member = byLoginId.get();
-        if (member.isMatchedPassword(password)) {
-            return member;
-        }
-
-        return null;
+    public MemberLoginResponse login(LoginServiceRequest request) throws PasswordFailedExceededException {
+        Member member = memberRepository.findByLoginId(request.getLoginId())
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+        member.validatePassword(request.getRawPassword());
+        // TODO: 로그인 기록 로깅 or 저장 로직 추가
+        
+        return MemberLoginResponse.from(member);
     }
 }

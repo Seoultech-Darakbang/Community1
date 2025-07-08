@@ -1,7 +1,7 @@
 package darak.community.domain.member;
 
 public enum MemberGrade {
-    NON_MEMBER(0), MEMBER(1), ADMIN(2), MASTER(3);
+    GUEST(0), MEMBER(1), ADMIN(2), MASTER(3);
 
     private final int precedence;
 
