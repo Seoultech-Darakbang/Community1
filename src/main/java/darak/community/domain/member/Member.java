@@ -122,4 +122,7 @@ public class Member extends BaseEntity {
         return this.memberGrade.isAtLeastThan(target);
     }
 
+    public void changeMemberGrade(MemberGrade memberGrade) {
+        this.memberGrade = memberGrade;
+    }
 }
