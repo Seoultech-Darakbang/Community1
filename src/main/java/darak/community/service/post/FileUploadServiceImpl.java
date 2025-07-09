@@ -1,12 +1,14 @@
 package darak.community.service.post;
 
+import darak.community.domain.post.UploadFile;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,35 +24,56 @@ public class FileUploadServiceImpl implements FileUploadService {
     private String uploadDir;
 
     @Override
-    public String uploadImage(MultipartFile file) throws Exception {
+    public String uploadImage(MultipartFile file) {
         Path uploadPath = Paths.get(uploadDir, "images");
-
         createDirectories(uploadPath);
 
-        String originalFilename = file.getOriginalFilename();
-        String extension = getFileExtension(originalFilename);
-        String filename = generateUniqueFilename(extension);
-
+        String filename = generateUniqueFilename(getFileExtension(file.getOriginalFilename()));
         Path filePath = uploadPath.resolve(filename);
 
+        copyFile(file, filePath);
+        return "/uploads/images/" + filename;
+    }
+
+    @Override
+    public List<UploadFile> uploadAttachments(List<MultipartFile> files) {
+        Path uploadPath = Paths.get(uploadDir, "attachments");
+        createDirectories(uploadPath);
+
+        List<UploadFile> uploadFiles = new ArrayList<>();
+        for (MultipartFile file : files) {
+            String extension = getFileExtension(file.getOriginalFilename());
+            String filename = generateUniqueFilename(extension);
+            Path filePath = uploadPath.resolve(filename);
+
+            copyFile(file, filePath);
+
+            uploadFiles.add(UploadFile.builder()
+                    .url("/uploads/attachments/" + filename)
+                    .size(file.getSize())
+                    .fileType(file.getContentType())
+                    .fileName(file.getOriginalFilename())
+                    .build());
+        }
+        return uploadFiles;
+    }
+
+    private void copyFile(MultipartFile file, Path filePath) {
         try {
-            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-            log.info("이미지 업로드 완료: {}", filePath.toAbsolutePath());
-
-            String imageUrl = "/uploads/images/" + filename;
-            log.info("이미지 URL: {}", imageUrl);
-
-            return imageUrl;
-
+            Files.copy(file.getInputStream(), filePath);
+            log.info("파일 업로드 완료: {}", filePath.toAbsolutePath());
         } catch (IOException e) {
-            log.error("파일 저장 실패: {}", filePath, e);
-            throw new RuntimeException("파일 저장에 실패했습니다.", e);
+            throw new RuntimeException("파일 업로드에 실패했습니다: " + filePath, e);
         }
     }
 
-    private void createDirectories(Path path) throws IOException {
+    private void createDirectories(Path path) {
         if (!Files.exists(path)) {
-            Files.createDirectories(path);
+            try {
+                Files.createDirectories(path);
+            } catch (IOException e) {
+                throw new RuntimeException("디렉토리 생성에 실패했습니다: " + path, e);
+            }
             log.info("디렉토리 생성 완료: {}", path.toAbsolutePath());
         } else {
             log.debug("디렉토리가 이미 존재합니다: {}", path.toAbsolutePath());

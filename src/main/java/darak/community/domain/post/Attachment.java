@@ -1,6 +1,7 @@
 package darak.community.domain.post;
 
 import darak.community.domain.BaseEntity;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -20,25 +21,25 @@ public class Attachment extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String url;
-
-    private Long size;
-
-    private String fileType;  // MIME 타입 (예: image/jpeg, image/png)
+    @Embedded
+    private UploadFile uploadFile;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")
     private Post post;
 
     @Builder
-    public Attachment(String url, Long size, String fileType, Post post) {
-        this.url = url;
-        this.size = size;
-        this.fileType = fileType;
+    private Attachment(String url, Long size, String fileType, Post post, String fileName) {
+        this.uploadFile = UploadFile.builder()
+                .url(url)
+                .size(size)
+                .fileType(fileType)
+                .fileName(fileName)
+                .build();
         this.post = post;
     }
 
     public boolean isImage() {
-        return fileType != null && fileType.startsWith("image/");
+        return uploadFile.isImage();
     }
 }

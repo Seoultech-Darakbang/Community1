@@ -1,14 +1,17 @@
 package darak.community.service.post;
 
-import darak.community.domain.post.Attachment;
+import darak.community.service.post.request.AttachmentCreateServiceRequest;
+import darak.community.service.post.response.AttachmentResponse;
 import java.util.List;
 
 public interface AttachmentService {
-    void save(Attachment attachment);
+
+    List<AttachmentResponse> addAttachments(AttachmentCreateServiceRequest request);
 
     void delete(Long attachmentId);
 
-    List<Attachment> findByPostId(Long postId);
+    List<AttachmentResponse> findAttachmentsByPostId(Long postId);
 
-    List<Attachment> findImagesByPostId(Long postId);
+    List<AttachmentResponse> findImagesByPostId(Long postId);
+    
 }
