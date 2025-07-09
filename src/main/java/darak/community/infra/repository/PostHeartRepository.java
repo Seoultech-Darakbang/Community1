@@ -1,11 +1,10 @@
 package darak.community.infra.repository;
 
-import darak.community.domain.post.Post;
 import darak.community.domain.heart.PostHeart;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.TypedQuery;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -49,27 +48,15 @@ public class PostHeartRepository {
         return result.stream().findAny();
     }
 
-    public Page<Post> findLikedPostsByMember(Long memberId, Pageable pageable) {
-        // 좋아요한 게시글 조회 쿼리
-        String jpql = "SELECT p FROM PostHeart ph " +
-                "JOIN ph.post p " +
-                "WHERE ph.member.id = :memberId " +
-                "ORDER BY ph.createdDate DESC";
-
-        TypedQuery<Post> query = em.createQuery(jpql, Post.class)
-                .setParameter("memberId", memberId);
-
-        // 전체 개수 조회
-        String countJpql = "SELECT COUNT(ph) FROM PostHeart ph WHERE ph.member.id = :memberId";
-        Long totalCount = em.createQuery(countJpql, Long.class)
+    public Page<PostHeart> findByMemberIdFetchPost(Long memberId, Pageable pageable) {
+        return em.createQuery("select ph from PostHeart ph join fetch ph.post p where ph.member.id = :memberId",
+                        PostHeart.class)
                 .setParameter("memberId", memberId)
-                .getSingleResult();
-
-        query.setFirstResult((int) pageable.getOffset())
-                .setMaxResults(pageable.getPageSize());
-
-        List<Post> posts = query.getResultList();
-
-        return new PageImpl<>(posts, pageable, totalCount);
+                .setFirstResult((int) pageable.getOffset())
+                .setMaxResults(pageable.getPageSize())
+                .getResultList()
+                .stream()
+                .collect(Collectors.collectingAndThen(Collectors.toList(),
+                        list -> new PageImpl<>(list, pageable, list.size())));
     }
 }

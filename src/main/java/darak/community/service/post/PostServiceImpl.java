@@ -2,6 +2,7 @@ package darak.community.service.post;
 
 import darak.community.core.auth.ServiceAuth;
 import darak.community.domain.board.Board;
+import darak.community.domain.heart.PostHeart;
 import darak.community.domain.log.AdminLog;
 import darak.community.domain.member.Member;
 import darak.community.domain.member.MemberGrade;
@@ -9,6 +10,7 @@ import darak.community.domain.post.Post;
 import darak.community.infra.repository.AdminLogRepository;
 import darak.community.infra.repository.BoardRepository;
 import darak.community.infra.repository.MemberRepository;
+import darak.community.infra.repository.PostHeartRepository;
 import darak.community.infra.repository.PostRepository;
 import darak.community.service.post.request.PostCreateServiceRequest;
 import darak.community.service.post.request.PostDeleteServiceRequest;
@@ -33,6 +35,7 @@ public class PostServiceImpl implements PostService {
     private final BoardRepository boardRepository;
     private final MemberRepository memberRepository;
     private final AdminLogRepository adminLogRepository;
+    private final PostHeartRepository postHeartRepository;
 
     @Override
     @Transactional
@@ -111,6 +114,12 @@ public class PostServiceImpl implements PostService {
                 .toList();
 
         return new PageImpl<>(result, pageable, result.size());
+    }
+
+    @Override
+    public Page<PostResponse> findHeartedPostsBy(Long memberId, Pageable pageable) {
+        Page<PostHeart> postHearts = postHeartRepository.findByMemberIdFetchPost(memberId, pageable);
+        return postHearts.map(postHeart -> PostResponse.of(postHeart.getPost()));
     }
 
     @Override

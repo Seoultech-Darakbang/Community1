@@ -14,6 +14,8 @@ public interface PostService {
 
     Page<PostResponse> findPostsPagedIn(Long boardId, Pageable pageable);
 
+    Page<PostResponse> findHeartedPostsBy(Long memberId, Pageable pageable);
+
     void increaseReadCount(Long id);
 
     void editPost(PostUpdateServiceRequest request);
