@@ -22,4 +22,6 @@ public interface PostService {
 
     void deletePostByAdmin(PostDeleteServiceRequest request);
 
+    long getTotalPostCount();
+
 }

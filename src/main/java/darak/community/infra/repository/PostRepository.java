@@ -248,4 +248,9 @@ public class PostRepository {
 
         return new PageImpl<>(posts, pageable, count);
     }
+
+    public long count() {
+        return em.createQuery("select count(p) from Post p", Long.class)
+                .getSingleResult();
+    }
 }

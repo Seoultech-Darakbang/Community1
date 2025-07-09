@@ -1,9 +1,12 @@
 package darak.community.service.boardcategory;
 
+import darak.community.core.auth.ServiceAuth;
 import darak.community.domain.board.BoardCategory;
+import darak.community.domain.member.MemberGrade;
 import darak.community.infra.repository.BoardCategoryRepository;
 import darak.community.infra.repository.BoardRepository;
 import darak.community.service.boardcategory.request.BoardCategoryCreateServiceRequest;
+import darak.community.service.boardcategory.request.BoardCategoryUpdateServiceRequest;
 import darak.community.service.boardcategory.response.BoardCategoryResponse;
 import jakarta.annotation.PostConstruct;
 import java.util.ArrayList;
@@ -24,8 +27,27 @@ public class BoardCategoryServiceImpl implements BoardCategoryService {
 
     @Override
     @Transactional
+    @ServiceAuth(MemberGrade.ADMIN)
     public void createBoardCategory(BoardCategoryCreateServiceRequest request) {
         boardCategoryRepository.save(request.toEntity());
+        refreshCache();
+    }
+
+    @Transactional
+    @Override
+    @ServiceAuth(MemberGrade.ADMIN)
+    public void updateBoardCategory(BoardCategoryUpdateServiceRequest request) {
+        BoardCategory boardCategory = findBoardCategoryBy(request.getBoardCategoryId());
+        boardCategory.updateCategory(request.getName(), request.getPriority());
+        refreshCache();
+    }
+
+    @Transactional
+    @Override
+    @ServiceAuth(MemberGrade.ADMIN)
+    public void deleteCategory(Long id) {
+        BoardCategory boardCategory = findBoardCategoryBy(id);
+        boardCategoryRepository.delete(boardCategory);
         refreshCache();
     }
 
@@ -38,9 +60,7 @@ public class BoardCategoryServiceImpl implements BoardCategoryService {
 
     @Override
     public BoardCategoryResponse findById(Long boardId) {
-        BoardCategory boardCategory = boardCategoryRepository.findById(boardId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시판입니다."));
-        return BoardCategoryResponse.of(boardCategory);
+        return BoardCategoryResponse.of(findBoardCategoryBy(boardId));
     }
 
     @Override
@@ -48,6 +68,11 @@ public class BoardCategoryServiceImpl implements BoardCategoryService {
         BoardCategory boardCategory = boardCategoryRepository.findByName(name)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 카테고리입니다."));
         return BoardCategoryResponse.of(boardCategory);
+    }
+
+    @Override
+    public long getTotalCategoryCount() {
+        return boardCategoryRepository.count();
     }
 
     @PostConstruct
@@ -59,5 +84,10 @@ public class BoardCategoryServiceImpl implements BoardCategoryService {
         sortedBoardCategories.clear();
         sortedBoardCategories.addAll(boardCategoryRepository.findAll());
         Collections.sort(sortedBoardCategories);
+    }
+
+    private BoardCategory findBoardCategoryBy(Long boardCategoryId) {
+        return boardCategoryRepository.findById(boardCategoryId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시판입니다."));
     }
 }

@@ -37,9 +37,8 @@ public class Board implements Comparable<Board> {
         this.priority = priority != null ? priority : 999;
     }
 
-    public void setBoardCategory(BoardCategory boardCategory) {
+    public void registerCategory(BoardCategory boardCategory) {
         this.boardCategory = boardCategory;
-        boardCategory.addBoard(this);
     }
 
     public void updateBoard(String name, String description, BoardCategory boardCategory, Integer priority) {

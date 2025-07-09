@@ -68,7 +68,7 @@ public class BoardRepository {
 
         return new PageImpl<>(boards, pageable, count);
     }
-    
+
 
     public Optional<Board> findTopPriorityBoardByCategory(Long categoryId) {
         List<Board> boards = em.createQuery(
@@ -78,5 +78,26 @@ public class BoardRepository {
                 .setMaxResults(1)
                 .getResultList();
         return boards.isEmpty() ? Optional.empty() : Optional.of(boards.get(0));
+    }
+
+    public long count() {
+        return em.createQuery("select count(b) from Board b", Long.class)
+                .getSingleResult();
+    }
+
+    public void delete(Board board) {
+        em.remove(board);
+    }
+
+    public Page<Board> findAllPaged(Pageable pageable) {
+        List<Board> boards = em.createQuery("select b from Board b order by b.id asc", Board.class)
+                .setFirstResult((int) pageable.getOffset())
+                .setMaxResults(pageable.getPageSize())
+                .getResultList();
+
+        Long count = em.createQuery("select count(b) from Board b", Long.class)
+                .getSingleResult();
+
+        return new PageImpl<>(boards, pageable, count);
     }
 }

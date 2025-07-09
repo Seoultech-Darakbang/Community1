@@ -22,4 +22,6 @@ public interface CommentService {
     Page<CommentResponse> findCommentsBy(Long memberId, Pageable pageable);
 
     Page<CommentResponse> findHeartCommentsBy(Long memberId, Pageable pageable);
+
+    long getTotalCommentCount();
 }

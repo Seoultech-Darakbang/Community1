@@ -10,6 +10,8 @@ import darak.community.service.member.request.MemberJoinServiceRequest;
 import darak.community.service.member.response.MemberResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -52,6 +54,26 @@ public class MemberServiceImpl implements MemberService {
         target.changeMemberGrade(grade);
         log.info("{}가 회원 등급 변경: 대상 회원 ID = {}, 새로운 등급 = {}",
                 UserContext.getCurrentMemberId(), targetMemberId, grade);
+    }
+
+    @Override
+    @ServiceAuth(MemberGrade.ADMIN)
+    public long getTotalMemberCount() {
+        return memberRepository.count();
+    }
+
+    @Override
+    @ServiceAuth(MemberGrade.ADMIN)
+    public Page<MemberResponse> getAllMembersPaged(Pageable pageable) {
+        Page<Member> members = memberRepository.findAllPaged(pageable);
+        return members.map(MemberResponse::of);
+    }
+
+    @Override
+    @ServiceAuth(MemberGrade.ADMIN)
+    public Page<MemberResponse> searchMembers(String keyword, MemberGrade grade, Pageable pageable) {
+        Page<Member> members = memberRepository.searchMembers(keyword, grade, pageable);
+        return members.map(MemberResponse::of);
     }
 
     private Member findMemberBy(Long memberId) {

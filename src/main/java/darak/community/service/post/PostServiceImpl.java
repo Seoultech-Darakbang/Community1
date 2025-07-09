@@ -113,6 +113,11 @@ public class PostServiceImpl implements PostService {
         return new PageImpl<>(result, pageable, result.size());
     }
 
+    @Override
+    public long getTotalPostCount() {
+        return postRepository.count();
+    }
+
     private Member findMemberBy(Long memberId) {
         return memberRepository.findById(memberId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));

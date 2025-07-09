@@ -40,4 +40,12 @@ public class BoardCategoryRepository {
                 .findFirst();
     }
 
+    public long count() {
+        return em.createQuery("select count(bc) from BoardCategory bc", Long.class)
+                .getSingleResult();
+    }
+
+    public void delete(BoardCategory boardCategory) {
+        em.remove(boardCategory);
+    }
 }

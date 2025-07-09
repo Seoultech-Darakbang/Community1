@@ -223,4 +223,9 @@ public class CommentRepository {
                 .setParameter("parentCommentIds", parentCommentIds)
                 .getResultList();
     }
+
+    public long count() {
+        return em.createQuery("select count(c) from Comment c", Long.class)
+                .getSingleResult();
+    }
 }

@@ -118,6 +118,11 @@ public class CommentServiceImpl implements CommentService {
         return new PageImpl<>(commentResponses, pageable, commentHearts.size());
     }
 
+    @Override
+    public long getTotalCommentCount() {
+        return commentRepository.count();
+    }
+
     private Post findPostBy(Long postId) {
         return postRepository.findById(postId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 게시글이 존재하지 않습니다."));
