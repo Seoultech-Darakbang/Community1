@@ -6,7 +6,7 @@ import darak.community.domain.post.Post;
 import darak.community.infra.repository.MemberRepository;
 import darak.community.infra.repository.PostHeartRepository;
 import darak.community.infra.repository.PostRepository;
-import darak.community.service.post.response.PostHeartServiceResponse;
+import darak.community.service.post.response.MyPostHeartResponse;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,7 +23,7 @@ public class PostHeartServiceImpl implements PostHeartService {
 
     @Override
     @Transactional
-    public PostHeartServiceResponse addLike(Long postId, Long memberId) {
+    public MyPostHeartResponse addLike(Long postId, Long memberId) {
         Post post = findPostBy(postId);
         Member member = findMemberBy(memberId);
 
@@ -33,24 +33,24 @@ public class PostHeartServiceImpl implements PostHeartService {
         postHeartRepository.save(postHeart);
 
         int likeCount = heartCountInPost(postId);
-        return new PostHeartServiceResponse(true, likeCount);
+        return new MyPostHeartResponse(true, likeCount);
     }
 
     @Override
     @Transactional
-    public PostHeartServiceResponse removeLike(Long postId, Long memberId) {
+    public MyPostHeartResponse removeLike(Long postId, Long memberId) {
         PostHeart postHeart = findPostHeartBy(postId, memberId);
         postHeartRepository.delete(postHeart);
 
         int likeCount = heartCountInPost(postId);
-        return new PostHeartServiceResponse(false, likeCount);
+        return new MyPostHeartResponse(false, likeCount);
     }
 
     @Override
-    public PostHeartServiceResponse getLikeStatus(Long postId, Long memberId) {
+    public MyPostHeartResponse getLikeStatus(Long postId, Long memberId) {
         boolean isLiked = isLiked(postId, memberId);
         int likeCount = heartCountInPost(postId);
-        return new PostHeartServiceResponse(isLiked, likeCount);
+        return new MyPostHeartResponse(isLiked, likeCount);
     }
 
     @Override

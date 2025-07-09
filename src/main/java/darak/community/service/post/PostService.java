@@ -1,43 +1,22 @@
 package darak.community.service.post;
 
-import darak.community.domain.member.Member;
-import darak.community.domain.post.Attachment;
-import darak.community.domain.post.Post;
-import darak.community.domain.post.PostType;
-import java.util.List;
+import darak.community.service.post.request.PostCreateServiceRequest;
+import darak.community.service.post.request.PostUpdateServiceRequest;
+import darak.community.service.post.response.PostResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface PostService {
-    void save(Post post);
+    void createPost(PostCreateServiceRequest request);
 
-    Post findById(Long id);
+    PostResponse readPostBy(Long postId, Long memberId);
 
-    void deleteById(Long id, Member member);
-
-    List<Post> findByTitle(String title);
-
-    List<Post> findByMemberName(String memberName);
+    Page<PostResponse> findPostsPagedIn(Long boardId, Pageable pageable);
 
     void increaseReadCount(Long id);
 
-    List<Post> findRecentPostsByCategory(Long categoryId, int limit);
+    void editPost(PostUpdateServiceRequest request);
 
-    List<Attachment> findRecentGalleryImages(int limit);
+    void deleteByPostId(Long postId, Long memberId);
 
-    List<Post> findByBoardId(Long id);
-
-    Page<Post> findByBoardIdPaged(Long boardId, Pageable pageable);
-
-    void editPost(Member member, Long postId, String title, PostType postType, String content, Boolean anonymous);
-
-    List<Post> findRecentPostsByBoardId(Long boardId, int limit);
-
-    List<Post> findRecentGalleryPostsWithImages(int limit);
-
-    long countGalleryBoards();
-
-    long countAttachments();
-
-    long countGalleryAttachments();
 }
