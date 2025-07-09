@@ -1,6 +1,7 @@
 package darak.community.service.post;
 
 import darak.community.service.post.request.PostCreateServiceRequest;
+import darak.community.service.post.request.PostDeleteServiceRequest;
 import darak.community.service.post.request.PostUpdateServiceRequest;
 import darak.community.service.post.response.PostResponse;
 import org.springframework.data.domain.Page;
@@ -17,6 +18,8 @@ public interface PostService {
 
     void editPost(PostUpdateServiceRequest request);
 
-    void deleteByPostId(Long postId, Long memberId);
+    void deletePostBy(Long postId, Long memberId);
+
+    void deletePostByAdmin(PostDeleteServiceRequest request);
 
 }

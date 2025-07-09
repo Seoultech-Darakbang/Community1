@@ -1,17 +1,19 @@
 package darak.community.service.comment;
 
+import darak.community.core.auth.ServiceAuth;
 import darak.community.domain.comment.Comment;
 import darak.community.domain.heart.CommentHeart;
-import darak.community.domain.log.DeleteLog;
+import darak.community.domain.log.AdminLog;
 import darak.community.domain.member.Member;
 import darak.community.domain.member.MemberGrade;
 import darak.community.domain.post.Post;
+import darak.community.infra.repository.AdminLogRepository;
 import darak.community.infra.repository.CommentHeartRepository;
 import darak.community.infra.repository.CommentRepository;
-import darak.community.infra.repository.DeleteLogRepository;
 import darak.community.infra.repository.MemberRepository;
 import darak.community.infra.repository.PostRepository;
 import darak.community.service.comment.request.CommentCreateServiceRequest;
+import darak.community.service.comment.request.CommentDeleteServiceRequest;
 import darak.community.service.comment.request.ReplyCreateServiceRequest;
 import darak.community.service.comment.response.CommentResponse;
 import java.util.ArrayList;
@@ -33,7 +35,7 @@ public class CommentServiceImpl implements CommentService {
     private final MemberRepository memberRepository;
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
-    private final DeleteLogRepository deleteLogRepository;
+    private final AdminLogRepository adminLogRepository;
     private final CommentHeartRepository commentHeartRepository;
 
     @Override
@@ -65,10 +67,21 @@ public class CommentServiceImpl implements CommentService {
     @Override
     @Transactional
     public void deleteCommentBy(Long memberId, Long commentId) {
-        validateDeletePermissionBy(memberId, commentId);
         Comment comment = findParentCommentBy(commentId);
+        Member member = findMemberBy(memberId);
+        validateAuthor(member, comment);
         commentRepository.delete(comment);
-        deleteLogRepository.save(DeleteLog.commentDeleteLog(comment, findMemberBy(memberId)));
+    }
+
+    @Override
+    @Transactional
+    @ServiceAuth(MemberGrade.ADMIN)
+    public void deleteCommentByAdmin(CommentDeleteServiceRequest request) {
+        Member member = findMemberBy(request.getMemberId());
+        Comment comment = findParentCommentBy(request.getCommentId());
+
+        adminLogRepository.save(AdminLog.commentDeleteLog(comment, member, request.getReason()));
+        commentRepository.delete(comment);
     }
 
     @Override
@@ -120,17 +133,14 @@ public class CommentServiceImpl implements CommentService {
                 .orElseThrow(() -> new IllegalArgumentException("해당 댓글이 존재하지 않습니다."));
     }
 
-    private void validateDeletePermissionBy(Long deleteMemberId, Long commentId) {
-        Member member = findMemberBy(deleteMemberId);
-        Comment comment = findParentCommentBy(commentId);
-
-        if (cannotHasPermission(comment, member)) {
+    private void validateAuthor(Member member, Comment comment) {
+        if (!isCommentAuthor(comment, member)) {
             throw new IllegalArgumentException("댓글 삭제 권한이 없습니다.");
         }
     }
 
-    private boolean cannotHasPermission(Comment comment, Member member) {
-        return !(comment.getMember().getId().equals(member.getId()) || member.isAtLeastThan(MemberGrade.ADMIN));
+    private boolean isCommentAuthor(Comment comment, Member member) {
+        return comment.getMember().equals(member);
     }
 
     private Map<Long, CommentResponse> createParentMapBy(

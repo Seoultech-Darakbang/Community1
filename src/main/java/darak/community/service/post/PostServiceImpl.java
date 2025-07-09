@@ -1,13 +1,17 @@
 package darak.community.service.post;
 
+import darak.community.core.auth.ServiceAuth;
 import darak.community.domain.board.Board;
+import darak.community.domain.log.AdminLog;
 import darak.community.domain.member.Member;
 import darak.community.domain.member.MemberGrade;
 import darak.community.domain.post.Post;
+import darak.community.infra.repository.AdminLogRepository;
 import darak.community.infra.repository.BoardRepository;
 import darak.community.infra.repository.MemberRepository;
 import darak.community.infra.repository.PostRepository;
 import darak.community.service.post.request.PostCreateServiceRequest;
+import darak.community.service.post.request.PostDeleteServiceRequest;
 import darak.community.service.post.request.PostUpdateServiceRequest;
 import darak.community.service.post.response.PostResponse;
 import java.util.List;
@@ -28,6 +32,7 @@ public class PostServiceImpl implements PostService {
     private final PostRepository postRepository;
     private final BoardRepository boardRepository;
     private final MemberRepository memberRepository;
+    private final AdminLogRepository adminLogRepository;
 
     @Override
     @Transactional
@@ -65,23 +70,30 @@ public class PostServiceImpl implements PostService {
         Post post = findPostBy(request.getPostId());
         Member member = findMemberBy(request.getAuthorId());
 
-        if (!hasAuthorization(member, post)) {
-            throw new IllegalArgumentException("게시글 수정 권한이 없습니다.");
-        }
+        validateAuthor(member, post);
 
         post.edit(request.getTitle(), request.getContent(), request.getPostType(), request.getAnonymous());
     }
 
     @Override
     @Transactional
-    public void deleteByPostId(Long postId, Long memberId) {
+    public void deletePostBy(Long postId, Long memberId) {
         Post post = findPostBy(postId);
         Member member = findMemberBy(memberId);
 
-        if (!hasAuthorization(member, post)) {
-            throw new IllegalArgumentException("게시글 삭제 권한이 없습니다.");
-        }
+        validateAuthor(member, post);
 
+        postRepository.delete(post);
+    }
+
+    @Override
+    @Transactional
+    @ServiceAuth(MemberGrade.ADMIN)
+    public void deletePostByAdmin(PostDeleteServiceRequest request) {
+        Post post = findPostBy(request.getPostId());
+        Member admin = findMemberBy(request.getMemberId());
+
+        adminLogRepository.save(AdminLog.postDeleteLog(post, admin, request.getReason()));
         postRepository.delete(post);
     }
 
@@ -115,8 +127,13 @@ public class PostServiceImpl implements PostService {
         return postRepository.findById(postId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글입니다."));
     }
 
-    private boolean hasAuthorization(Member member, Post post) {
-        return post.getMember().equals(member) || member.getMemberGrade() == MemberGrade.ADMIN
-                || member.getMemberGrade() == MemberGrade.MASTER;
+    private void validateAuthor(Member member, Post post) {
+        if (!isMemberAuthor(member, post)) {
+            throw new IllegalArgumentException("권한이 없습니다.");
+        }
+    }
+
+    private boolean isMemberAuthor(Member member, Post post) {
+        return post.getMember().equals(member);
     }
 }

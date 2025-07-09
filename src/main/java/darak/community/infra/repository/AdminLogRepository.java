@@ -1,17 +1,17 @@
 package darak.community.infra.repository;
 
-import darak.community.domain.log.DeleteLog;
+import darak.community.domain.log.AdminLog;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
-public class DeleteLogRepository {
+public class AdminLogRepository {
 
     private final EntityManager em;
 
-    public void save(DeleteLog log) {
+    public void save(AdminLog log) {
         em.persist(log);
     }
 }
