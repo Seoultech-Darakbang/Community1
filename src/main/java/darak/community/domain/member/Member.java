@@ -99,7 +99,7 @@ public class Member extends BaseEntity {
         }
     }
 
-    public void validatePassword(final String rawPassword) throws PasswordFailedExceededException {
+    public void validatePassword(final String rawPassword) {
         if (!password.isMatched(rawPassword)) {
             throw new PasswordMismatchException("비밀번호가 일치하지 않습니다.");
         }

@@ -1,6 +1,5 @@
 package darak.community.service.login;
 
-import darak.community.core.exception.PasswordFailedExceededException;
 import darak.community.domain.member.Member;
 import darak.community.infra.repository.MemberRepository;
 import darak.community.service.login.request.LoginServiceRequest;
@@ -19,12 +18,12 @@ public class LoginServiceImpl implements LoginService {
 
     @Override
     @Transactional
-    public MemberLoginResponse login(LoginServiceRequest request) throws PasswordFailedExceededException {
+    public MemberLoginResponse login(LoginServiceRequest request) {
         Member member = memberRepository.findByLoginId(request.getLoginId())
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
         member.validatePassword(request.getRawPassword());
         // TODO: 로그인 기록 로깅 or 저장 로직 추가
-        
+
         return MemberLoginResponse.from(member);
     }
 }
