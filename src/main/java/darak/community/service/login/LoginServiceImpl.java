@@ -19,11 +19,15 @@ public class LoginServiceImpl implements LoginService {
     @Override
     @Transactional
     public MemberLoginResponse login(LoginServiceRequest request) {
-        Member member = memberRepository.findByLoginId(request.getLoginId())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+        Member member = findMemberBy(request.getLoginId());
         member.validatePassword(request.getRawPassword());
         // TODO: 로그인 기록 로깅 or 저장 로직 추가
 
         return MemberLoginResponse.from(member);
+    }
+
+    private Member findMemberBy(String loginId) {
+        return memberRepository.findByLoginId(loginId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
     }
 }
