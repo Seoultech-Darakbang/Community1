@@ -1,13 +1,15 @@
 package darak.community.web.controller.home;
 
 import darak.community.core.argumentresolver.Login;
+import darak.community.core.exception.PasswordExpiredException;
 import darak.community.core.exception.PasswordFailedExceededException;
-import darak.community.core.session.constant.SessionConst;
-import darak.community.domain.member.Member;
+import darak.community.core.exception.PasswordMismatchException;
+import darak.community.core.session.SessionManager;
+import darak.community.core.session.dto.LoginMember;
 import darak.community.dto.LoginForm;
 import darak.community.service.login.LoginService;
+import darak.community.service.login.response.MemberLoginResponse;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -25,9 +27,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class LoginController {
 
     private final LoginService loginService;
+    private final SessionManager sessionManager;
 
     @GetMapping("/login")
-    public String loginForm(@Login Member member, @ModelAttribute("loginForm") LoginForm form, Model model) {
+    public String loginForm(@Login LoginMember member, @ModelAttribute("loginForm") LoginForm form, Model model) {
         if (member != null) {
             model.addAttribute(member);
             return "redirect:/";
@@ -37,36 +40,31 @@ public class LoginController {
 
     @PostMapping("/login")
     public String login(@Validated @ModelAttribute LoginForm loginForm, BindingResult bindingResult,
-                        @RequestParam(defaultValue = "/") String redirectURL, HttpServletRequest request)
-            throws PasswordFailedExceededException {
+                        @RequestParam(defaultValue = "/") String redirectURL, HttpServletRequest request) {
 
         if (bindingResult.hasErrors()) {
             return "login/loginForm";
         }
 
-        Member loginMember = loginService.login(loginForm.getLoginId(), loginForm.getPassword());
-        if (loginMember == null) {
+        try {
+            MemberLoginResponse loginResponse = loginService.login(loginForm.toServiceRequest());
+            sessionManager.login(request.getSession(),
+                    LoginMember.of(loginResponse.getMemberId(), loginResponse.getMemberGrade()));
+            return "redirect:" + redirectURL;
+        } catch (PasswordMismatchException e) {
             bindingResult.reject("member.password.fail", "ID 또는 비밀번호가 일치하지 않습니다");
             return "login/loginForm";
-        }
-
-        HttpSession session = request.getSession();
-        session.setAttribute(SessionConst.LOGIN_MEMBER, loginMember);
-
-        if (loginMember.isPasswordExpired()) {
+        } catch (PasswordFailedExceededException e) {
+            bindingResult.reject("member.password.fail", "비밀번호 입력 실패 횟수를 초과했습니다. 관리자에게 문의하세요.");
+            return "login/loginForm";
+        } catch (PasswordExpiredException e) {
             return "redirect:/members/expired-password?redirectURL=" + redirectURL;
         }
-
-        return "redirect:" + redirectURL;
     }
 
     @PostMapping("/logout")
     public String logout(HttpServletRequest request) {
-        HttpSession session = request.getSession();
-        if (session != null) {
-            session.invalidate();
-        }
-
+        sessionManager.logout(request.getSession());
         return "redirect:/";
     }
 }

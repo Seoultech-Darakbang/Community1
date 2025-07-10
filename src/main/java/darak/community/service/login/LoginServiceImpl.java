@@ -1,5 +1,6 @@
 package darak.community.service.login;
 
+import darak.community.core.exception.PasswordExpiredException;
 import darak.community.domain.member.Member;
 import darak.community.infra.repository.MemberRepository;
 import darak.community.service.login.request.LoginServiceRequest;
@@ -23,6 +24,9 @@ public class LoginServiceImpl implements LoginService {
         member.validatePassword(request.getRawPassword());
         // TODO: 로그인 기록 로깅 or 저장 로직 추가
 
+        if (member.isPasswordExpired()) {
+            throw new PasswordExpiredException("비밀번호가 만료되었습니다. 비밀번호를 변경해주세요.");
+        }
         return MemberLoginResponse.from(member);
     }
 
