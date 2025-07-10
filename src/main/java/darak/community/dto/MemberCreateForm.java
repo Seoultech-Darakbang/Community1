@@ -1,6 +1,6 @@
 package darak.community.dto;
 
-import darak.community.domain.member.Member;
+import darak.community.service.member.request.MemberJoinServiceRequest;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import java.time.LocalDate;
@@ -32,11 +32,11 @@ public class MemberCreateForm {
     @NotEmpty
     private String email;
 
-    public Member toEntity() {
-        return Member.builder()
+    public MemberJoinServiceRequest toServiceRequest() {
+        return MemberJoinServiceRequest.builder()
                 .loginId(loginId)
-                .password(password)
                 .name(name)
+                .password(password)
                 .phone(phone)
                 .birth(birth)
                 .email(email)

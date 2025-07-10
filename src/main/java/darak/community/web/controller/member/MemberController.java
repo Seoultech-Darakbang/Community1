@@ -2,10 +2,10 @@ package darak.community.web.controller.member;
 
 import darak.community.core.argumentresolver.Login;
 import darak.community.core.exception.PasswordFailedExceededException;
-import darak.community.domain.member.Member;
+import darak.community.core.session.dto.LoginMember;
+import darak.community.dto.ApiResponse;
 import darak.community.dto.MemberCreateForm;
 import darak.community.dto.PasswordForm;
-import darak.community.dto.ResponseDto;
 import darak.community.service.member.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,9 +28,9 @@ public class MemberController {
     private final MemberService memberService;
 
     @GetMapping("/members/new")
-    public String createForm(@Login Member member, @ModelAttribute("memberCreateForm") MemberCreateForm form,
+    public String createForm(@Login LoginMember loginMember, @ModelAttribute("memberCreateForm") MemberCreateForm form,
                              Model model) {
-        if (member != null) {
+        if (loginMember != null) {
             return "redirect:/";
         }
         return "members/createMemberForm";
@@ -44,65 +44,57 @@ public class MemberController {
             return "members/createMemberForm";
         }
 
-        Member newMember = form.toEntity();
-        memberService.join(newMember);
-
+        memberService.join(form.toServiceRequest());
         log.info("loginId: {}, name: {} 님의 회원 가입", form.getLoginId(), form.getName());
         redirectAttributes.addAttribute("memberJoinStatus", true);
         return "redirect:/login";
     }
 
     @GetMapping("/members/expired-password")
-    public String expiredPasswordForm(@Login Member member, @ModelAttribute("passwordForm") PasswordForm form) {
-        if (member == null) {
+    public String expiredPasswordForm(@Login LoginMember loginMember,
+                                      @ModelAttribute("passwordForm") PasswordForm form) {
+        if (loginMember == null) {
             return "redirect:/login";
-        }
-        if (!member.isPasswordExpired()) {
-            return "redirect:/";
         }
 
         return "/members/expired-password";
     }
 
     @PostMapping("/members/password")
-    public String changePassword(@Login Member member,
+    public String changePassword(@Login LoginMember loginMember,
                                  @Validated @ModelAttribute("passwordForm") PasswordForm form,
                                  BindingResult bindingResult) throws PasswordFailedExceededException {
-        if (member == null) {
+        if (loginMember == null) {
             return "redirect:/login";
-        }
-        if (!member.isPasswordExpired()) {
-            return "redirect:/";
         }
 
         if (bindingResult.hasErrors()) {
             return "members/expired-password";
         }
 
-        if (!form.getNewPassword().equals(form.getNewPasswordConfirm())) {
+        if (!form.isNewPasswordMatch()) {
             bindingResult.reject("change.member.password.confirmFail", "새로운 비밀번호를 다시 확인해주세요.");
             return "members/expired-password";
         }
 
-        memberService.changePassword(member.getId(), form.getNewPassword(), form.getOldPassword());
+        memberService.changePassword(form.toServiceRequest(loginMember.getId()));
         return "redirect:/";
     }
 
 
     @GetMapping("/members/new/confirmLoginId")
     @ResponseBody
-    public ResponseDto<?> checkDuplicatedLoginId(@RequestParam String loginId) {
+    public ApiResponse<?> checkDuplicatedLoginId(@RequestParam String loginId) {
 
-        log.info("loginID 중복 검사 = {}", loginId);
         if (loginId.isEmpty()) {
-            return new ResponseDto<>(-1, "아이디를 입력해주세요", null);
+            return ApiResponse.error("아이디를 입력해주세요");
         }
 
         if (loginId.length() < 4 || loginId.length() > 20) {
-            return new ResponseDto<>(-1, "아이디는 4자 이상, 20자 이하입니다", null);
+            return ApiResponse.error("아이디는 4자 이상, 20자 이하입니다");
         }
 
         memberService.validateDuplicateMember(loginId);
-        return new ResponseDto<>(1, "사용 가능한 회원 ID 입니다.", null);
+        return ApiResponse.successWithNoData("사용 가능한 회원 ID 입니다.");
     }
 }

@@ -1,5 +1,6 @@
 package darak.community.dto;
 
+import darak.community.service.member.request.PasswordChangeServiceRequest;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,5 +17,13 @@ public class PasswordForm {
 
     @NotEmpty
     private String newPasswordConfirm;
+
+    public boolean isNewPasswordMatch() {
+        return newPassword.equals(newPasswordConfirm);
+    }
+
+    public PasswordChangeServiceRequest toServiceRequest(Long memberId) {
+        return new PasswordChangeServiceRequest(memberId, oldPassword, newPassword);
+    }
 
 }
