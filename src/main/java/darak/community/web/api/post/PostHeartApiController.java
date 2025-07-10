@@ -4,7 +4,7 @@ import darak.community.core.argumentresolver.Login;
 import darak.community.core.session.dto.LoginMember;
 import darak.community.dto.ApiResponse;
 import darak.community.service.post.PostHeartService;
-import darak.community.service.post.response.PostHeartServiceResponse;
+import darak.community.service.post.response.MyPostHeartResponse;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +26,7 @@ public class PostHeartApiController {
 
     @PostMapping("/{postId}/like")
     public ApiResponse<LikeResponse> addLike(@Login LoginMember loginMember, @PathVariable Long postId) {
-        PostHeartServiceResponse response = postHeartService.addLike(postId, loginMember.getId());
+        MyPostHeartResponse response = postHeartService.addLike(postId, loginMember.getId());
 
         return ApiResponse.success("좋아요가 추가되었습니다.",
                 LikeResponse.from(response));
@@ -34,7 +34,7 @@ public class PostHeartApiController {
 
     @DeleteMapping("/{postId}/like")
     public ApiResponse<LikeResponse> removeLike(@Login LoginMember loginMember, @PathVariable Long postId) {
-        PostHeartServiceResponse response = postHeartService.removeLike(postId, loginMember.getId());
+        MyPostHeartResponse response = postHeartService.removeLike(postId, loginMember.getId());
 
         return ApiResponse.success("좋아요가 취소되었습니다.",
                 LikeResponse.from(response));
@@ -42,7 +42,7 @@ public class PostHeartApiController {
 
     @GetMapping("/{postId}/like/status")
     public ApiResponse<LikeResponse> getLikeStatus(@Login LoginMember loginMember, @PathVariable Long postId) {
-        PostHeartServiceResponse response = postHeartService.getLikeStatus(postId, loginMember.getId());
+        MyPostHeartResponse response = postHeartService.getLikeStatus(postId, loginMember.getId());
 
         return ApiResponse.success("좋아요 상태 조회에 성공했습니다.",
                 LikeResponse.from(response));
@@ -54,7 +54,7 @@ public class PostHeartApiController {
         private boolean isLiked;
         private int likeCount;
 
-        public static LikeResponse from(PostHeartServiceResponse response) {
+        public static LikeResponse from(MyPostHeartResponse response) {
             return new LikeResponse(response.isLiked(), response.getLikeCount());
         }
     }

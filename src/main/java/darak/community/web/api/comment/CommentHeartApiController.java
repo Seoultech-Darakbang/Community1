@@ -4,7 +4,7 @@ import darak.community.core.argumentresolver.Login;
 import darak.community.core.session.dto.LoginMember;
 import darak.community.dto.ApiResponse;
 import darak.community.service.comment.CommentHeartService;
-import darak.community.service.comment.response.CommentHeartServiceResponse;
+import darak.community.service.comment.response.MyCommentHeartResponse;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +26,7 @@ public class CommentHeartApiController {
 
     @PostMapping("/{commentId}/like")
     public ApiResponse<LikeResponse> addLike(@Login LoginMember loginMember, @PathVariable Long commentId) {
-        CommentHeartServiceResponse response = commentHeartService.addLike(commentId, loginMember.getId());
+        MyCommentHeartResponse response = commentHeartService.addLike(commentId, loginMember.getId());
 
         return ApiResponse.success("좋아요가 추가되었습니다.",
                 LikeResponse.from(response));
@@ -34,7 +34,7 @@ public class CommentHeartApiController {
 
     @DeleteMapping("/{commentId}/like")
     public ApiResponse<LikeResponse> removeLike(@Login LoginMember loginMember, @PathVariable Long commentId) {
-        CommentHeartServiceResponse response = commentHeartService.removeLike(commentId, loginMember.getId());
+        MyCommentHeartResponse response = commentHeartService.removeLike(commentId, loginMember.getId());
 
         return ApiResponse.success("좋아요가 취소되었습니다.",
                 LikeResponse.from(response));
@@ -42,7 +42,7 @@ public class CommentHeartApiController {
 
     @GetMapping("/{commentId}/like/status")
     public ApiResponse<LikeResponse> getLikeStatus(@Login LoginMember loginMember, @PathVariable Long commentId) {
-        CommentHeartServiceResponse response = commentHeartService.getLikeStatus(commentId, loginMember.getId());
+        MyCommentHeartResponse response = commentHeartService.getLikeStatus(commentId, loginMember.getId());
 
         return ApiResponse.success("좋아요 상태 조회에 성공했습니다.",
                 LikeResponse.from(response));
@@ -54,7 +54,7 @@ public class CommentHeartApiController {
         private boolean isLiked;
         private int likeCount;
 
-        public static LikeResponse from(CommentHeartServiceResponse response) {
+        public static LikeResponse from(MyCommentHeartResponse response) {
             return new LikeResponse(response.isLiked(), response.getLikeCount());
         }
     }
