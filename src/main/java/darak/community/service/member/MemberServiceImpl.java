@@ -2,11 +2,11 @@ package darak.community.service.member;
 
 import darak.community.core.auth.ServiceAuth;
 import darak.community.core.context.UserContext;
-import darak.community.core.exception.PasswordFailedExceededException;
 import darak.community.domain.member.Member;
 import darak.community.domain.member.MemberGrade;
 import darak.community.infra.repository.MemberRepository;
 import darak.community.service.member.request.MemberJoinServiceRequest;
+import darak.community.service.member.request.PasswordChangeServiceRequest;
 import darak.community.service.member.response.MemberResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,9 +41,9 @@ public class MemberServiceImpl implements MemberService {
 
     @Transactional
     @Override
-    public void changePassword(Long id, String newPassword, String oldPassword) throws PasswordFailedExceededException {
-        Member findMember = findMemberBy(id);
-        findMember.changePassword(newPassword, oldPassword);
+    public void changePassword(PasswordChangeServiceRequest request) {
+        Member findMember = findMemberBy(request.getMemberId());
+        findMember.changePassword(request.getNewPassword(), request.getOldPassword());
     }
 
     @Transactional
