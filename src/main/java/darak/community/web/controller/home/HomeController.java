@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class HomeController {
 
     @GetMapping("/")
-    public String home(@Login LoginMember member, Model model) {
-        model.addAttribute("member", member);
+    public String home(@Login LoginMember loginMember, Model model) {
+        model.addAttribute("loginMember", loginMember);
         return "home";
     }
 }
