@@ -2,6 +2,7 @@ package darak.community.infra.repository;
 
 import darak.community.domain.post.Attachment;
 import darak.community.domain.post.Post;
+import darak.community.infra.repository.dto.PostWithMetaDto;
 import jakarta.persistence.EntityManager;
 import java.util.List;
 import java.util.Optional;
@@ -249,8 +250,96 @@ public class PostRepository {
         return new PageImpl<>(posts, pageable, count);
     }
 
+    public Page<PostWithMetaDto> findPostsWithMetaByMemberId(Long memberId, Pageable pageable) {
+        String jpql = """
+                select new darak.community.infra.repository.dto.PostWithMetaDto(
+                            p.id, p.title, p.content, p.anonymous, p.postType,
+                            m.id, m.name, m.memberGrade, b.id, b.name,
+                            p.readCount, p.createdDate,
+                            (select count(c) from Comment c
+                             where c.post = p),
+                            case when
+                                 (select count(ph2) from PostHeart ph2
+                                  where ph2.post = p
+                                    and ph2.member.id = :memberId) > 0
+                                 then true
+                                 else false
+                             end,
+                            (select count(ph) from PostHeart ph
+                             where ph.post = p)
+                        )
+                        from Post p
+                        join p.member m
+                        join p.board b
+                        where p.member.id = :memberId
+                        order by p.createdDate desc
+                """;
+        String countJpql = """
+                select count(p)
+                from Post p
+                where p.member.id = :memberId
+                """;
+
+        List<PostWithMetaDto> content = em.createQuery(jpql, PostWithMetaDto.class)
+                .setParameter("memberId", memberId)
+                .setFirstResult((int) pageable.getOffset())
+                .setMaxResults(pageable.getPageSize())
+                .getResultList();
+
+        Long total = em.createQuery(countJpql, Long.class)
+                .setParameter("memberId", memberId)
+                .getSingleResult();
+
+        return new PageImpl<>(content, pageable, total);
+    }
+
+    public Page<PostWithMetaDto> findPostsWithMetaByMemberLiked(Long memberId, Pageable pageable) {
+        String jpql = """
+                select new darak.community.infra.repository.dto.PostWithMetaDto(
+                            p.id, p.title, p.content, p.anonymous, p.postType,
+                            m.id, m.name, m.memberGrade, b.id, b.name,
+                            p.readCount, p.createdDate,
+                            (select count(c) from Comment c
+                             where c.post = p),
+                            case when
+                                 (select count(ph2) from PostHeart ph2
+                                  where ph2.post = p
+                                    and ph2.member.id = :memberId) > 0
+                                 then true
+                                 else false
+                             end,
+                            (select count(ph) from PostHeart ph
+                             where ph.post = p)
+                        )
+                        from Post p
+                        join p.member m
+                        join p.board b
+                        join PostHeart ph on ph.post.id = p.id
+                        where ph.member.id = :memberId
+                        order by p.createdDate desc
+                """;
+        String countJpql = """
+                select count(p)
+                from Post p
+                where p.member.id = :memberId
+                """;
+
+        List<PostWithMetaDto> content = em.createQuery(jpql, PostWithMetaDto.class)
+                .setParameter("memberId", memberId)
+                .setFirstResult((int) pageable.getOffset())
+                .setMaxResults(pageable.getPageSize())
+                .getResultList();
+
+        Long total = em.createQuery(countJpql, Long.class)
+                .setParameter("memberId", memberId)
+                .getSingleResult();
+
+        return new PageImpl<>(content, pageable, total);
+    }
+
     public long count() {
         return em.createQuery("select count(p) from Post p", Long.class)
                 .getSingleResult();
     }
+
 }

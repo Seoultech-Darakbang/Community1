@@ -1,6 +1,7 @@
 package darak.community.infra.repository;
 
 import darak.community.domain.comment.Comment;
+import darak.community.infra.repository.dto.CommentWithMetaDto;
 import jakarta.persistence.EntityManager;
 import java.util.List;
 import java.util.Optional;
@@ -227,5 +228,83 @@ public class CommentRepository {
     public long count() {
         return em.createQuery("select count(c) from Comment c", Long.class)
                 .getSingleResult();
+    }
+
+    public Page<CommentWithMetaDto> findCommentsWithMetaByMemberIdPaged(Long memberId, Pageable pageable) {
+        String jpql = """
+                select new darak.community.infra.repository.dto.CommentWithMetaDto(
+                    c.id, m.id, c.anonymous, m.name, c.content,
+                    case when c.parent is not null then true else false end,
+                    p.id, p.title, p.postType,
+                    b.id, b.name, c.createdDate,
+                    case when
+                        (select count(ch) from CommentHeart ch where ch.comment.id = c.id and ch.member.id = :memberId) > 0
+                        then true else false end,
+                    (select count(ch) from CommentHeart ch where ch.comment.id = c.id)
+                )
+                from Comment c
+                join c.member m
+                join c.post p
+                join p.board b
+                where c.member.id = :memberId
+                order by c.createdDate desc
+                """;
+
+        String countJpql = """
+                select count(c)
+                from Comment c
+                where c.member.id = :memberId
+                """;
+
+        List<CommentWithMetaDto> comments = em.createQuery(jpql, CommentWithMetaDto.class)
+                .setParameter("memberId", memberId)
+                .setFirstResult((int) pageable.getOffset())
+                .setMaxResults(pageable.getPageSize())
+                .getResultList();
+
+        Long count = em.createQuery(countJpql, Long.class)
+                .setParameter("memberId", memberId)
+                .getSingleResult();
+
+        return new PageImpl<>(comments, pageable, count);
+    }
+
+    public Page<CommentWithMetaDto> findCommentsWithMetaByMemberLiked(Long memberId, Pageable pageable) {
+        String jpql = """
+                select new darak.community.infra.repository.dto.CommentWithMetaDto(
+                    c.id, m.id, c.anonymous, m.name, c.content,
+                    case when c.parent is not null then true else false end,
+                    p.id, p.title, p.postType,
+                    b.id, b.name, c.createdDate,
+                    true,
+                    (select count(ch2) from CommentHeart ch2 where ch2.comment.id = c.id)
+                )
+                from CommentHeart ch
+                join ch.comment c
+                join c.member m
+                join c.post p
+                join p.board b
+                where ch.member.id = :memberId
+                order by ch.createdDate desc
+                """;
+
+        String countJpql = """
+                select count(c)
+                from CommentHeart ch
+                join ch.comment c
+                where ch.member.id = :memberId
+                """;
+
+        List<CommentWithMetaDto> comments = em.createQuery(jpql, CommentWithMetaDto.class)
+                .setParameter("memberId", memberId)
+                .setFirstResult((int) pageable.getOffset())
+                .setMaxResults(pageable.getPageSize())
+                .getResultList();
+
+        Long count = em.createQuery(countJpql, Long.class)
+                .setParameter("memberId", memberId)
+                .getSingleResult();
+
+        return new PageImpl<>(comments, pageable, count);
     }
 }

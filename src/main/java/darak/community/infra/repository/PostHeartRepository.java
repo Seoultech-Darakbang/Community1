@@ -59,4 +59,10 @@ public class PostHeartRepository {
                 .collect(Collectors.collectingAndThen(Collectors.toList(),
                         list -> new PageImpl<>(list, pageable, list.size())));
     }
+
+    public List<PostHeart> findByPostId(Long postId) {
+        return em.createQuery("select ph from PostHeart ph where ph.post.id = :postId", PostHeart.class)
+                .setParameter("postId", postId)
+                .getResultList();
+    }
 }
