@@ -6,6 +6,7 @@ import darak.community.domain.heart.PostHeart;
 import darak.community.domain.log.AdminLog;
 import darak.community.domain.member.Member;
 import darak.community.domain.member.MemberGrade;
+import darak.community.domain.post.Attachment;
 import darak.community.domain.post.Post;
 import darak.community.infra.repository.AdminLogRepository;
 import darak.community.infra.repository.BoardRepository;
@@ -17,8 +18,13 @@ import darak.community.service.post.request.PostCreateServiceRequest;
 import darak.community.service.post.request.PostDeleteServiceRequest;
 import darak.community.service.post.request.PostSearch;
 import darak.community.service.post.request.PostUpdateServiceRequest;
+import darak.community.service.post.response.GalleryImageResponse;
 import darak.community.service.post.response.PostResponse;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -158,6 +164,42 @@ public class PostServiceImpl implements PostService {
         return postRepository.findPostsWithMetaByMemberLiked(memberId, pageable);
     }
 
+    @Override
+    public List<GalleryImageResponse> findRecentGalleryImages(int limit) {
+        List<GalleryImageResponse> galleryImages = new ArrayList<>();
+
+        // 첨부파일
+        List<Attachment> attachmentImages = postRepository.findRecentGalleryImages(limit);
+        List<GalleryImageResponse> fromAttachments = attachmentImages.stream()
+                .map(GalleryImageResponse::fromAttachment)
+                .toList();
+        galleryImages.addAll(fromAttachments);
+
+        // content 내부 이미지 URL 추출
+        List<Post> galleryPosts = postRepository.findRecentGalleryPostsWithImages(limit * 2);
+        for (Post post : galleryPosts) {
+            List<String> contentImages = extractImagesFromContent(post.getContent());
+            for (String imageUrl : contentImages) {
+                // 중복 방지
+                boolean alreadyAdded = galleryImages.stream()
+                        .anyMatch(img -> img.getPost().getId().equals(post.getId()) &&
+                                img.getUrl().equals(imageUrl));
+
+                if (!alreadyAdded) {
+                    galleryImages.add(GalleryImageResponse.fromContentImage(imageUrl, post));
+                }
+            }
+
+            if (galleryImages.size() >= limit) {
+                break;
+            }
+        }
+
+        return galleryImages.stream()
+                .limit(limit)
+                .collect(Collectors.toList());
+    }
+
     private Member findMemberBy(Long memberId) {
         return memberRepository.findById(memberId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
@@ -180,5 +222,47 @@ public class PostServiceImpl implements PostService {
 
     private boolean isMemberAuthor(Member member, Post post) {
         return post.getMember().equals(member);
+    }
+
+
+    private List<String> extractImagesFromContent(String content) {
+        List<String> imageUrls = new ArrayList<>();
+
+        if (content == null || content.trim().isEmpty()) {
+            return imageUrls;
+        }
+
+        // Markdown 이미지 패턴: ![alt](url) 또는 ![alt](url "title")
+        Pattern markdownPattern = Pattern.compile("!\\[.*?\\]\\(([^\\s)]+)(?:\\s+\".*?\")?\\)");
+        Matcher markdownMatcher = markdownPattern.matcher(content);
+        while (markdownMatcher.find()) {
+            String url = markdownMatcher.group(1);
+            if (isImageUrl(url)) {
+                imageUrls.add(url);
+            }
+        }
+
+        // HTML img 태그 패턴: <img src="url" ...>
+        Pattern htmlPattern = Pattern.compile("<img[^>]+src=[\"']([^\"']+)[\"'][^>]*>");
+        Matcher htmlMatcher = htmlPattern.matcher(content);
+        while (htmlMatcher.find()) {
+            String url = htmlMatcher.group(1);
+            if (isImageUrl(url)) {
+                imageUrls.add(url);
+            }
+        }
+
+        return imageUrls;
+    }
+
+    private boolean isImageUrl(String url) {
+        if (url == null || url.trim().isEmpty()) {
+            return false;
+        }
+
+        String lowerUrl = url.toLowerCase();
+        return lowerUrl.matches(".*\\.(jpg|jpeg|png|gif|bmp|webp|svg)(\\?.*)?$") ||
+                lowerUrl.contains("/uploads/images/") ||
+                lowerUrl.contains("picsum.photos");
     }
 }

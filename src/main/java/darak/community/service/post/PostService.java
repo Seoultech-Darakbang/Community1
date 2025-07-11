@@ -6,8 +6,11 @@ import darak.community.service.post.request.PostDeleteServiceRequest;
 import darak.community.service.post.request.PostSearch;
 import darak.community.service.post.request.PostUpdateServiceRequest;
 import darak.community.service.post.response.PostResponse;
+import darak.community.service.post.response.GalleryImageResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+
+import java.util.List;
 
 public interface PostService {
     void createPost(PostCreateServiceRequest request);
@@ -33,4 +36,6 @@ public interface PostService {
     Page<PostWithMetaDto> searchPostsByMemberIdAnd(Long memberId, PostSearch postSearch);
 
     Page<PostWithMetaDto> findPostsByMemberIdAndLiked(Long memberId, Pageable pageable);
+
+    List<GalleryImageResponse> findRecentGalleryImages(int limit);
 }
