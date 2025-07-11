@@ -1,4 +1,4 @@
-package darak.community.web.controller.member;
+package darak.community.web.controller.community.profile;
 
 import darak.community.core.argumentresolver.Login;
 import darak.community.core.session.dto.LoginMember;
@@ -6,8 +6,6 @@ import darak.community.dto.PasswordForm;
 import darak.community.infra.repository.dto.CommentWithMetaDto;
 import darak.community.infra.repository.dto.PostWithMetaDto;
 import darak.community.service.board.BoardService;
-import darak.community.service.board.response.BoardResponse;
-import darak.community.service.boardcategory.response.BoardCategoryResponse;
 import darak.community.service.comment.CommentService;
 import darak.community.service.comment.request.CommentSearch;
 import darak.community.service.member.MemberService;
@@ -19,8 +17,6 @@ import darak.community.service.post.PostService;
 import darak.community.service.post.request.PostSearch;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.constraints.NotEmpty;
-import java.util.List;
-import java.util.Map;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -47,13 +43,7 @@ public class ProfileController {
     private final PostService postService;
     private final CommentService commentService;
     private final BoardService boardService;
-
-    @ModelAttribute
-    public void addAttributes(@Login LoginMember loginMember, Model model) {
-        addBoardInformation(model);
-        model.addAttribute("loginMember", loginMember);
-    }
-
+    
     @GetMapping
     public String profile(@Login LoginMember loginMember, Model model) {
 
@@ -201,10 +191,6 @@ public class ProfileController {
         return "redirect:/profile/edit";
     }
 
-    private void addBoardInformation(Model model) {
-        Map<BoardCategoryResponse, List<BoardResponse>> boardsGroupedByCategory = boardService.findBoardsGroupedByCategory();
-        model.addAttribute("boardsGroupedByCategory", boardsGroupedByCategory);
-    }
 
     @Data
     private class ProfileUpdateForm {
