@@ -5,7 +5,7 @@ import darak.community.service.member.response.ProfileResponse;
 import darak.community.service.member.response.ProfileStatsResponse;
 
 public interface ProfileService {
-    ProfileResponse getProfile(Long memberId);
+    ProfileResponse getProfileBy(Long memberId);
 
     ProfileStatsResponse getProfileStats(Long memberId);
 

@@ -27,7 +27,7 @@ public class ProfileServiceImpl implements ProfileService {
     private final MemberRepository memberRepository;
 
     @Override
-    public ProfileResponse getProfile(Long memberId) {
+    public ProfileResponse getProfileBy(Long memberId) {
         Member member = findMemberBy(memberId);
         return ProfileResponse.of(member);
     }
