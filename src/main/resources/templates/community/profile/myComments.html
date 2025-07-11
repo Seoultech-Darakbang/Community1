@@ -2,120 +2,123 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: layout(~{::title}, ~{::main})}">
 
 <head>
-  <title>다락방 커뮤니티 - 작성한 댓글 목록</title>
+    <title>다락방 커뮤니티 - 작성한 댓글 목록</title>
 </head>
 
 <body>
-  <main>
+<main>
     <div class="container max-w-6xl mx-auto px-6 py-8">
-      <div class="flex flex-col md:flex-row gap-6">
-        <!-- 좌측: 프로필 사이드바 -->
-        <div th:replace="~{fragments/profileSidebar :: profileSidebar('comments')}"></div>
+        <div class="flex flex-col md:flex-row gap-6">
+            <!-- 좌측: 프로필 사이드바 -->
+            <div th:replace="~{fragments/profileSidebar :: profileSidebar('comments')}"></div>
 
-        <!-- 우측: 작성한 댓글 목록 -->
-        <div class="w-full md:w-3/4">
-          <h1 class="text-3xl font-bold mb-6">작성한 댓글 목록</h1>
+            <!-- 우측: 작성한 댓글 목록 -->
+            <div class="w-full md:w-3/4">
+                <h1 class="text-3xl font-bold mb-6">작성한 댓글 목록</h1>
 
-          <!-- 검색 및 필터링 -->
-          <form method="get" action="/profile/comments" class="mb-6 flex flex-col md:flex-row gap-4">
-            <div class="flex-grow">
-              <input type="text" name="keyword" th:value="${keyword}" placeholder="검색어를 입력하세요"
-                class="w-full p-2 border rounded dark:bg-gray-700">
-            </div>
-            <div class="flex gap-2">
-              <select name="boardName" class="p-2 border rounded dark:bg-gray-700">
-                <option value="">전체 게시판</option>
-                <th:block th:each="category : ${boardCategories}">
-                  <option th:each="board : ${category.boards}" th:value="${board.name}"
-                    th:selected="${boardName == board.name}" th:text="${board.name}"></option>
-                </th:block>
-              </select>
-              <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">검색</button>
-            </div>
-          </form>
+                <!-- 검색 및 필터링 -->
+                <form method="get" action="/profile/comments" class="mb-6 flex flex-col md:flex-row gap-4">
+                    <div class="flex-grow">
+                        <input type="text" name="keyword" th:value="${keyword}" placeholder="검색어를 입력하세요"
+                               class="w-full p-2 border rounded dark:bg-gray-700">
+                    </div>
+                    <div class="flex gap-2">
+                        <select name="boardName" class="p-2 border rounded dark:bg-gray-700">
+                            <option value="">전체 게시판</option>
+                            <th:block th:each="categoryDto : ${boardsGroupedByCategory.keySet()}">
+                                <option th:each="board : ${boardsGroupedByCategory.get(categoryDto)}"
+                                        th:value="${board.name}"
+                                        th:selected="${boardName == board.name}" th:text="${board.name}"></option>
+                            </th:block>
+                        </select>
+                        <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">검색
+                        </button>
+                    </div>
+                </form>
 
-          <!-- 댓글 목록 -->
-          <div class="space-y-4">
-            <div th:each="comment, iterStat : ${comments.content}"
-              class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-              <div class="flex justify-between items-start mb-4">
-                <div class="flex-grow">
-                  <div class="flex items-center space-x-2 mb-2">
+                <!-- 댓글 목록 -->
+                <div class="space-y-4">
+                    <div th:each="comment, iterStat : ${comments.content}"
+                         class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="flex-grow">
+                                <div class="flex items-center space-x-2 mb-2">
                     <span
-                      class="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800 dark:bg-blue-800 dark:text-blue-100"
-                      th:text="${comment.boardName}"></span>
-                    <span th:if="${comment.reply}"
-                      class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100">
+                            class="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800 dark:bg-blue-800 dark:text-blue-100"
+                            th:text="${comment.boardName}"></span>
+                                    <span th:if="${comment.isReply}"
+                                          class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100">
                       답글
                     </span>
-                  </div>
-                  <h3 class="text-lg font-medium mb-2">
-                    <a th:href="@{/community/boards/{boardId}/posts/{postId}(boardId=${comment.boardId}, postId=${comment.postId})}"
-                      class="text-blue-600 dark:text-blue-400 hover:underline" th:text="${comment.postTitle}"></a>
-                  </h3>
+                                </div>
+                                <h3 class="text-lg font-medium mb-2">
+                                    <a th:href="@{/community/boards/{boardId}/posts/{postId}(boardId=${comment.boardId}, postId=${comment.postId})}"
+                                       class="text-blue-600 dark:text-blue-400 hover:underline"
+                                       th:text="${comment.postTitle}"></a>
+                                </h3>
+                            </div>
+                            <div class="text-right text-sm text-gray-500 dark:text-gray-400">
+                                <div th:text="${#temporals.format(comment.createdDate, 'yyyy-MM-dd HH:mm')}"></div>
+                                <div class="flex items-center space-x-2 mt-1">
+                                    <span>❤️ <span th:text="${comment.heartCount}"></span></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="text-gray-700 dark:text-gray-300 mb-4" th:text="${comment.content}"></div>
+
+                        <div class="flex justify-between items-center">
+                            <div class="text-sm text-gray-500 dark:text-gray-400">
+                                번호: <span
+                                    th:text="${comments.totalElements - (comments.number * comments.size) - iterStat.index}"></span>
+                            </div>
+                            <a th:href="@{/community/boards/{boardId}/posts/{postId}(boardId=${comment.boardId}, postId=${comment.postId})}"
+                               class="text-blue-600 dark:text-blue-400 hover:underline text-sm">
+                                게시글 보기
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- 댓글이 없을 때 -->
+                    <div th:if="${comments.content.isEmpty()}" class="text-center py-12">
+                        <p class="text-gray-500 dark:text-gray-400">작성한 댓글이 없습니다.</p>
+                    </div>
                 </div>
-                <div class="text-right text-sm text-gray-500 dark:text-gray-400">
-                  <div th:text="${#temporals.format(comment.createdDate, 'yyyy-MM-dd HH:mm')}"></div>
-                  <div class="flex items-center space-x-2 mt-1">
-                    <span>❤️ <span th:text="${comment.likeCount}"></span></span>
-                  </div>
-                </div>
-              </div>
 
-              <div class="text-gray-700 dark:text-gray-300 mb-4" th:text="${comment.content}"></div>
+                <!-- 페이지네이션 -->
+                <div th:if="${comments.totalPages > 1}" class="mt-6 flex justify-center">
+                    <nav class="flex items-center space-x-2">
+                        <!-- 이전 페이지 -->
+                        <a th:if="${comments.hasPrevious()}"
+                           th:href="@{/profile/comments(page=${comments.number - 1}, keyword=${keyword}, boardName=${boardName})}"
+                           class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700">
+                            이전
+                        </a>
 
-              <div class="flex justify-between items-center">
-                <div class="text-sm text-gray-500 dark:text-gray-400">
-                  번호: <span
-                    th:text="${comments.totalElements - (comments.number * comments.size) - iterStat.index}"></span>
-                </div>
-                <a th:href="@{/community/boards/{boardId}/posts/{postId}(boardId=${comment.boardId}, postId=${comment.postId})}"
-                  class="text-blue-600 dark:text-blue-400 hover:underline text-sm">
-                  게시글 보기
-                </a>
-              </div>
-            </div>
-
-            <!-- 댓글이 없을 때 -->
-            <div th:if="${comments.content.isEmpty()}" class="text-center py-12">
-              <p class="text-gray-500 dark:text-gray-400">작성한 댓글이 없습니다.</p>
-            </div>
-          </div>
-
-          <!-- 페이지네이션 -->
-          <div th:if="${comments.totalPages > 1}" class="mt-6 flex justify-center">
-            <nav class="flex items-center space-x-2">
-              <!-- 이전 페이지 -->
-              <a th:if="${comments.hasPrevious()}"
-                th:href="@{/profile/comments(page=${comments.number - 1}, keyword=${keyword}, boardName=${boardName})}"
-                class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700">
-                이전
-              </a>
-
-              <!-- 페이지 번호 -->
-              <span th:each="pageNum : ${#numbers.sequence(0, comments.totalPages - 1)}">
+                        <!-- 페이지 번호 -->
+                        <span th:each="pageNum : ${#numbers.sequence(0, comments.totalPages - 1)}">
                 <a th:if="${pageNum != comments.number}"
-                  th:href="@{/profile/comments(page=${pageNum}, keyword=${keyword}, boardName=${boardName})}"
-                  th:text="${pageNum + 1}"
-                  class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700">
+                   th:href="@{/profile/comments(page=${pageNum}, keyword=${keyword}, boardName=${boardName})}"
+                   th:text="${pageNum + 1}"
+                   class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700">
                 </a>
                 <span th:if="${pageNum == comments.number}" th:text="${pageNum + 1}"
-                  class="px-3 py-2 text-sm font-medium text-white bg-blue-600 border border-blue-600 rounded-md">
+                      class="px-3 py-2 text-sm font-medium text-white bg-blue-600 border border-blue-600 rounded-md">
                 </span>
               </span>
 
-              <!-- 다음 페이지 -->
-              <a th:if="${comments.hasNext()}"
-                th:href="@{/profile/comments(page=${comments.number + 1}, keyword=${keyword}, boardName=${boardName})}"
-                class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700">
-                다음
-              </a>
-            </nav>
-          </div>
+                        <!-- 다음 페이지 -->
+                        <a th:if="${comments.hasNext()}"
+                           th:href="@{/profile/comments(page=${comments.number + 1}, keyword=${keyword}, boardName=${boardName})}"
+                           class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700">
+                            다음
+                        </a>
+                    </nav>
+                </div>
+            </div>
         </div>
-      </div>
     </div>
-  </main>
+</main>
 </body>
 
 </html>

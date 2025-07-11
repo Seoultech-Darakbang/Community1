@@ -97,9 +97,9 @@
             <form method="post" action="/profile/change-password">
               <div class="space-y-4">
                 <div>
-                  <label for="currentPassword"
-                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">현재 비밀번호</label>
-                  <input type="password" id="currentPassword" name="currentPassword" required
+                  <label for="oldPassword" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">현재
+                    비밀번호</label>
+                  <input type="password" id="oldPassword" name="oldPassword" required
                     class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                 </div>
 
@@ -111,9 +111,10 @@
                 </div>
 
                 <div>
-                  <label for="confirmPassword" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">새
+                  <label for="newPasswordConfirm"
+                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">새
                     비밀번호 확인</label>
-                  <input type="password" id="confirmPassword" name="confirmPassword" required
+                  <input type="password" id="newPasswordConfirm" name="newPasswordConfirm" required
                     class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                 </div>
               </div>
