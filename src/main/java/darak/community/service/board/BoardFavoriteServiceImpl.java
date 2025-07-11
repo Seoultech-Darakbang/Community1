@@ -6,7 +6,9 @@ import darak.community.domain.member.Member;
 import darak.community.infra.repository.BoardFavoriteRepository;
 import darak.community.infra.repository.BoardRepository;
 import darak.community.infra.repository.MemberRepository;
+import darak.community.service.board.response.BoardResponse;
 import darak.community.service.board.response.FavoriteServiceResponse;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,6 +47,15 @@ public class BoardFavoriteServiceImpl implements BoardFavoriteService {
     public FavoriteServiceResponse isFavorite(Long memberId, Long boardId) {
         boolean present = boardFavoriteRepository.findByMemberIdAndBoardId(memberId, boardId).isPresent();
         return new FavoriteServiceResponse(present);
+    }
+
+    @Override
+    public List<BoardResponse> findFavoriteBoardsBy(Long memberId) {
+        List<BoardFavorite> boardFavorites = boardFavoriteRepository.findByMemberIdFetch(memberId);
+        return boardFavorites.stream()
+                .map(BoardFavorite::getBoard)
+                .map(BoardResponse::of)
+                .toList();
     }
 
     private void validateFavoriteNotExists(Member member, Board board) {
