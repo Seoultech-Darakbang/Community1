@@ -12,8 +12,10 @@ import darak.community.infra.repository.CommentHeartRepository;
 import darak.community.infra.repository.CommentRepository;
 import darak.community.infra.repository.MemberRepository;
 import darak.community.infra.repository.PostRepository;
+import darak.community.infra.repository.dto.CommentWithMetaDto;
 import darak.community.service.comment.request.CommentCreateServiceRequest;
 import darak.community.service.comment.request.CommentDeleteServiceRequest;
+import darak.community.service.comment.request.CommentSearch;
 import darak.community.service.comment.request.ReplyCreateServiceRequest;
 import darak.community.service.comment.response.CommentResponse;
 import java.util.ArrayList;
@@ -23,6 +25,7 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -116,6 +119,34 @@ public class CommentServiceImpl implements CommentService {
                 .map(CommentResponse::createRootResponse)
                 .toList();
         return new PageImpl<>(commentResponses, pageable, commentHearts.size());
+    }
+
+    @Override
+    public Page<CommentWithMetaDto> findCommentsWithMetaBy(Long memberId, Pageable pageable) {
+        return commentRepository.findCommentsWithMetaByMemberIdPaged(memberId, pageable);
+    }
+
+    @Override
+    public Page<CommentWithMetaDto> searchCommentsWithMetaByMemberIdAnd(Long memberId, CommentSearch commentSearch) {
+        Pageable pageable = PageRequest.of(commentSearch.getPage(), commentSearch.getSize());
+        Page<CommentWithMetaDto> comments = commentRepository.findCommentsWithMetaByMemberIdPaged(
+                memberId, pageable);
+
+        if (commentSearch.getBoardName() == null || commentSearch.getBoardName().isEmpty()) {
+            return comments;
+        }
+
+        List<CommentWithMetaDto> filteredComments = comments.stream()
+                .filter(comment -> comment.getBoardName().contains(commentSearch.getBoardName())
+                        || comment.getContent().contains(commentSearch.getKeyword()))
+                .toList();
+
+        return new PageImpl<>(filteredComments, pageable, filteredComments.size());
+    }
+
+    @Override
+    public Page<CommentWithMetaDto> findCommentsWithMetaByMemberIdAndHearted(Long memberId, Pageable pageable) {
+        return commentRepository.findCommentsWithMetaByMemberLiked(memberId, pageable);
     }
 
     @Override
