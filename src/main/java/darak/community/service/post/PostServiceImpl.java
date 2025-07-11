@@ -12,8 +12,10 @@ import darak.community.infra.repository.BoardRepository;
 import darak.community.infra.repository.MemberRepository;
 import darak.community.infra.repository.PostHeartRepository;
 import darak.community.infra.repository.PostRepository;
+import darak.community.infra.repository.dto.PostWithMetaDto;
 import darak.community.service.post.request.PostCreateServiceRequest;
 import darak.community.service.post.request.PostDeleteServiceRequest;
+import darak.community.service.post.request.PostSearch;
 import darak.community.service.post.request.PostUpdateServiceRequest;
 import darak.community.service.post.response.PostResponse;
 import java.util.List;
@@ -21,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -66,6 +69,10 @@ public class PostServiceImpl implements PostService {
         return PostResponse.of(post);
     }
 
+    @Override
+    public Page<PostWithMetaDto> findPostsWithMetaByMemberPaged(Long memberId, Pageable pageable) {
+        return postRepository.findPostsWithMetaByMemberId(memberId, pageable);
+    }
 
     @Override
     @Transactional
@@ -86,7 +93,9 @@ public class PostServiceImpl implements PostService {
 
         validateAuthor(member, post);
 
-        postRepository.delete(post);
+        // TODO: 단방향 POST - HEART 매핑 vs 양방향 매핑 비교정리
+        List<PostHeart> hearts = postHeartRepository.findByPostId(postId);
+        hearts.forEach(postHeartRepository::delete);
     }
 
     @Override
@@ -125,6 +134,28 @@ public class PostServiceImpl implements PostService {
     @Override
     public long getTotalPostCount() {
         return postRepository.count();
+    }
+
+    @Override
+    public Page<PostWithMetaDto> searchPostsByMemberIdAnd(Long memberId, PostSearch postSearch) {
+        Member member = findMemberBy(memberId);
+        Pageable pageable = PageRequest.of(postSearch.getPage(), postSearch.getSize());
+        Page<PostWithMetaDto> posts = postRepository.findPostsWithMetaByMemberId(memberId, pageable);
+        // 여기서 검색 수행
+        if (postSearch.getKeyword() == null || postSearch.getKeyword().isEmpty()) {
+            return posts;
+        }
+        List<PostWithMetaDto> result = posts.stream()
+                .filter(post -> post.getTitle().contains(postSearch.getKeyword())
+                        || post.getBoardName().contains(postSearch.getBoardName()))
+                .toList();
+
+        return new PageImpl<>(result, pageable, result.size());
+    }
+
+    @Override
+    public Page<PostWithMetaDto> findPostsByMemberIdAndLiked(Long memberId, Pageable pageable) {
+        return postRepository.findPostsWithMetaByMemberLiked(memberId, pageable);
     }
 
     private Member findMemberBy(Long memberId) {

@@ -1,7 +1,9 @@
 package darak.community.service.post;
 
+import darak.community.infra.repository.dto.PostWithMetaDto;
 import darak.community.service.post.request.PostCreateServiceRequest;
 import darak.community.service.post.request.PostDeleteServiceRequest;
+import darak.community.service.post.request.PostSearch;
 import darak.community.service.post.request.PostUpdateServiceRequest;
 import darak.community.service.post.response.PostResponse;
 import org.springframework.data.domain.Page;
@@ -11,6 +13,8 @@ public interface PostService {
     void createPost(PostCreateServiceRequest request);
 
     PostResponse readPostBy(Long postId, Long memberId);
+
+    Page<PostWithMetaDto> findPostsWithMetaByMemberPaged(Long memberId, Pageable pageable);
 
     Page<PostResponse> findPostsPagedIn(Long boardId, Pageable pageable);
 
@@ -26,4 +30,7 @@ public interface PostService {
 
     long getTotalPostCount();
 
+    Page<PostWithMetaDto> searchPostsByMemberIdAnd(Long memberId, PostSearch postSearch);
+
+    Page<PostWithMetaDto> findPostsByMemberIdAndLiked(Long memberId, Pageable pageable);
 }
