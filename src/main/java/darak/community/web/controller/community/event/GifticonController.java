@@ -28,7 +28,7 @@ public class GifticonController {
     @GetMapping
     public String gifticonList(@Login Member member, Model model, HttpSession session) {
         List<GifticonDto.Response> activeGifticons =
-                GifticonDto.Response.from(gifticonService.getActiveGifticons());
+                GifticonDto.Response.from(gifticonService.findActiveGifticonsAll());
 
         model.addAttribute("gifticons", activeGifticons);
         model.addAttribute("member", member);

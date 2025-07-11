@@ -124,7 +124,7 @@ class GifticonServiceImplTest {
 
     @Test
     @DisplayName("활성 기프티콘 목록 조회")
-    void getActiveGifticons() {
+    void findActiveGifticonsAll() {
         // given
         List<Gifticon> activeGifticons = Arrays.asList(
                 createTestGifticon("기프티콘 1"),
@@ -135,7 +135,7 @@ class GifticonServiceImplTest {
                 .willReturn(activeGifticons);
 
         // when
-        List<Gifticon> result = gifticonService.getActiveGifticons();
+        List<Gifticon> result = gifticonService.findActiveGifticonsAll();
 
         // then
         assertThat(result).hasSize(2);

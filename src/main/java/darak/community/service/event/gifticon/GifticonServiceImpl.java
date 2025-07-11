@@ -72,9 +72,18 @@ public class GifticonServiceImpl implements GifticonService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<GifticonResponse> getActiveGifticons() {
+    public List<GifticonResponse> findActiveGifticonsAll() {
         return gifticonRepository.findActiveGifticons(GifticonStatus.ACTIVE, LocalDateTime.now())
                 .stream()
+                .map(GifticonResponse::of)
+                .toList();
+    }
+
+    @Override
+    public List<GifticonResponse> findActiveGifticonsLimit(int limit) {
+        return gifticonRepository.findActiveGifticons(GifticonStatus.ACTIVE, LocalDateTime.now())
+                .stream()
+                .limit(limit)
                 .map(GifticonResponse::of)
                 .toList();
     }

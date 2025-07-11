@@ -93,7 +93,7 @@ class GifticonControllerTest {
         );
         List<GifticonClaim> claims = Arrays.asList();
 
-        given(gifticonService.getActiveGifticons()).willReturn(gifticons);
+        given(gifticonService.findActiveGifticonsAll()).willReturn(gifticons);
         given(gifticonService.getMemberClaims(testMember)).willReturn(claims);
 
         // when & then

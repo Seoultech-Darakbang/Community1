@@ -15,7 +15,9 @@ public interface GifticonService {
 
     void deactivateGifticon(Long gifticonId);
 
-    List<GifticonResponse> getActiveGifticons();
+    List<GifticonResponse> findActiveGifticonsAll();
+
+    List<GifticonResponse> findActiveGifticonsLimit(int limit);
 
     Page<GifticonResponse> getAllGifticons(Pageable pageable);
 
