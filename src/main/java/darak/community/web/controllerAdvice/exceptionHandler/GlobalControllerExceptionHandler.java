@@ -1,4 +1,4 @@
-package darak.community.web.exceptionHandler;
+package darak.community.web.controllerAdvice.exceptionHandler;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ui.Model;
