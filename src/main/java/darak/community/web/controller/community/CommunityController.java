@@ -1,18 +1,13 @@
 package darak.community.web.controller.community;
 
 import darak.community.core.argumentresolver.Login;
-import darak.community.domain.board.Board;
-import darak.community.domain.board.BoardCategory;
-import darak.community.domain.member.Member;
-import darak.community.domain.post.Attachment;
-import darak.community.domain.post.Post;
-import darak.community.dto.GifticonDto;
-import darak.community.service.board.BoardCategoryService;
+import darak.community.core.session.dto.LoginMember;
 import darak.community.service.board.BoardFavoriteService;
 import darak.community.service.board.BoardService;
+import darak.community.service.board.response.BoardResponse;
+import darak.community.service.boardcategory.response.BoardCategoryResponse;
 import darak.community.service.event.gifticon.GifticonService;
 import darak.community.service.post.PostService;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -28,61 +23,31 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 public class CommunityController {
 
     private final BoardService boardService;
-    private final BoardCategoryService boardCategoryService;
     private final BoardFavoriteService boardFavoriteService;
     private final PostService postService;
     private final GifticonService gifticonService;
 
     @ModelAttribute
-    public void addAttributes(@Login Member member, Model model) {
+    public void addBasicAttributes(@Login LoginMember loginMember, Model model) {
         addBoardInformation(model);
-        model.addAttribute("member", member);
+        model.addAttribute("member", loginMember);
     }
 
     @GetMapping("/community")
-    public String communityHome(@Login Member member, Model model) {
+    public String communityHome(@Login LoginMember loginMember, Model model) {
 
-        model.addAttribute("boardFavorites", boardFavoriteService.findByMemberId(member.getId()));
-
-        List<BoardCategory> boardCategories = boardCategoryService.findAll();
-        model.addAttribute("allBoardCategories", boardCategories);
-
-        Map<String, Object> recentPostsData = getRecentPostMap();
-        model.addAttribute("recentPostsData", recentPostsData);
-
-        List<GifticonDto.Response> recentGifticons =
-                GifticonDto.Response.from(gifticonService.getActiveGifticons().stream().limit(3).toList());
-        model.addAttribute("recentGifticons", recentGifticons);
-
-        List<Attachment> galleryImages = postService.findRecentGalleryImages(8);
-        model.addAttribute("galleryImages", galleryImages);
+        model.addAttribute("favoriteBoards", boardFavoriteService.findFavoriteBoardsBy(loginMember.getId()));
+        model.addAttribute("recentPostsData", boardService.findRecentPostsGroupedByBoardLimit(
+                2));
+        model.addAttribute("recentGifticons", gifticonService.findActiveGifticonsLimit(3));
+        model.addAttribute("galleryImages", postService.findRecentGalleryImages(8));
 
         return "community/communityHome";
     }
 
-    private Map<String, Object> getRecentPostMap() {
-        Map<String, Object> recentPostsData = new HashMap<>();
-        List<BoardCategory> categories = boardCategoryService.findAll();
-
-        for (BoardCategory category : categories) {
-            Board topPriorityBoard = boardService.findTopPriorityBoardByCategory(category.getId());
-
-            if (topPriorityBoard != null) {
-                List<Post> recentPosts = postService.findRecentPostsByBoardId(topPriorityBoard.getId(), 4);
-
-                Map<String, Object> categoryData = new HashMap<>();
-                categoryData.put("category", category);
-                categoryData.put("board", topPriorityBoard);
-                categoryData.put("posts", recentPosts);
-
-                recentPostsData.put(category.getName().toLowerCase(), categoryData);
-            }
-        }
-
-        return recentPostsData;
-    }
-
     private void addBoardInformation(Model model) {
-        model.addAttribute("boardCategories", boardCategoryService.findAll());
+        Map<BoardCategoryResponse, List<BoardResponse>> boardsGroupedByCategory = boardService.findBoardsGroupedByCategory();
+        model.addAttribute("boardsGroupedByCategory", boardsGroupedByCategory);
     }
+
 }
