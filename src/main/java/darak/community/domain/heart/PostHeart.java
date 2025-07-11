@@ -1,8 +1,8 @@
 package darak.community.domain.heart;
 
 import darak.community.domain.BaseEntity;
-import darak.community.domain.post.Post;
 import darak.community.domain.member.Member;
+import darak.community.domain.post.Post;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -33,6 +33,5 @@ public class PostHeart extends BaseEntity {
     public PostHeart(Post post, Member member) {
         this.post = post;
         this.member = member;
-        post.getHearts().add(this);
     }
 }

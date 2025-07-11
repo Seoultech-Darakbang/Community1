@@ -27,7 +27,6 @@ public class CommentHeart extends Heart {
     public CommentHeart(Comment comment, Member member) {
         this.comment = comment;
         setMember(member);
-        comment.getHearts().add(this);
     }
 
     public void setMember(Member member) {

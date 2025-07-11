@@ -1,10 +1,8 @@
 package darak.community.domain.comment;
 
 import darak.community.domain.BaseEntity;
-import darak.community.domain.post.Post;
-import darak.community.domain.heart.CommentHeart;
 import darak.community.domain.member.Member;
-import jakarta.persistence.CascadeType;
+import darak.community.domain.post.Post;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -12,9 +10,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -43,9 +38,6 @@ public class Comment extends BaseEntity {
     @JoinColumn(name = "parent_id")
     private Comment parent;
 
-    // 좋아요 양방향 관계 설정
-    @OneToMany(mappedBy = "comment", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CommentHeart> hearts = new ArrayList<>();
 
     public static Comment createComment(String content, boolean anonymous, Post post, Member member) {
         Comment comment = new Comment();
@@ -65,8 +57,5 @@ public class Comment extends BaseEntity {
     public void updateParent(Comment parent) {
         this.parent = parent;
     }
-
-    public int getLikeCount() {
-        return hearts.size();
-    }
+    
 }
