@@ -23,7 +23,7 @@ public class BoardFavoriteRepository {
         em.remove(boardFavorite);
     }
 
-    public List<BoardFavorite> findByMemberId(Long memberId) {
+    public List<BoardFavorite> findByMemberIdFetch(Long memberId) {
         return em.createQuery(
                         "select bf from BoardFavorite bf " +
                                 "join fetch bf.board " +
