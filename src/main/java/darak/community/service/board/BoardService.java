@@ -3,7 +3,9 @@ package darak.community.service.board;
 import darak.community.service.board.request.BoardCreateServiceRequest;
 import darak.community.service.board.request.BoardUpdateServiceRequest;
 import darak.community.service.board.response.BoardResponse;
+import darak.community.service.boardcategory.response.BoardCategoryResponse;
 import java.util.List;
+import java.util.Map;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -18,6 +20,8 @@ public interface BoardService {
     BoardResponse readBoardBy(Long boardId);
 
     List<BoardResponse> findBoardsBy(Long categoryId);
+
+    Map<BoardCategoryResponse, List<BoardResponse>> findBoardsGroupedByCategory();
 
     List<BoardResponse> findOrderedBoardsBy(Long categoryId);
 

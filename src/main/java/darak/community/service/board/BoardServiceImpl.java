@@ -9,7 +9,10 @@ import darak.community.infra.repository.BoardRepository;
 import darak.community.service.board.request.BoardCreateServiceRequest;
 import darak.community.service.board.request.BoardUpdateServiceRequest;
 import darak.community.service.board.response.BoardResponse;
+import darak.community.service.boardcategory.response.BoardCategoryResponse;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -64,6 +67,15 @@ public class BoardServiceImpl implements BoardService {
         return boards.stream()
                 .map(BoardResponse::of)
                 .toList();
+    }
+
+    @Override
+    public Map<BoardCategoryResponse, List<BoardResponse>> findBoardsGroupedByCategory() {
+        return boardRepository.findAll().stream()
+                .collect(Collectors.groupingBy(
+                        board -> BoardCategoryResponse.of(board.getBoardCategory()),
+                        Collectors.mapping(BoardResponse::of, Collectors.toList())
+                ));
     }
 
     @Override
