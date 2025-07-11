@@ -1,5 +1,6 @@
 package darak.community.service.board;
 
+import darak.community.infra.repository.dto.PostWithMetaDto;
 import darak.community.service.board.request.BoardCreateServiceRequest;
 import darak.community.service.board.request.BoardUpdateServiceRequest;
 import darak.community.service.board.response.BoardResponse;
@@ -23,6 +24,8 @@ public interface BoardService {
 
     Map<BoardCategoryResponse, List<BoardResponse>> findBoardsGroupedByCategory();
 
+    Map<BoardResponse, List<PostWithMetaDto>> findRecentPostsGroupedByBoardLimit(int limit);
+
     List<BoardResponse> findOrderedBoardsBy(Long categoryId);
 
     BoardResponse findTopPriorityBoardBy(Long categoryId);
@@ -32,4 +35,5 @@ public interface BoardService {
     Page<BoardResponse> getBoardsByCategoryPaged(Long categoryId, Pageable pageable);
 
     long getTotalBoardCount();
+
 }

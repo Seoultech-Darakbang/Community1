@@ -6,6 +6,8 @@ import darak.community.domain.board.BoardCategory;
 import darak.community.domain.member.MemberGrade;
 import darak.community.infra.repository.BoardCategoryRepository;
 import darak.community.infra.repository.BoardRepository;
+import darak.community.infra.repository.PostRepository;
+import darak.community.infra.repository.dto.PostWithMetaDto;
 import darak.community.service.board.request.BoardCreateServiceRequest;
 import darak.community.service.board.request.BoardUpdateServiceRequest;
 import darak.community.service.board.response.BoardResponse;
@@ -15,6 +17,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +29,7 @@ public class BoardServiceImpl implements BoardService {
 
     private final BoardRepository boardRepository;
     private final BoardCategoryRepository boardCategoryRepository;
+    private final PostRepository postRepository;
 
     @ServiceAuth(MemberGrade.ADMIN)
     @Override
@@ -79,6 +83,17 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
+    public Map<BoardResponse, List<PostWithMetaDto>> findRecentPostsGroupedByBoardLimit(int limit) {
+        List<Board> boards = boardRepository.findAll();
+        return boards.stream()
+                .collect(Collectors.toMap(
+                        BoardResponse::of,
+                        board -> postRepository.findPostsWithMetaByBoardId(board.getId(), PageRequest.of(0, limit))
+                                .stream()
+                                .toList()));
+    }
+
+    @Override
     public List<BoardResponse> findOrderedBoardsBy(Long categoryId) {
         List<Board> boards = boardRepository.findByBoardCategoryId(categoryId);
         return boards.stream()
@@ -110,6 +125,7 @@ public class BoardServiceImpl implements BoardService {
     public long getTotalBoardCount() {
         return boardRepository.count();
     }
+
 
     private Board findBoardBy(Long boardId) {
         return boardRepository.findById(boardId)

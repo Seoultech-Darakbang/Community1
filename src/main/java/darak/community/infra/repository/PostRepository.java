@@ -1,5 +1,6 @@
 package darak.community.infra.repository;
 
+import darak.community.domain.board.Board;
 import darak.community.domain.post.Attachment;
 import darak.community.domain.post.Post;
 import darak.community.infra.repository.dto.PostWithMetaDto;
@@ -63,7 +64,7 @@ public class PostRepository {
                                 "join a.post p " +
                                 "join p.board b " +
                                 "where (lower(b.name) like '%갤러리%' or lower(b.name) like '%gallery%') " +
-                                "and a.fileType like 'image/%' " +
+                                "and a.uploadFile.fileType like 'image/%' " +
                                 "order by p.createdDate desc", Attachment.class)
                 .setMaxResults(limit)
                 .getResultList();
@@ -250,6 +251,51 @@ public class PostRepository {
         return new PageImpl<>(posts, pageable, count);
     }
 
+    public Page<PostWithMetaDto> findPostsWithMetaByBoardId(Long boardId, Pageable pageable) {
+        String jpql = """
+                select new darak.community.infra.repository.dto.PostWithMetaDto(
+                            p.id, p.title, p.content, p.anonymous, p.postType,
+                            m.id, m.name, m.memberGrade, b.id, b.name,
+                            p.readCount, p.createdDate,
+                            (select count(c) from Comment c
+                             where c.post = p),
+                            case when
+                                 (select count(ph2) from PostHeart ph2
+                                  where ph2.post = p
+                                    and ph2.member.id = :memberId) > 0
+                                 then true
+                                 else false
+                             end,
+                            (select count(ph) from PostHeart ph
+                             where ph.post = p)
+                        )
+                        from Post p
+                        join p.member m
+                        join p.board b
+                        where b.id = :boardId
+                        order by p.createdDate desc
+                """;
+        String countJpql = """
+                select count(p)
+                from Post p
+                where p.board.id = :boardId
+                """;
+
+        List<PostWithMetaDto> content = em.createQuery(jpql, PostWithMetaDto.class)
+                .setParameter("boardId", boardId)
+                .setParameter("memberId",
+                        pageable.getPageNumber()) // Assuming memberId is passed in pageable for context
+                .setFirstResult((int) pageable.getOffset())
+                .setMaxResults(pageable.getPageSize())
+                .getResultList();
+
+        Long total = em.createQuery(countJpql, Long.class)
+                .setParameter("boardId", boardId)
+                .getSingleResult();
+
+        return new PageImpl<>(content, pageable, total);
+    }
+
     public Page<PostWithMetaDto> findPostsWithMetaByMemberId(Long memberId, Pageable pageable) {
         String jpql = """
                 select new darak.community.infra.repository.dto.PostWithMetaDto(
@@ -340,6 +386,14 @@ public class PostRepository {
     public long count() {
         return em.createQuery("select count(p) from Post p", Long.class)
                 .getSingleResult();
+    }
+
+    public List<Post> findRecentPostByBoard(Board board, int limit) {
+        return em.createQuery(
+                        "select p from Post p where p.board = :board order by p.createdDate desc", Post.class)
+                .setParameter("board", board)
+                .setMaxResults(limit)
+                .getResultList();
     }
 
 }
