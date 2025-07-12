@@ -21,7 +21,7 @@ public class CommunityControllerAdvice {
     @ModelAttribute
     public void addBasicAttributes(@Login LoginMember loginMember, Model model) {
         addBoardInformation(model);
-        model.addAttribute("member", loginMember);
+        model.addAttribute("loginMember", loginMember);
     }
 
     private void addBoardInformation(Model model) {

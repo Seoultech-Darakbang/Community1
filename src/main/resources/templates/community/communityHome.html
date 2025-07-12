@@ -9,7 +9,7 @@
 <main>
     <!-- 관리자 패널 (관리자만 표시) -->
     <section
-            th:if="${member != null && (member.memberGrade.name() == 'ADMIN' || member.memberGrade.name() == 'MASTER')}"
+            th:if="${loginMember != null && (loginMember.memberGrade.name() == 'ADMIN' || member.memberGrade.name() == 'MASTER')}"
             class="px-6 py-4 bg-red-50 dark:bg-red-900/20 border-b-2 border-red-200 dark:border-red-800">
         <div class="container mx-auto max-w-6xl">
             <div class="flex justify-between items-center">

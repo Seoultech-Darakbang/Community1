@@ -94,15 +94,15 @@
                class="hover:text-blue-500 transition-colors flex items-center gap-1">
                 <i class="fas fa-users"></i> 커뮤니티
             </a>
-            <a th:href="@{/login}" th:if="${member == null}" href="/login"
+            <a th:href="@{/login}" th:if="${loginMember == null}" href="/login"
                class="hover:text-blue-500 transition-colors flex items-center gap-1">
                 <i class="fas fa-sign-in-alt"></i> 로그인
             </a>
-            <a th:href="@{/members/new}" th:if="${member == null}" href="/signup"
+            <a th:href="@{/members/new}" th:if="${loginMember == null}" href="/signup"
                class="hover:text-blue-500 transition-colors flex items-center gap-1">
                 <i class="fas fa-user-plus"></i> 회원가입
             </a>
-            <form th:action="@{/logout}" th:if="${member != null}" method="post">
+            <form th:action="@{/logout}" th:if="${loginMember != null}" method="post">
                 <button class="hover:text-blue-500 transition-colors flex items-center gap-1" type="submit">
                     <i class="fas fa-sign-out-alt"></i> 로그아웃
                 </button>
@@ -143,15 +143,15 @@
            class="hover:text-blue-500 transition-colors flex items-center gap-2">
             <i class="fas fa-users"></i> 커뮤니티
         </a>
-        <a th:href="@{/login}" href="/login" th:if="${member == null}"
+        <a th:href="@{/login}" href="/login" th:if="${loginMember == null}"
            class="hover:text-blue-500 transition-colors flex items-center gap-2">
             <i class="fas fa-sign-in-alt"></i> 로그인
         </a>
-        <a th:href="@{/members/new}" th:if="${member == null}" href="/signup"
+        <a th:href="@{/members/new}" th:if="${loginMember == null}" href="/signup"
            class="hover:text-blue-500 transition-colors flex items-center gap-2">
             <i class="fas fa-user-plus"></i> 회원가입
         </a>
-        <form th:action="@{/logout}" th:if="${member != null}" method="post">
+        <form th:action="@{/logout}" th:if="${loginMember != null}" method="post">
             <button class="hover:text-blue-500 transition-colors flex items-center gap-2" type="submit">
                 <i class="fas fa-sign-out-alt"></i> 로그아웃
             </button>
