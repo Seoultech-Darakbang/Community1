@@ -12,6 +12,7 @@ import darak.community.infra.repository.CommentHeartRepository;
 import darak.community.infra.repository.CommentRepository;
 import darak.community.infra.repository.MemberRepository;
 import darak.community.infra.repository.PostRepository;
+import darak.community.infra.repository.dto.CommentInPostDto;
 import darak.community.infra.repository.dto.CommentWithMetaDto;
 import darak.community.service.comment.request.CommentCreateServiceRequest;
 import darak.community.service.comment.request.CommentDeleteServiceRequest;
@@ -85,6 +86,12 @@ public class CommentServiceImpl implements CommentService {
 
         adminLogRepository.save(AdminLog.commentDeleteLog(comment, member, request.getReason()));
         commentRepository.delete(comment);
+    }
+
+    @Override
+    public Page<CommentInPostDto> findCommentsInPostBy(Long memberId, Long postId, Pageable pageable) {
+        return commentRepository.findCommentInPostByPostIdAndMemberIdPaged(
+                postId, memberId, pageable);
     }
 
     @Override

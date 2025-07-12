@@ -1,5 +1,6 @@
 package darak.community.service.comment;
 
+import darak.community.infra.repository.dto.CommentInPostDto;
 import darak.community.infra.repository.dto.CommentWithMetaDto;
 import darak.community.service.comment.request.CommentCreateServiceRequest;
 import darak.community.service.comment.request.CommentDeleteServiceRequest;
@@ -18,6 +19,8 @@ public interface CommentService {
     void deleteCommentBy(Long commentId, Long memberId);
 
     void deleteCommentByAdmin(CommentDeleteServiceRequest request);
+
+    Page<CommentInPostDto> findCommentsInPostBy(Long memberId, Long postId, Pageable pageable);
 
     Page<CommentResponse> findCommentsWithReplyBy(Long memberId, Long postId, Pageable pageable);
 
