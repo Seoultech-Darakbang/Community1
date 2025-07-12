@@ -1,4 +1,4 @@
-package darak.community.web.controller.admin;
+package darak.community.web.controller.community.admin;
 
 import darak.community.core.argumentresolver.Login;
 import darak.community.domain.member.Member;
