@@ -59,9 +59,8 @@ public class PostController {
     }
 
     @GetMapping("/community/boards/{boardId}/posts")
-    public String writePostForm(@Login LoginMember loginMember,
-                                @PathVariable Long boardId, @ModelAttribute PostCURequestForm form,
-                                Model model) {
+    public String writePostForm(@PathVariable Long boardId,
+                                @ModelAttribute PostCURequestForm form, Model model) {
 
         return "community/post/createPostForm";
     }
