@@ -4,7 +4,7 @@ import darak.community.core.argumentresolver.Login;
 import darak.community.core.session.dto.LoginMember;
 import darak.community.dto.PasswordForm;
 import darak.community.infra.repository.dto.CommentWithMetaDto;
-import darak.community.infra.repository.dto.PostWithMetaDto;
+import darak.community.infra.repository.dto.PostWithAllDto;
 import darak.community.service.board.BoardService;
 import darak.community.service.comment.CommentService;
 import darak.community.service.comment.request.CommentSearch;
@@ -43,7 +43,7 @@ public class ProfileController {
     private final PostService postService;
     private final CommentService commentService;
     private final BoardService boardService;
-    
+
     @GetMapping
     public String profile(@Login LoginMember loginMember, Model model) {
 
@@ -75,7 +75,7 @@ public class ProfileController {
                           @RequestParam(required = false) String boardName,
                           Model model) {
 
-        Page<PostWithMetaDto> postWithMetaDtos = postService.searchPostsByMemberIdAnd(loginMember.getId(),
+        Page<PostWithAllDto> postWithMetaDtos = postService.searchPostsByMemberIdAnd(loginMember.getId(),
                 PostSearch.builder()
                         .keyword(keyword)
                         .boardName(boardName)
@@ -122,7 +122,7 @@ public class ProfileController {
                              Model model) {
 
         Pageable pageable = PageRequest.of(page, size);
-        Page<PostWithMetaDto> postWithMetaDtos = postService.findPostsByMemberIdAndLiked(loginMember.getId(),
+        Page<PostWithAllDto> postWithMetaDtos = postService.findPostsByMemberIdAndLiked(loginMember.getId(),
                 pageable);
 
         model.addAttribute("posts", postWithMetaDtos);
