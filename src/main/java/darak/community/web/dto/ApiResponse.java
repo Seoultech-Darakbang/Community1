@@ -1,4 +1,4 @@
-package darak.community.dto;
+package darak.community.web.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

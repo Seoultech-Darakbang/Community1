@@ -1,4 +1,4 @@
-package darak.community.dto;
+package darak.community.web.dto;
 
 import darak.community.domain.post.PostType;
 import darak.community.service.post.request.PostCreateServiceRequest;

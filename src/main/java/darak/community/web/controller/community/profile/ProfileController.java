@@ -2,7 +2,6 @@ package darak.community.web.controller.community.profile;
 
 import darak.community.core.argumentresolver.Login;
 import darak.community.core.session.dto.LoginMember;
-import darak.community.dto.PasswordForm;
 import darak.community.infra.repository.dto.CommentWithMetaDto;
 import darak.community.infra.repository.dto.PostWithAllDto;
 import darak.community.service.comment.CommentService;
@@ -14,6 +13,7 @@ import darak.community.service.member.response.ProfileResponse;
 import darak.community.service.member.response.ProfileStatsResponse;
 import darak.community.service.post.PostService;
 import darak.community.service.post.request.PostSearch;
+import darak.community.web.dto.PasswordForm;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;

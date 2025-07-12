@@ -2,9 +2,9 @@ package darak.community.web.api.comment;
 
 import darak.community.core.argumentresolver.Login;
 import darak.community.core.session.dto.LoginMember;
-import darak.community.dto.ApiResponse;
 import darak.community.service.comment.CommentHeartService;
 import darak.community.service.comment.response.MyCommentHeartResponse;
+import darak.community.web.dto.ApiResponse;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;

@@ -1,4 +1,4 @@
-package darak.community.dto;
+package darak.community.web.dto;
 
 import darak.community.service.login.request.LoginServiceRequest;
 import jakarta.validation.constraints.NotEmpty;
