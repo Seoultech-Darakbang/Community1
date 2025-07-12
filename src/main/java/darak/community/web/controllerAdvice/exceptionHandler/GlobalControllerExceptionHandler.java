@@ -16,6 +16,14 @@ public class GlobalControllerExceptionHandler {
         return "error/403";
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public String handleIllegalArgumentException(IllegalArgumentException ex, Model model) {
+        String message = ex.getMessage();
+
+        model.addAttribute("errorMessage", "잘못된 요청입니다: " + message);
+        return "error/404";
+    }
+
     @ExceptionHandler(Exception.class)
     public String handleAllExceptions(Exception ex, Model model) {
         log.error("예상치 못한 오류 발생", ex);
