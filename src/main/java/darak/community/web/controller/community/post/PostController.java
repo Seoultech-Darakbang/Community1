@@ -1,27 +1,17 @@
 package darak.community.web.controller.community.post;
 
 import darak.community.core.argumentresolver.Login;
-import darak.community.domain.board.Board;
-import darak.community.domain.board.BoardCategory;
-import darak.community.domain.comment.Comment;
+import darak.community.core.session.dto.LoginMember;
 import darak.community.domain.member.Member;
-import darak.community.domain.post.Post;
 import darak.community.dto.PostCURequestForm;
-import darak.community.service.board.BoardFavoriteService;
 import darak.community.service.board.BoardService;
-import darak.community.service.boardcategory.BoardCategoryService;
-import darak.community.service.comment.CommentHeartService;
+import darak.community.service.board.response.BoardResponse;
 import darak.community.service.comment.CommentService;
 import darak.community.service.post.PostHeartService;
 import darak.community.service.post.PostService;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -41,154 +31,74 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 public class PostController {
 
     private final BoardService boardService;
-    private final BoardCategoryService boardCategoryService;
-    private final BoardFavoriteService boardFavoriteService;
     private final PostService postService;
     private final CommentService commentService;
     private final PostHeartService postHeartService;
-    private final CommentHeartService commentHeartService;
 
     @ModelAttribute
-    public void addAttributes(@Login Member member, Model model) {
-        addBoardInformation(model);
-        model.addAttribute("member", member);
+    public void addSideMenuInformation(Model model, @PathVariable Long boardId) {
+        BoardResponse currentBoard = boardService.findBoardInfoBy(boardId);
+        model.addAttribute("currentBoard", currentBoard);
+        // 어차피 CommunityControllerAdvice 에서 전역 ModelAttribute 로 게시판 정보를 추가하므로, 현재 게시판 정보만 알면 됨
     }
 
     @GetMapping("/community/boards/{boardId}/posts/{postId}")
-    public String viewPost(@Login Member member,
+    public String viewPost(@Login LoginMember loginMember,
                            @PathVariable Long boardId,
                            @PathVariable Long postId,
                            @RequestParam(defaultValue = "0") int commentPage,
                            Model model) {
 
-        Board board = boardService.findBoardAndCategoryWithBoardId(boardId);
-        Post post = postService.findById(postId);
-
-        if (board == null || board.getBoardCategory() == null || post == null) {
-            return "redirect:/error/404";
-        }
-
-        postService.increaseReadCount(postId);
-
-        model.addAttribute("post", post);
-        addSideMenuInformation(model, board.getBoardCategory(), board, board.getBoardCategory().getBoards());
-
-        // 댓글 페이징 처리 (페이지당 5개)
-        Pageable pageable = PageRequest.of(commentPage, 5);
-        Map<Comment, List<Comment>> commentsWithReplies = commentService.findCommentsWithReplies(postId, pageable);
-        Page<Comment> commentsPage = commentService.findParentCommentsByPostId(postId, pageable);
-
-        model.addAttribute("commentsWithReplies", commentsWithReplies);
-        model.addAttribute("commentsPage", commentsPage);
+        model.addAttribute("post", postService.readPostBy(postId, loginMember.getId()));
+        model.addAttribute("commentsPaged", commentService.findCommentsInPostBy(loginMember.getId(), postId,
+                PageRequest.of(commentPage, 5)));
         model.addAttribute("currentCommentPage", commentPage);
-
-        boolean isLiked = postHeartService.isLiked(postId, member.getId());
-        model.addAttribute("isLiked", isLiked);
-
-        Map<Long, Boolean> commentLikeStatusMap = new HashMap<>();
-
-        for (Comment comment : commentsWithReplies.keySet()) {
-            commentLikeStatusMap.put(comment.getId(), commentHeartService.isLiked(comment.getId(), member.getId()));
-
-            List<Comment> replies = commentsWithReplies.get(comment);
-            if (replies != null) {
-                for (Comment reply : replies) {
-                    commentLikeStatusMap.put(reply.getId(), commentHeartService.isLiked(reply.getId(), member.getId()));
-                }
-            }
-        }
-        model.addAttribute("commentLikeStatusMap", commentLikeStatusMap);
+        model.addAttribute("isLiked", postHeartService.isLiked(postId, loginMember.getId()));
 
         return "community/post/viewPost";
     }
 
-    private void addSideMenuInformation(Model model, BoardCategory category, Board board, List<Board> boards) {
-        model.addAttribute("category", category);
-        model.addAttribute("activeBoard", board);
-        model.addAttribute("boards", boards);
-    }
-
     @GetMapping("/community/boards/{boardId}/posts")
-    public String writePostForm(@Login Member member,
+    public String writePostForm(@Login LoginMember loginMember,
                                 @PathVariable Long boardId, @ModelAttribute PostCURequestForm form,
                                 Model model) {
 
-        Board board = boardService.findBoardAndCategoryWithBoardId(boardId);
-
-        if (board == null || board.getBoardCategory() == null) {
-            return "redirect:/error/404";
-        }
-
-        addSideMenuInformation(model, board.getBoardCategory(), board, board.getBoardCategory().getBoards());
         return "community/post/createPostForm";
     }
 
     @PostMapping("/community/boards/{boardId}/posts")
-    public String writePost(@Login Member member, @PathVariable Long boardId,
+    public String writePost(@Login LoginMember loginMember, @PathVariable Long boardId,
                             @ModelAttribute @Validated PostCURequestForm form, BindingResult bindingResult,
                             Model model) {
-
-        Board board = boardService.findBoardAndCategoryWithBoardId(boardId);
-        if (board == null || board.getBoardCategory() == null) {
-            return "redirect:/error/404";
-        }
-        addSideMenuInformation(model, board.getBoardCategory(), board, board.getBoardCategory().getBoards());
 
         if (bindingResult.hasErrors()) {
             return "community/post/createPostForm";
         }
 
-        Post post = Post.builder()
-                .anonymous(form.getAnonymous())
-                .postType(form.getPostType())
-                .title(form.getTitle())
-                .content(form.getContent())
-                .member(member)
-                .board(board)
-                .build();
-        postService.save(post);
-
-        return "redirect:/community/boards/" + boardId + "/posts/" + post.getId();
+        Long postId = postService.createPost(form.toCreateServiceRequest(loginMember.getId(), boardId));
+        return "redirect:/community/boards/" + boardId + "/posts/" + postId;
     }
 
     @DeleteMapping("/community/boards/{boardId}/posts/{postId}")
-    public String deletePost(@Login Member member,
+    public String deletePost(@Login LoginMember loginMember,
                              @PathVariable Long boardId,
                              @PathVariable Long postId,
                              RedirectAttributes attributes,
                              Model model) {
 
-        Board board = boardService.findBoardAndCategoryWithBoardId(boardId);
-        if (board == null || board.getBoardCategory() == null) {
-            return "redirect:/error/404";
-        }
-        addSideMenuInformation(model, board.getBoardCategory(), board, board.getBoardCategory().getBoards());
-
-        postService.deleteById(postId, member);
+        postService.deletePostBy(postId, loginMember.getId());
         attributes.addAttribute("deleteStatus", true);
         return "redirect:/community/boards/" + boardId;
     }
 
-    private void addBoardInformation(Model model) {
-        model.addAttribute("boardCategories", boardCategoryService.findAll());
-    }
-
     @GetMapping("/community/boards/{boardId}/posts/{postId}/edit")
-    public String editPostForm(@Login Member member,
+    public String editPostForm(@Login LoginMember loginMember,
                                @PathVariable Long boardId,
                                @PathVariable Long postId,
                                @ModelAttribute PostCURequestForm form,
                                Model model) {
 
-        Board board = boardService.findBoardAndCategoryWithBoardId(boardId);
-        Post post = postService.findById(postId);
-
-        if (board == null || board.getBoardCategory() == null) {
-            return "redirect:/error/404";
-        }
-
-        addSideMenuInformation(model, board.getBoardCategory(), board, board.getBoardCategory().getBoards());
-        model.addAttribute("form", new PostCURequestForm(post));
+        model.addAttribute("form", new PostCURequestForm(postService.findPostForEditBy(postId, loginMember.getId())));
         return "community/post/editPostForm";
     }
 
@@ -197,19 +107,11 @@ public class PostController {
                            @ModelAttribute @Validated PostCURequestForm form, BindingResult bindingResult,
                            RedirectAttributes attributes, Model model) {
 
-        Board board = boardService.findBoardAndCategoryWithBoardId(boardId);
-        if (board == null || board.getBoardCategory() == null) {
-            return "redirect:/error/404";
-        }
-        addSideMenuInformation(model, board.getBoardCategory(), board, board.getBoardCategory().getBoards());
-
         if (bindingResult.hasErrors()) {
             return "community/post/editPostForm";
         }
 
-        postService.editPost(member, postId, form.getTitle(), form.getPostType(), form.getContent(),
-                form.getAnonymous());
-
+        postService.editPost(form.toUpdateServiceRequest(postId, member.getId(), boardId));
         attributes.addAttribute("editStatus", true);
         return "redirect:/community/boards/" + boardId + "/posts/" + postId;
     }
