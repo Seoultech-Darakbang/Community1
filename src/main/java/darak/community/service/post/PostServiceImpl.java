@@ -13,7 +13,8 @@ import darak.community.infra.repository.BoardRepository;
 import darak.community.infra.repository.MemberRepository;
 import darak.community.infra.repository.PostHeartRepository;
 import darak.community.infra.repository.PostRepository;
-import darak.community.infra.repository.dto.PostWithMetaDto;
+import darak.community.infra.repository.dto.PostContentDto;
+import darak.community.infra.repository.dto.PostWithAllDto;
 import darak.community.service.post.request.PostCreateServiceRequest;
 import darak.community.service.post.request.PostDeleteServiceRequest;
 import darak.community.service.post.request.PostSearch;
@@ -48,7 +49,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional
-    public void createPost(PostCreateServiceRequest request) {
+    public Long createPost(PostCreateServiceRequest request) {
         Member member = findMemberBy(request.getAuthorId());
         Board board = findBoardBy(request.getBoardId());
 
@@ -62,22 +63,26 @@ public class PostServiceImpl implements PostService {
                 .build();
 
         postRepository.save(post);
+        return post.getId();
     }
 
     @Override
     @Transactional
-    public PostResponse readPostBy(Long postId, Long memberId) {
-        Post post = findPostBy(postId);
-        Member member = findMemberBy(memberId);
-        log.info("{}님이 게시글 {}를 조회합니다.", member.getName(), post.getId());
-
+    public PostContentDto readPostBy(Long postId, Long memberId) {
         increaseReadCount(postId);
-        return PostResponse.of(post);
+        return postRepository.findPostContentByMemberIdAndPostId(postId, memberId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시글입니다."));
     }
 
     @Override
-    public Page<PostWithMetaDto> findPostsWithMetaByMemberPaged(Long memberId, Pageable pageable) {
-        return postRepository.findPostsWithMetaByMemberId(memberId, pageable);
+    public PostResponse findPostForEditBy(Long postId, Long memberId) {
+        Post post = findPostBy(postId);
+        Member member = findMemberBy(memberId);
+
+        if (member.getMemberGrade() == MemberGrade.ADMIN || isMemberAuthor(member, post)) {
+            return PostResponse.of(post);
+        }
+        throw new IllegalArgumentException("권한이 없습니다.");
     }
 
     @Override
@@ -143,15 +148,15 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Page<PostWithMetaDto> searchPostsByMemberIdAnd(Long memberId, PostSearch postSearch) {
+    public Page<PostWithAllDto> searchPostsByMemberIdAnd(Long memberId, PostSearch postSearch) {
         Member member = findMemberBy(memberId);
         Pageable pageable = PageRequest.of(postSearch.getPage(), postSearch.getSize());
-        Page<PostWithMetaDto> posts = postRepository.findPostsWithMetaByMemberId(memberId, pageable);
+        Page<PostWithAllDto> posts = postRepository.findPostsWithMetaWrittenByMemberId(memberId, pageable);
         // 여기서 검색 수행
         if (postSearch.getKeyword() == null || postSearch.getKeyword().isEmpty()) {
             return posts;
         }
-        List<PostWithMetaDto> result = posts.stream()
+        List<PostWithAllDto> result = posts.stream()
                 .filter(post -> post.getTitle().contains(postSearch.getKeyword())
                         || post.getBoardName().contains(postSearch.getBoardName()))
                 .toList();
@@ -160,7 +165,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Page<PostWithMetaDto> findPostsByMemberIdAndLiked(Long memberId, Pageable pageable) {
+    public Page<PostWithAllDto> findPostsByMemberIdAndLiked(Long memberId, Pageable pageable) {
         return postRepository.findPostsWithMetaByMemberLiked(memberId, pageable);
     }
 

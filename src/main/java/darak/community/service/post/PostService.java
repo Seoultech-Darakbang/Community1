@@ -1,23 +1,25 @@
 package darak.community.service.post;
 
-import darak.community.infra.repository.dto.PostWithMetaDto;
+import darak.community.infra.repository.dto.PostContentDto;
+import darak.community.infra.repository.dto.PostWithAllDto;
 import darak.community.service.post.request.PostCreateServiceRequest;
 import darak.community.service.post.request.PostDeleteServiceRequest;
 import darak.community.service.post.request.PostSearch;
 import darak.community.service.post.request.PostUpdateServiceRequest;
-import darak.community.service.post.response.PostResponse;
 import darak.community.service.post.response.GalleryImageResponse;
+import darak.community.service.post.response.PostResponse;
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import java.util.List;
-
 public interface PostService {
-    void createPost(PostCreateServiceRequest request);
+    Long createPost(PostCreateServiceRequest request);
 
-    PostResponse readPostBy(Long postId, Long memberId);
+    PostContentDto readPostBy(Long postId, Long memberId);
 
-    Page<PostWithMetaDto> findPostsWithMetaByMemberPaged(Long memberId, Pageable pageable);
+    PostResponse findPostForEditBy(Long postId, Long memberId);
+
+//    Page<PostWithAllDto> findPostsWithMetaByMemberPaged(Long memberId, Pageable pageable);
 
     Page<PostResponse> findPostsPagedIn(Long boardId, Pageable pageable);
 
@@ -33,9 +35,9 @@ public interface PostService {
 
     long getTotalPostCount();
 
-    Page<PostWithMetaDto> searchPostsByMemberIdAnd(Long memberId, PostSearch postSearch);
+    Page<PostWithAllDto> searchPostsByMemberIdAnd(Long memberId, PostSearch postSearch);
 
-    Page<PostWithMetaDto> findPostsByMemberIdAndLiked(Long memberId, Pageable pageable);
+    Page<PostWithAllDto> findPostsByMemberIdAndLiked(Long memberId, Pageable pageable);
 
     List<GalleryImageResponse> findRecentGalleryImages(int limit);
 }
