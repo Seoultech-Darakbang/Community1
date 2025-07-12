@@ -1,7 +1,6 @@
 package darak.community.web.controller.community.board;
 
 import darak.community.infra.repository.dto.PostContentDto;
-import darak.community.service.board.BoardService;
 import darak.community.service.boardcategory.BoardCategoryService;
 import darak.community.service.post.PostService;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Slf4j
 public class BoardController {
 
-    private final BoardService boardService;
     private final BoardCategoryService boardCategoryService;
     private final PostService postService;
 

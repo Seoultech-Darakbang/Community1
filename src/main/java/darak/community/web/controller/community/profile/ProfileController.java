@@ -5,7 +5,6 @@ import darak.community.core.session.dto.LoginMember;
 import darak.community.dto.PasswordForm;
 import darak.community.infra.repository.dto.CommentWithMetaDto;
 import darak.community.infra.repository.dto.PostWithAllDto;
-import darak.community.service.board.BoardService;
 import darak.community.service.comment.CommentService;
 import darak.community.service.comment.request.CommentSearch;
 import darak.community.service.member.MemberService;
@@ -42,7 +41,6 @@ public class ProfileController {
     private final MemberService memberService;
     private final PostService postService;
     private final CommentService commentService;
-    private final BoardService boardService;
 
     @GetMapping
     public String profile(@Login LoginMember loginMember, Model model) {
