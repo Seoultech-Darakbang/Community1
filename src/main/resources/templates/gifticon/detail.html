@@ -2,278 +2,288 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: layout(~{::title}, ~{::body})}">
 
 <head>
-  <title th:text="${gifticon.title} + ' - 기프티콘'">기프티콘 상세</title>
+    <title th:text="${gifticon.title} + ' - 기프티콘'">기프티콘 상세</title>
 </head>
 
 <body>
-  <section class="min-h-screen pt-20 pb-16 px-4 sm:px-6 lg:px-8 dark:bg-gray-900 bg-gray-50">
-    <div class="max-w-4xl mx-auto">
-      <!-- 뒤로가기 버튼 -->
-      <div class="mb-8">
-        <a href="/community/gifticons"
-          class="inline-flex items-center text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors">
-          <i class="fas fa-arrow-left mr-2"></i>기프티콘 목록으로 돌아가기
-        </a>
-      </div>
-
-      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
-        <div class="md:flex">
-          <!-- 기프티콘 이미지 -->
-          <div class="md:w-1/2">
-            <div class="relative h-64 md:h-full bg-gradient-to-br from-purple-400 to-pink-400">
-              <img th:src="${gifticon.imageUrl}" th:alt="${gifticon.title}" class="w-full h-full object-cover"
-                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-              <div class="hidden w-full h-full items-center justify-center text-white text-8xl">
-                <i class="fas fa-gift"></i>
-              </div>
-
-              <!-- 상태 배지 -->
-              <div class="absolute top-6 left-6">
-                <span th:if="${gifticon.status.name() == 'ACTIVE' && gifticon.canClaim}"
-                  class="bg-green-500 text-white px-4 py-2 rounded-full text-sm font-semibold">
-                  <i class="fas fa-check-circle mr-1"></i>수령 가능
-                </span>
-                <span th:if="${gifticon.status.name() == 'SOLD_OUT'}"
-                  class="bg-red-500 text-white px-4 py-2 rounded-full text-sm font-semibold">
-                  <i class="fas fa-times-circle mr-1"></i>품절
-                </span>
-                <span th:if="${gifticon.status.name() == 'WAITING'}"
-                  class="bg-yellow-500 text-white px-4 py-2 rounded-full text-sm font-semibold">
-                  <i class="fas fa-clock mr-1"></i>대기중
-                </span>
-                <span th:if="${gifticon.status.name() == 'CLOSED'}"
-                  class="bg-gray-500 text-white px-4 py-2 rounded-full text-sm font-semibold">
-                  <i class="fas fa-ban mr-1"></i>종료됨
-                </span>
-              </div>
-
-              <!-- 남은 수량 -->
-              <div
-                class="absolute top-6 right-6 bg-black bg-opacity-70 text-white px-4 py-2 rounded-full text-sm font-semibold">
-                <i class="fas fa-users mr-1"></i>
-                <span th:text="${gifticon.remainingQuantity}">0</span>/<span
-                  th:text="${gifticon.totalQuantity}">0</span> 남음
-              </div>
-            </div>
-          </div>
-
-          <!-- 기프티콘 정보 -->
-          <div class="md:w-1/2 p-8">
-            <div class="mb-4">
-              <span
-                class="text-sm text-purple-600 dark:text-purple-400 font-semibold bg-purple-100 dark:bg-purple-900 px-3 py-1 rounded-full"
-                th:text="${gifticon.brand}">브랜드</span>
+    <section class="min-h-screen pt-20 pb-16 px-4 sm:px-6 lg:px-8 dark:bg-gray-900 bg-gray-50">
+        <div class="max-w-4xl mx-auto">
+            <!-- 뒤로가기 버튼 -->
+            <div class="mb-8">
+                <a href="/community/gifticons"
+                    class="inline-flex items-center text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors">
+                    <i class="fas fa-arrow-left mr-2"></i>기프티콘 목록으로 돌아가기
+                </a>
             </div>
 
-            <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-4" th:text="${gifticon.title}">기프티콘 제목</h1>
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
+                <div class="md:flex">
+                    <!-- 기프티콘 이미지 -->
+                    <div class="md:w-1/2">
+                        <div class="relative h-64 md:h-full bg-gradient-to-br from-purple-400 to-pink-400">
+                            <img th:src="${gifticon.imageUrl}" th:alt="${gifticon.title}"
+                                class="w-full h-full object-cover"
+                                onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div class="hidden w-full h-full items-center justify-center text-white text-8xl">
+                                <i class="fas fa-gift"></i>
+                            </div>
 
-            <p class="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed" th:text="${gifticon.description}">기프티콘 설명
-            </p>
+                            <!-- 상태 배지 -->
+                            <div class="absolute top-6 left-6">
+                                <span th:if="${gifticon.status.name() == 'ACTIVE' && gifticon.canClaim}"
+                                    class="bg-green-500 text-white px-4 py-2 rounded-full text-sm font-semibold">
+                                    <i class="fas fa-check-circle mr-1"></i>수령 가능
+                                </span>
+                                <span th:if="${gifticon.status.name() == 'SOLD_OUT'}"
+                                    class="bg-red-500 text-white px-4 py-2 rounded-full text-sm font-semibold">
+                                    <i class="fas fa-times-circle mr-1"></i>품절
+                                </span>
+                                <span th:if="${gifticon.status.name() == 'WAITING'}"
+                                    class="bg-yellow-500 text-white px-4 py-2 rounded-full text-sm font-semibold">
+                                    <i class="fas fa-clock mr-1"></i>대기중
+                                </span>
+                                <span th:if="${gifticon.status.name() == 'CLOSED'}"
+                                    class="bg-gray-500 text-white px-4 py-2 rounded-full text-sm font-semibold">
+                                    <i class="fas fa-ban mr-1"></i>종료됨
+                                </span>
+                            </div>
 
-            <!-- 수량 진행률 -->
-            <div class="mb-6">
-              <div class="flex justify-between items-center mb-2">
-                <span class="text-sm font-medium text-gray-700 dark:text-gray-300">수령 현황</span>
-                <span class="text-sm text-gray-500 dark:text-gray-400">
-                  <span th:text="${gifticon.totalQuantity - gifticon.remainingQuantity}">0</span>명 수령완료
-                </span>
-              </div>
-              <div class="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-3">
-                <div class="bg-gradient-to-r from-purple-600 to-pink-600 h-3 rounded-full transition-all duration-300"
-                  th:style="'width: ' + ((${gifticon.totalQuantity - gifticon.remainingQuantity}) * 100 / ${gifticon.totalQuantity}) + '%'">
+                            <!-- 남은 수량 -->
+                            <div
+                                class="absolute top-6 right-6 bg-black bg-opacity-70 text-white px-4 py-2 rounded-full text-sm font-semibold">
+                                <i class="fas fa-users mr-1"></i>
+                                <span th:text="${gifticon.remainingQuantity}">0</span>/<span
+                                    th:text="${gifticon.totalQuantity}">0</span> 남음
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 기프티콘 정보 -->
+                    <div class="md:w-1/2 p-8">
+                        <div class="mb-4">
+                            <span
+                                class="text-sm text-purple-600 dark:text-purple-400 font-semibold bg-purple-100 dark:bg-purple-900 px-3 py-1 rounded-full"
+                                th:text="${gifticon.brand}">브랜드</span>
+                        </div>
+
+                        <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-4" th:text="${gifticon.title}">
+                            기프티콘
+                            제목</h1>
+
+                        <p class="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed"
+                            th:text="${gifticon.description}">
+                            기프티콘 설명
+                        </p>
+
+                        <!-- 수량 진행률 -->
+                        <div class="mb-6">
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-sm font-medium text-gray-700 dark:text-gray-300">수령 현황</span>
+                                <span class="text-sm text-gray-500 dark:text-gray-400">
+                                    <span th:text="${gifticon.totalQuantity - gifticon.remainingQuantity}">0</span>명
+                                    수령완료
+                                </span>
+                            </div>
+                            <div class="w-full bg-gray-200 dark:bg-gray-600 rounded-full h-3">
+                                <div class="bg-gradient-to-r from-purple-600 to-pink-600 h-3 rounded-full transition-all duration-300"
+                                    th:style="'width: ' + ((${gifticon.totalQuantity - gifticon.remainingQuantity}) * 100 / ${gifticon.totalQuantity}) + '%'">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 기간 정보 -->
+                        <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 mb-6">
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">
+                                <i class="fas fa-calendar-alt mr-2"></i>이벤트 기간
+                            </h3>
+                            <div class="space-y-2">
+                                <div class="flex items-center text-sm text-gray-600 dark:text-gray-300">
+                                    <i class="fas fa-play mr-3 text-green-500 w-4"></i>
+                                    <span class="font-medium mr-2">시작:</span>
+                                    <span th:text="${#temporals.format(gifticon.startTime, 'yyyy년 MM월 dd일 HH:mm')}">시작
+                                        시간</span>
+                                </div>
+                                <div class="flex items-center text-sm text-gray-600 dark:text-gray-300">
+                                    <i class="fas fa-stop mr-3 text-red-500 w-4"></i>
+                                    <span class="font-medium mr-2">종료:</span>
+                                    <span th:text="${#temporals.format(gifticon.endTime, 'yyyy년 MM월 dd일 HH:mm')}">종료
+                                        시간</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 수령 버튼 -->
+                        <div class="space-y-4">
+                            <button th:if="${gifticon.canClaim && loginMember != null}"
+                                class="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-4 rounded-lg font-semibold text-lg hover:from-purple-700 hover:to-pink-700 transition-all duration-300 transform hover:scale-105 claim-btn"
+                                th:data-gifticon-id="${gifticon.id}">
+                                <i class="fas fa-gift mr-2"></i>지금 바로 수령하기
+                            </button>
+
+                            <button th:if="${!gifticon.canClaim}"
+                                class="w-full bg-gray-400 text-white py-4 rounded-lg font-semibold text-lg cursor-not-allowed"
+                                disabled>
+                                <i class="fas fa-times mr-2"></i>
+                                <span th:if="${gifticon.status.name() == 'SOLD_OUT'}">품절되었습니다</span>
+                                <span th:if="${gifticon.status.name() == 'WAITING'}">아직 시작되지 않았습니다</span>
+                                <span th:if="${gifticon.status.name() == 'CLOSED'}">이벤트가 종료되었습니다</span>
+                            </button>
+
+                            <a th:if="${loginMember == null}" href="/login"
+                                class="block w-full bg-blue-600 text-white py-4 rounded-lg font-semibold text-lg text-center hover:bg-blue-700 transition-all duration-300">
+                                <i class="fas fa-sign-in-alt mr-2"></i>로그인 후 수령하기
+                            </a>
+
+                            <!-- 소셜 공유 -->
+                            <div class="border-t dark:border-gray-600 pt-4">
+                                <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">친구들에게 공유하기</p>
+                                <div class="flex space-x-3">
+                                    <button onclick="shareToKakao()"
+                                        class="flex-1 bg-yellow-400 text-gray-900 py-2 px-4 rounded-lg font-medium hover:bg-yellow-500 transition-colors">
+                                        <i class="fas fa-comment mr-1"></i>카카오톡
+                                    </button>
+                                    <button onclick="copyLink()"
+                                        class="flex-1 bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 py-2 px-4 rounded-lg font-medium hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors">
+                                        <i class="fas fa-link mr-1"></i>링크복사
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-              </div>
             </div>
 
-            <!-- 기간 정보 -->
-            <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 mb-6">
-              <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-3">
-                <i class="fas fa-calendar-alt mr-2"></i>이벤트 기간
-              </h3>
-              <div class="space-y-2">
-                <div class="flex items-center text-sm text-gray-600 dark:text-gray-300">
-                  <i class="fas fa-play mr-3 text-green-500 w-4"></i>
-                  <span class="font-medium mr-2">시작:</span>
-                  <span th:text="${#temporals.format(gifticon.startTime, 'yyyy년 MM월 dd일 HH:mm')}">시작 시간</span>
-                </div>
-                <div class="flex items-center text-sm text-gray-600 dark:text-gray-300">
-                  <i class="fas fa-stop mr-3 text-red-500 w-4"></i>
-                  <span class="font-medium mr-2">종료:</span>
-                  <span th:text="${#temporals.format(gifticon.endTime, 'yyyy년 MM월 dd일 HH:mm')}">종료 시간</span>
-                </div>
-              </div>
+            <!-- 주의사항 -->
+            <div
+                class="bg-yellow-50 dark:bg-yellow-900 border border-yellow-200 dark:border-yellow-700 rounded-lg p-6 mt-8">
+                <h3 class="text-lg font-semibold text-yellow-800 dark:text-yellow-200 mb-3">
+                    <i class="fas fa-exclamation-triangle mr-2"></i>주의사항
+                </h3>
+                <ul class="text-sm text-yellow-700 dark:text-yellow-300 space-y-2">
+                    <li><i class="fas fa-check mr-2"></i>선착순으로 배포되며, 수량이 소진되면 더 이상 받을 수 없습니다.</li>
+                    <li><i class="fas fa-check mr-2"></i>한 회원당 하나의 기프티콘만 받을 수 있습니다.</li>
+                    <li><i class="fas fa-check mr-2"></i>수령한 기프티콘은 '내 기프티콘' 페이지에서 확인할 수 있습니다.</li>
+                    <li><i class="fas fa-check mr-2"></i>기프티콘 코드는 분실하지 않도록 주의하세요.</li>
+                </ul>
             </div>
-
-            <!-- 수령 버튼 -->
-            <div class="space-y-4">
-              <button th:if="${gifticon.canClaim && member != null}"
-                class="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-4 rounded-lg font-semibold text-lg hover:from-purple-700 hover:to-pink-700 transition-all duration-300 transform hover:scale-105 claim-btn"
-                th:data-gifticon-id="${gifticon.id}">
-                <i class="fas fa-gift mr-2"></i>지금 바로 수령하기
-              </button>
-
-              <button th:if="${!gifticon.canClaim}"
-                class="w-full bg-gray-400 text-white py-4 rounded-lg font-semibold text-lg cursor-not-allowed" disabled>
-                <i class="fas fa-times mr-2"></i>
-                <span th:if="${gifticon.status.name() == 'SOLD_OUT'}">품절되었습니다</span>
-                <span th:if="${gifticon.status.name() == 'WAITING'}">아직 시작되지 않았습니다</span>
-                <span th:if="${gifticon.status.name() == 'CLOSED'}">이벤트가 종료되었습니다</span>
-              </button>
-
-              <a th:if="${member == null}" href="/login"
-                class="block w-full bg-blue-600 text-white py-4 rounded-lg font-semibold text-lg text-center hover:bg-blue-700 transition-all duration-300">
-                <i class="fas fa-sign-in-alt mr-2"></i>로그인 후 수령하기
-              </a>
-
-              <!-- 소셜 공유 -->
-              <div class="border-t dark:border-gray-600 pt-4">
-                <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">친구들에게 공유하기</p>
-                <div class="flex space-x-3">
-                  <button onclick="shareToKakao()"
-                    class="flex-1 bg-yellow-400 text-gray-900 py-2 px-4 rounded-lg font-medium hover:bg-yellow-500 transition-colors">
-                    <i class="fas fa-comment mr-1"></i>카카오톡
-                  </button>
-                  <button onclick="copyLink()"
-                    class="flex-1 bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 py-2 px-4 rounded-lg font-medium hover:bg-gray-300 dark:hover:bg-gray-500 transition-colors">
-                    <i class="fas fa-link mr-1"></i>링크복사
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
-      </div>
+    </section>
 
-      <!-- 주의사항 -->
-      <div class="bg-yellow-50 dark:bg-yellow-900 border border-yellow-200 dark:border-yellow-700 rounded-lg p-6 mt-8">
-        <h3 class="text-lg font-semibold text-yellow-800 dark:text-yellow-200 mb-3">
-          <i class="fas fa-exclamation-triangle mr-2"></i>주의사항
-        </h3>
-        <ul class="text-sm text-yellow-700 dark:text-yellow-300 space-y-2">
-          <li><i class="fas fa-check mr-2"></i>선착순으로 배포되며, 수량이 소진되면 더 이상 받을 수 없습니다.</li>
-          <li><i class="fas fa-check mr-2"></i>한 회원당 하나의 기프티콘만 받을 수 있습니다.</li>
-          <li><i class="fas fa-check mr-2"></i>수령한 기프티콘은 '내 기프티콘' 페이지에서 확인할 수 있습니다.</li>
-          <li><i class="fas fa-check mr-2"></i>기프티콘 코드는 분실하지 않도록 주의하세요.</li>
-        </ul>
-      </div>
-    </div>
-  </section>
+    <!-- 페이지 전용 스크립트 -->
+    <script>
+        console.log('Gifticon detail scripts loaded');
 
-  <!-- 페이지 전용 스크립트 -->
-  <script>
-    console.log('Gifticon detail scripts loaded');
+        document.addEventListener('DOMContentLoaded', function () {
+            console.log('Gifticon detail DOMContentLoaded');
 
-    document.addEventListener('DOMContentLoaded', function () {
-      console.log('Gifticon detail DOMContentLoaded');
-
-      const claimButton = document.querySelector('.claim-btn');
-      if (claimButton) {
-        console.log('Claim button found:', claimButton);
-        claimButton.addEventListener('click', function () {
-          console.log('Claim button clicked');
-          claimGifticon(this);
+            const claimButton = document.querySelector('.claim-btn');
+            if (claimButton) {
+                console.log('Claim button found:', claimButton);
+                claimButton.addEventListener('click', function () {
+                    console.log('Claim button clicked');
+                    claimGifticon(this);
+                });
+            } else {
+                console.log('Claim button not found');
+            }
         });
-      } else {
-        console.log('Claim button not found');
-      }
-    });
 
-    // 기프티콘 수령
-    function claimGifticon(button) {
-      console.log('claimGifticon function called');
-      const gifticonId = button.dataset.gifticonId;
-      console.log('Gifticon ID:', gifticonId);
+        // 기프티콘 수령
+        function claimGifticon(button) {
+            console.log('claimGifticon function called');
+            const gifticonId = button.dataset.gifticonId;
+            console.log('Gifticon ID:', gifticonId);
 
-      if (!confirm('이 기프티콘을 수령하시겠습니까?')) {
-        return;
-      }
+            if (!confirm('이 기프티콘을 수령하시겠습니까?')) {
+                return;
+            }
 
-      button.disabled = true;
-      button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>수령 중...';
+            button.disabled = true;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>수령 중...';
 
-      console.log('Sending fetch request to:', `/community/gifticons/${gifticonId}/claim`);
+            console.log('Sending fetch request to:', `/api/v1/community/gifticons/${gifticonId}/claim`);
 
-      fetch(`/community/gifticons/${gifticonId}/claim`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+            fetch(`/api/v1/community/gifticons/${gifticonId}/claim`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+                .then(response => {
+                    console.log('Response received:', response);
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Response data:', data);
+                    if (data.id) {
+                        showGifticonAlert('success', '기프티콘을 성공적으로 수령했습니다!', function () {
+                            window.location.href = '/community/gifticons/my';
+                        });
+                    } else {
+                        showGifticonAlert('error', data);
+                        button.disabled = false;
+                        button.innerHTML = '<i class="fas fa-gift mr-2"></i>지금 바로 수령하기';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showGifticonAlert('error', '수령 중 오류가 발생했습니다.');
+                    button.disabled = false;
+                    button.innerHTML = '<i class="fas fa-gift mr-2"></i>지금 바로 수령하기';
+                });
         }
-      })
-        .then(response => {
-          console.log('Response received:', response);
-          return response.json();
-        })
-        .then(data => {
-          console.log('Response data:', data);
-          if (data.id) {
-            showGifticonAlert('success', '기프티콘을 성공적으로 수령했습니다!', function () {
-              window.location.href = '/community/gifticons/my';
+
+        // 링크 복사
+        function copyLink() {
+            navigator.clipboard.writeText(window.location.href).then(function () {
+                showGifticonAlert('success', '링크가 클립보드에 복사되었습니다.');
+            }, function (err) {
+                console.error('복사 실패: ', err);
+                showGifticonAlert('error', '링크 복사에 실패했습니다.');
             });
-          } else {
-            showGifticonAlert('error', data);
-            button.disabled = false;
-            button.innerHTML = '<i class="fas fa-gift mr-2"></i>지금 바로 수령하기';
-          }
-        })
-        .catch(error => {
-          console.error('Error:', error);
-          showGifticonAlert('error', '수령 중 오류가 발생했습니다.');
-          button.disabled = false;
-          button.innerHTML = '<i class="fas fa-gift mr-2"></i>지금 바로 수령하기';
-        });
-    }
+        }
 
-    // 링크 복사
-    function copyLink() {
-      navigator.clipboard.writeText(window.location.href).then(function () {
-        showGifticonAlert('success', '링크가 클립보드에 복사되었습니다.');
-      }, function (err) {
-        console.error('복사 실패: ', err);
-        showGifticonAlert('error', '링크 복사에 실패했습니다.');
-      });
-    }
+        // 카카오톡 공유
+        function shareToKakao() {
+            showGifticonAlert('info', '카카오톡 공유 기능은 개발 중입니다.');
+        }
 
-    // 카카오톡 공유
-    function shareToKakao() {
-      showGifticonAlert('info', '카카오톡 공유 기능은 개발 중입니다.');
-    }
+        // 알림 표시
+        function showGifticonAlert(type, message, callback) {
+            console.log('showGifticonAlert called:', type, message);
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `fixed top-4 right-4 px-6 py-4 rounded-lg text-white z-50 transform transition-transform duration-300 translate-x-full shadow-lg`;
 
-    // 알림 표시
-    function showGifticonAlert(type, message, callback) {
-      console.log('showGifticonAlert called:', type, message);
-      const alertDiv = document.createElement('div');
-      alertDiv.className = `fixed top-4 right-4 px-6 py-4 rounded-lg text-white z-50 transform transition-transform duration-300 translate-x-full shadow-lg`;
+            if (type === 'success') {
+                alertDiv.classList.add('bg-green-500');
+            } else if (type === 'error') {
+                alertDiv.classList.add('bg-red-500');
+            } else if (type === 'info') {
+                alertDiv.classList.add('bg-blue-500');
+            }
 
-      if (type === 'success') {
-        alertDiv.classList.add('bg-green-500');
-      } else if (type === 'error') {
-        alertDiv.classList.add('bg-red-500');
-      } else if (type === 'info') {
-        alertDiv.classList.add('bg-blue-500');
-      }
-
-      alertDiv.innerHTML = `
+            alertDiv.innerHTML = `
         <div class="flex items-center">
             <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'} mr-2"></i>
             <span>${message}</span>
         </div>
       `;
 
-      document.body.appendChild(alertDiv);
+            document.body.appendChild(alertDiv);
 
-      setTimeout(() => {
-        alertDiv.classList.remove('translate-x-full');
-      }, 100);
+            setTimeout(() => {
+                alertDiv.classList.remove('translate-x-full');
+            }, 100);
 
-      setTimeout(() => {
-        alertDiv.classList.add('translate-x-full');
-        setTimeout(() => {
-          document.body.removeChild(alertDiv);
-          if (callback) callback();
-        }, 300);
-      }, 3000);
-    }
-  </script>
+            setTimeout(() => {
+                alertDiv.classList.add('translate-x-full');
+                setTimeout(() => {
+                    document.body.removeChild(alertDiv);
+                    if (callback) callback();
+                }, 300);
+            }, 3000);
+        }
+    </script>
 </body>
 
 </html>
