@@ -4,6 +4,7 @@ import darak.community.domain.BaseEntity;
 import darak.community.domain.comment.Comment;
 import darak.community.domain.member.Member;
 import darak.community.domain.post.Post;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -22,6 +23,8 @@ public class AdminLog extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "admin_log_id")
+
     private Long id;
 
     private String type;

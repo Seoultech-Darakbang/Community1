@@ -3,6 +3,7 @@ package darak.community.domain.post;
 import darak.community.domain.BaseEntity;
 import darak.community.domain.board.Board;
 import darak.community.domain.member.Member;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -22,6 +23,8 @@ import lombok.NoArgsConstructor;
 public class Post extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "post_id")
+
     private Long id;
 
     private String title;

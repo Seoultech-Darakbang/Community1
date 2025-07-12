@@ -1,6 +1,7 @@
 package darak.community.domain.post;
 
 import darak.community.domain.BaseEntity;
+import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -19,6 +20,7 @@ import lombok.NoArgsConstructor;
 public class Attachment extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "attachment_id")
     private Long id;
 
     @Embedded

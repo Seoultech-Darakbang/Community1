@@ -1,6 +1,7 @@
 package darak.community.domain.board;
 
 import darak.community.domain.member.Member;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -25,6 +26,7 @@ public class BoardFavorite {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "board_favorite_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
