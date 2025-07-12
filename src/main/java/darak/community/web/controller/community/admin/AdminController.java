@@ -1,14 +1,18 @@
 package darak.community.web.controller.community.admin;
 
-import darak.community.core.argumentresolver.Login;
-import darak.community.domain.board.Board;
-import darak.community.domain.board.BoardCategory;
-import darak.community.domain.member.Member;
+import darak.community.core.auth.WebAuth;
 import darak.community.domain.member.MemberGrade;
-import darak.community.service.admin.AdminService;
-import darak.community.service.board.BoardCategoryService;
 import darak.community.service.board.BoardService;
-import java.util.List;
+import darak.community.service.board.request.BoardCreateServiceRequest;
+import darak.community.service.board.request.BoardUpdateServiceRequest;
+import darak.community.service.boardcategory.BoardCategoryService;
+import darak.community.service.boardcategory.request.BoardCategoryCreateServiceRequest;
+import darak.community.service.boardcategory.request.BoardCategoryUpdateServiceRequest;
+import darak.community.service.comment.CommentService;
+import darak.community.service.member.MemberService;
+import darak.community.service.member.response.MemberResponse;
+import darak.community.service.post.PostService;
+import darak.community.service.board.response.BoardAdminResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -17,7 +21,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,34 +31,22 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @RequestMapping("/admin")
 @RequiredArgsConstructor
 @Slf4j
+@WebAuth(MemberGrade.ADMIN)
 public class AdminController {
 
-    private final AdminService adminService;
     private final BoardCategoryService boardCategoryService;
+    private final MemberService memberService;
+    private final PostService postService;
+    private final CommentService commentService;
     private final BoardService boardService;
-
-    @ModelAttribute
-    public void checkAdminAccess(@Login Member member, Model model) {
-        if (member.getMemberGrade() != MemberGrade.ADMIN
-                && member.getMemberGrade() != MemberGrade.MASTER) {
-            throw new IllegalAccessError("관리자만 접근 가능합니다.");
-        }
-        model.addAttribute("member", member);
-    }
 
     @GetMapping
     public String adminHome(Model model) {
-        long totalMembers = adminService.getTotalMemberCount();
-        long totalPosts = adminService.getTotalPostCount();
-        long totalComments = adminService.getTotalCommentCount();
-        long totalCategories = adminService.getTotalCategoryCount();
-        long totalBoards = adminService.getTotalBoardCount();
-
-        model.addAttribute("totalMembers", totalMembers);
-        model.addAttribute("totalPosts", totalPosts);
-        model.addAttribute("totalComments", totalComments);
-        model.addAttribute("totalCategories", totalCategories);
-        model.addAttribute("totalBoards", totalBoards);
+        model.addAttribute("totalMembers", memberService.getTotalMemberCount());
+        model.addAttribute("totalPosts", postService.getTotalPostCount());
+        model.addAttribute("totalComments", commentService.getTotalCommentCount());
+        model.addAttribute("totalCategories", boardCategoryService.getTotalCategoryCount());
+        model.addAttribute("totalBoards", boardService.getTotalBoardCount());
         model.addAttribute("active", "dashboard");
 
         return "admin/dashboard";
@@ -63,8 +54,8 @@ public class AdminController {
 
     @GetMapping("/categories")
     public String categoryList(Model model) {
-        List<BoardCategory> categories = boardCategoryService.findAll();
-        model.addAttribute("categories", categories);
+//        model.addAttribute("categories", categories);
+        // 카테고리 정보는 ControllerAdvice의 전역 ModelAttribute로 추가!
         model.addAttribute("active", "categories");
         return "admin/categories/list";
     }
@@ -80,7 +71,7 @@ public class AdminController {
                                  @RequestParam Integer priority,
                                  RedirectAttributes redirectAttributes) {
         try {
-            adminService.createCategory(name, priority);
+            boardCategoryService.createBoardCategory(BoardCategoryCreateServiceRequest.of(name, priority));
             redirectAttributes.addFlashAttribute("message", "카테고리가 성공적으로 생성되었습니다.");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "카테고리 생성 중 오류가 발생했습니다: " + e.getMessage());
@@ -90,8 +81,7 @@ public class AdminController {
 
     @GetMapping("/categories/{id}/edit")
     public String categoryEditForm(@PathVariable Long id, Model model) {
-        BoardCategory category = boardCategoryService.findById(id);
-        model.addAttribute("category", category);
+        // 카테고리 정보는 ControllerAdvice의 전역 ModelAttribute로 추가!
         model.addAttribute("active", "categories");
         return "admin/categories/edit";
     }
@@ -102,7 +92,7 @@ public class AdminController {
                                  @RequestParam Integer priority,
                                  RedirectAttributes redirectAttributes) {
         try {
-            adminService.updateCategory(id, name, priority);
+            boardCategoryService.updateBoardCategory(new BoardCategoryUpdateServiceRequest(id, name, priority));
             redirectAttributes.addFlashAttribute("message", "카테고리가 성공적으로 수정되었습니다.");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "카테고리 수정 중 오류가 발생했습니다: " + e.getMessage());
@@ -113,7 +103,7 @@ public class AdminController {
     @PostMapping("/categories/{id}/delete")
     public String deleteCategory(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {
-            adminService.deleteCategory(id);
+            boardCategoryService.deleteCategory(id);
             redirectAttributes.addFlashAttribute("message", "카테고리가 성공적으로 삭제되었습니다.");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "카테고리 삭제 중 오류가 발생했습니다: " + e.getMessage());
@@ -121,34 +111,31 @@ public class AdminController {
         return "redirect:/admin/categories";
     }
 
-    // ===== 게시판 관리 =====
     @GetMapping("/boards")
     public String boardList(@RequestParam(defaultValue = "0") int page,
                             @RequestParam(defaultValue = "10") int size,
                             @RequestParam(required = false) Long categoryId,
                             Model model) {
+
         Pageable pageable = PageRequest.of(page, size);
-        Page<Board> boards;
+        Page<BoardAdminResponse> boards;
 
         if (categoryId != null) {
-            boards = adminService.getBoardsByCategoryPaged(categoryId, pageable);
+            boards = boardService.getBoardsWithCategoryByCategoryPaged(categoryId, pageable);
             model.addAttribute("selectedCategoryId", categoryId);
         } else {
-            boards = adminService.getAllBoardsPaged(pageable);
+            boards = boardService.getAllBoardsWithCategoryPaged(pageable);
         }
 
-        List<BoardCategory> categories = boardCategoryService.findAll();
-
         model.addAttribute("boards", boards);
-        model.addAttribute("categories", categories);
+        model.addAttribute("categories", boardCategoryService.findAll());
         model.addAttribute("active", "boards");
         return "admin/boards/list";
     }
 
     @GetMapping("/boards/new")
     public String boardCreateForm(Model model) {
-        List<BoardCategory> categories = boardCategoryService.findAll();
-        model.addAttribute("categories", categories);
+        model.addAttribute("categories", boardCategoryService.findAll());   // 카테고리 목록 주입
         model.addAttribute("active", "boards");
         return "admin/boards/form";
     }
@@ -160,7 +147,12 @@ public class AdminController {
                               @RequestParam Integer priority,
                               RedirectAttributes redirectAttributes) {
         try {
-            adminService.createBoard(name, description, categoryId, priority);
+            boardService.createBoard(BoardCreateServiceRequest.builder()
+                    .name(name)
+                    .boardCategoryId(categoryId)
+                    .description(description)
+                    .priority(priority)
+                    .build());
             redirectAttributes.addFlashAttribute("message", "게시판이 성공적으로 생성되었습니다.");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "게시판 생성 중 오류가 발생했습니다: " + e.getMessage());
@@ -170,10 +162,8 @@ public class AdminController {
 
     @GetMapping("/boards/{id}/edit")
     public String boardEditForm(@PathVariable Long id, Model model) {
-        Board board = boardService.findById(id);
-        List<BoardCategory> categories = boardCategoryService.findAll();
-        model.addAttribute("board", board);
-        model.addAttribute("categories", categories);
+        model.addAttribute("board", boardService.findBoardAdminInfoBy(id)); // DTO 교체
+        model.addAttribute("categories", boardCategoryService.findAll());
         model.addAttribute("active", "boards");
         return "admin/boards/edit";
     }
@@ -186,7 +176,13 @@ public class AdminController {
                               @RequestParam Integer priority,
                               RedirectAttributes redirectAttributes) {
         try {
-            adminService.updateBoard(id, name, description, categoryId, priority);
+            boardService.updateBoard(BoardUpdateServiceRequest.builder()
+                    .boardId(id)
+                    .name(name)
+                    .description(description)
+                    .boardCategoryId(categoryId)
+                    .priority(priority)
+                    .build());
             redirectAttributes.addFlashAttribute("message", "게시판이 성공적으로 수정되었습니다.");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "게시판 수정 중 오류가 발생했습니다: " + e.getMessage());
@@ -197,7 +193,7 @@ public class AdminController {
     @PostMapping("/boards/{id}/delete")
     public String deleteBoard(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {
-            adminService.deleteBoard(id);
+            boardService.deleteBoard(id);
             redirectAttributes.addFlashAttribute("message", "게시판이 성공적으로 삭제되었습니다.");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "게시판 삭제 중 오류가 발생했습니다: " + e.getMessage());
@@ -205,17 +201,14 @@ public class AdminController {
         return "redirect:/admin/boards";
     }
 
-    // ===== 회원 관리 =====
     @GetMapping("/members")
     public String memberList(@RequestParam(defaultValue = "0") int page,
                              @RequestParam(defaultValue = "10") int size,
                              @RequestParam(required = false) String keyword,
                              @RequestParam(required = false) MemberGrade grade,
                              Model model) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<Member> members = getMembers(keyword, grade, pageable);
 
-        model.addAttribute("members", members);
+        model.addAttribute("members", getMembers(keyword, grade, PageRequest.of(page, size)));
         model.addAttribute("keyword", keyword);
         model.addAttribute("selectedGrade", grade);
         model.addAttribute("grades", MemberGrade.values());
@@ -223,23 +216,23 @@ public class AdminController {
         return "admin/members/list";
     }
 
-    private Page<Member> getMembers(String keyword, MemberGrade grade, Pageable pageable) {
-        if ((keyword != null && !keyword.trim().isEmpty()) || grade != null) {
-            return adminService.searchMembers(keyword, grade, pageable);
-        }
-        return adminService.getAllMembersPaged(pageable);
-    }
-
     @PostMapping("/members/{id}/grade")
     public String updateMemberGrade(@PathVariable Long id,
                                     @RequestParam MemberGrade grade,
                                     RedirectAttributes redirectAttributes) {
         try {
-            adminService.updateMemberGrade(id, grade);
+            memberService.editMemberGrade(id, grade);
             redirectAttributes.addFlashAttribute("message", "회원 등급이 성공적으로 변경되었습니다.");
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "회원 등급 변경 중 오류가 발생했습니다: " + e.getMessage());
         }
         return "redirect:/admin/members";
     }
-} 
+
+    private Page<MemberResponse> getMembers(String keyword, MemberGrade grade, Pageable pageable) {
+        if ((keyword != null && !keyword.trim().isEmpty()) || grade != null) {
+            return memberService.searchMembers(keyword, grade, pageable);
+        }
+        return memberService.getAllMembersPaged(pageable);
+    }
+}

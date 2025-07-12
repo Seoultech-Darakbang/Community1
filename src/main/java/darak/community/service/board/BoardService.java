@@ -3,6 +3,7 @@ package darak.community.service.board;
 import darak.community.infra.repository.dto.PostWithAllDto;
 import darak.community.service.board.request.BoardCreateServiceRequest;
 import darak.community.service.board.request.BoardUpdateServiceRequest;
+import darak.community.service.board.response.BoardAdminResponse;
 import darak.community.service.board.response.BoardResponse;
 import darak.community.service.boardcategory.response.BoardCategoryResponse;
 import java.util.List;
@@ -33,6 +34,12 @@ public interface BoardService {
     Page<BoardResponse> getAllBoardsPaged(Pageable pageable);
 
     Page<BoardResponse> getBoardsByCategoryPaged(Long categoryId, Pageable pageable);
+
+    Page<BoardAdminResponse> getAllBoardsWithCategoryPaged(Pageable pageable);
+
+    Page<BoardAdminResponse> getBoardsWithCategoryByCategoryPaged(Long categoryId, Pageable pageable);
+
+    BoardAdminResponse findBoardAdminInfoBy(Long boardId);
 
     long getTotalBoardCount();
 

@@ -16,10 +16,11 @@ public class BoardCreateServiceRequest {
     private Long boardCategoryId;
 
     @Builder
-    private BoardCreateServiceRequest(String name, String description, Integer priority) {
+    private BoardCreateServiceRequest(String name, String description, Integer priority, Long boardCategoryId) {
         this.name = name;
         this.description = description;
         this.priority = priority;
+        this.boardCategoryId = boardCategoryId;
     }
 
     public Board toEntity() {

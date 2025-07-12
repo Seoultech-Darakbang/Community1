@@ -10,6 +10,7 @@ import darak.community.infra.repository.PostRepository;
 import darak.community.infra.repository.dto.PostWithAllDto;
 import darak.community.service.board.request.BoardCreateServiceRequest;
 import darak.community.service.board.request.BoardUpdateServiceRequest;
+import darak.community.service.board.response.BoardAdminResponse;
 import darak.community.service.board.response.BoardResponse;
 import darak.community.service.boardcategory.response.BoardCategoryResponse;
 import java.util.List;
@@ -119,6 +120,22 @@ public class BoardServiceImpl implements BoardService {
     public Page<BoardResponse> getBoardsByCategoryPaged(Long categoryId, Pageable pageable) {
         Page<Board> boardPage = boardRepository.findByBoardCategoryIdPaged(categoryId, pageable);
         return boardPage.map(BoardResponse::of);
+    }
+
+    @Override
+    public Page<BoardAdminResponse> getAllBoardsWithCategoryPaged(Pageable pageable) {
+        return boardRepository.findAllPaged(pageable).map(BoardAdminResponse::of);
+    }
+
+    @Override
+    public Page<BoardAdminResponse> getBoardsWithCategoryByCategoryPaged(Long categoryId, Pageable pageable) {
+        return boardRepository.findByBoardCategoryIdPaged(categoryId, pageable)
+                .map(BoardAdminResponse::of);
+    }
+
+    @Override
+    public BoardAdminResponse findBoardAdminInfoBy(Long boardId) {
+        return BoardAdminResponse.of(findBoardBy(boardId));
     }
 
     @Override
