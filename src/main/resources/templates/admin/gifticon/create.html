@@ -27,6 +27,11 @@
             </a>
           </div>
 
+          <!-- Validation / Error Message -->
+          <div th:if="${error}" class="mb-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+            <span th:text="${error}"></span>
+          </div>
+
           <!-- 기프티콘 등록 폼 -->
           <form th:action="@{/admin/gifticons/create}" th:object="${gifticon}" method="post"
             class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8">
