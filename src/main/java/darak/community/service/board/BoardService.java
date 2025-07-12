@@ -1,6 +1,6 @@
 package darak.community.service.board;
 
-import darak.community.infra.repository.dto.PostWithMetaDto;
+import darak.community.infra.repository.dto.PostWithAllDto;
 import darak.community.service.board.request.BoardCreateServiceRequest;
 import darak.community.service.board.request.BoardUpdateServiceRequest;
 import darak.community.service.board.response.BoardResponse;
@@ -18,13 +18,13 @@ public interface BoardService {
 
     void deleteBoard(Long boardId);
 
-    BoardResponse readBoardBy(Long boardId);
+    BoardResponse findBoardInfoBy(Long boardId);
 
     List<BoardResponse> findBoardsBy(Long categoryId);
 
     Map<BoardCategoryResponse, List<BoardResponse>> findBoardsGroupedByCategory();
 
-    Map<BoardResponse, List<PostWithMetaDto>> findRecentPostsGroupedByBoardLimit(int limit);
+    Map<BoardResponse, List<PostWithAllDto>> findRecentPostsGroupedByBoardLimit(int limit);
 
     List<BoardResponse> findOrderedBoardsBy(Long categoryId);
 

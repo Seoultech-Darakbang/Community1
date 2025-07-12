@@ -7,7 +7,7 @@ import darak.community.domain.member.MemberGrade;
 import darak.community.infra.repository.BoardCategoryRepository;
 import darak.community.infra.repository.BoardRepository;
 import darak.community.infra.repository.PostRepository;
-import darak.community.infra.repository.dto.PostWithMetaDto;
+import darak.community.infra.repository.dto.PostWithAllDto;
 import darak.community.service.board.request.BoardCreateServiceRequest;
 import darak.community.service.board.request.BoardUpdateServiceRequest;
 import darak.community.service.board.response.BoardResponse;
@@ -59,7 +59,7 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public BoardResponse readBoardBy(Long boardId) {
+    public BoardResponse findBoardInfoBy(Long boardId) {
         return boardRepository.findById(boardId)
                 .map(BoardResponse::of)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시판입니다."));
@@ -83,7 +83,7 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public Map<BoardResponse, List<PostWithMetaDto>> findRecentPostsGroupedByBoardLimit(int limit) {
+    public Map<BoardResponse, List<PostWithAllDto>> findRecentPostsGroupedByBoardLimit(int limit) {
         List<Board> boards = boardRepository.findAll();
         return boards.stream()
                 .collect(Collectors.toMap(

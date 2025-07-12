@@ -8,20 +8,24 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class PostWithMetaDto {
+public class PostWithAllDto {
 
     private Long postId;
     private String title;
     private String content;
     private Boolean anonymous;
     private PostType postType;
+
     private Long authorId;
     private String authorName;
     private MemberGrade authorGrade;
+
     private Long boardId;
     private String boardName;
+
     private Long readCount;
     private LocalDateTime createdDate;
+
     private int commentCount;
     private Boolean myHeart;
     private int heartCount;
