@@ -44,7 +44,7 @@ public class CommentResponse {
         this.commentHeartResponse = commentHeartResponse;
     }
 
-    public static CommentResponse createRootResponse(Comment comment) {
+    public static CommentResponse createRootResponse(Comment comment, MyCommentHeartResponse commentHeartResponse) {
         return CommentResponse.builder()
                 .id(comment.getId())
                 .content(comment.getContent())
@@ -53,7 +53,7 @@ public class CommentResponse {
                 .createdAt(comment.getCreatedDate())
                 .modifiedAt(comment.getLastModifiedDate())
                 .author(MemberResponse.of(comment.getMember()))
-                .commentHeartResponse(MyCommentHeartResponse.of(comment.getMember(), comment))
+                .commentHeartResponse(commentHeartResponse)
                 .build();
     }
 

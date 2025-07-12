@@ -19,6 +19,7 @@ import darak.community.service.comment.request.CommentDeleteServiceRequest;
 import darak.community.service.comment.request.CommentSearch;
 import darak.community.service.comment.request.ReplyCreateServiceRequest;
 import darak.community.service.comment.response.CommentResponse;
+import darak.community.service.comment.response.MyCommentHeartResponse;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -41,6 +42,7 @@ public class CommentServiceImpl implements CommentService {
     private final PostRepository postRepository;
     private final AdminLogRepository adminLogRepository;
     private final CommentHeartRepository commentHeartRepository;
+    private final CommentHeartService commentHeartService; // 추가
 
     @Override
     @Transactional
@@ -98,11 +100,11 @@ public class CommentServiceImpl implements CommentService {
     public Page<CommentResponse> findCommentsWithReplyBy(Long memberId, Long postId, Pageable pageable) {
         Page<Comment> parentCommentsPage = commentRepository.findParentCommentsByPostIdPaged(postId, pageable);
 
-        Map<Long, CommentResponse> parentResponseMap = createParentMapBy(parentCommentsPage);
+        Map<Long, CommentResponse> parentResponseMap = createParentMapBy(parentCommentsPage, memberId);
         List<Long> parentCommentIds = getParentCommentIds(parentResponseMap);
 
         List<Comment> childComments = commentRepository.findChildCommentsByParentIds(parentCommentIds);
-        addChildCommentsToParentMap(childComments, parentResponseMap);
+        addChildCommentsToParentMap(childComments, parentResponseMap, memberId);
 
         List<CommentResponse> commentResponses = new ArrayList<>(parentResponseMap.values());
         return new PageImpl<>(commentResponses, pageable, parentCommentsPage.getTotalElements());
@@ -112,7 +114,10 @@ public class CommentServiceImpl implements CommentService {
     public Page<CommentResponse> findCommentsBy(Long memberId, Pageable pageable) {
         Page<Comment> myCommentsPage = commentRepository.findByMemberIdPaged(memberId, pageable);
         List<CommentResponse> commentResponses = myCommentsPage.stream()
-                .map(CommentResponse::createRootResponse)
+                .map(comment -> {
+                    MyCommentHeartResponse heartResponse = commentHeartService.getLikeStatus(comment.getId(), memberId);
+                    return CommentResponse.createRootResponse(comment, heartResponse);
+                })
                 .toList();
 
         return new PageImpl<>(commentResponses, pageable, myCommentsPage.getTotalElements());
@@ -122,8 +127,11 @@ public class CommentServiceImpl implements CommentService {
     public Page<CommentResponse> findHeartCommentsBy(Long memberId, Pageable pageable) {
         List<CommentHeart> commentHearts = commentHeartRepository.findByMemberIdFetchComments(memberId);
         List<CommentResponse> commentResponses = commentHearts.stream()
-                .map(CommentHeart::getComment)
-                .map(CommentResponse::createRootResponse)
+                .map(commentHeart -> {
+                    Comment comment = commentHeart.getComment();
+                    MyCommentHeartResponse heartResponse = commentHeartService.getLikeStatus(comment.getId(), memberId);
+                    return CommentResponse.createRootResponse(comment, heartResponse);
+                })
                 .toList();
         return new PageImpl<>(commentResponses, pageable, commentHearts.size());
     }
@@ -186,10 +194,12 @@ public class CommentServiceImpl implements CommentService {
         return comment.getMember().equals(member);
     }
 
-    private Map<Long, CommentResponse> createParentMapBy(
-            Page<Comment> parentCommentsPage) {
+    private Map<Long, CommentResponse> createParentMapBy(Page<Comment> parentCommentsPage, Long memberId) {
         return parentCommentsPage.stream()
-                .map(CommentResponse::createRootResponse)
+                .map(comment -> {
+                    MyCommentHeartResponse heartResponse = commentHeartService.getLikeStatus(comment.getId(), memberId);
+                    return CommentResponse.createRootResponse(comment, heartResponse);
+                })
                 .collect(Collectors.toMap(CommentResponse::getId, commentResponse -> commentResponse));
     }
 
@@ -198,9 +208,11 @@ public class CommentServiceImpl implements CommentService {
     }
 
     private void addChildCommentsToParentMap(List<Comment> childComments,
-                                             Map<Long, CommentResponse> parentResponseMap) {
+                                             Map<Long, CommentResponse> parentResponseMap,
+                                             Long memberId) {
         childComments.forEach(comment -> {
-            CommentResponse childResponse = CommentResponse.createRootResponse(comment);
+            MyCommentHeartResponse heartResponse = commentHeartService.getLikeStatus(comment.getId(), memberId);
+            CommentResponse childResponse = CommentResponse.createRootResponse(comment, heartResponse);
             parentResponseMap.get(comment.getParent().getId()).addChild(childResponse);
         });
     }
