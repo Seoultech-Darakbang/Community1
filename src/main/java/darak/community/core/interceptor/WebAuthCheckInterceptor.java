@@ -22,6 +22,14 @@ public class WebAuthCheckInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
 
+        HandlerMethod handlerMethod = (HandlerMethod) handler;
+        ServiceAuth serviceAuth = getAuthAnnotation(handlerMethod);
+
+        if (serviceAuth == null) {
+            log.info("AuthCheck 시도: ServiceAuth가 없습니다. 인증 없이 진행합니다.");
+            return true;
+        }
+
         HttpSession session = request.getSession();
         if (session == null) {
             log.info("AuthCheck 시도: session is Empty");
@@ -36,10 +44,7 @@ public class WebAuthCheckInterceptor implements HandlerInterceptor {
             return false;
         }
 
-        HandlerMethod handlerMethod = (HandlerMethod) handler;
-        ServiceAuth serviceAuth = getAuthAnnotation(handlerMethod);
-
-        if (serviceAuth == null || memberHasPermission(loginMember, serviceAuth)) {
+        if (memberHasPermission(loginMember, serviceAuth)) {
             return true;
         }
 
