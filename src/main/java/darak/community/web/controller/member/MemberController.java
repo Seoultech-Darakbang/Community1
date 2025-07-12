@@ -4,7 +4,6 @@ import darak.community.core.argumentresolver.Login;
 import darak.community.core.exception.PasswordFailedExceededException;
 import darak.community.core.session.dto.LoginMember;
 import darak.community.service.member.MemberService;
-import darak.community.web.dto.ApiResponse;
 import darak.community.web.dto.MemberCreateForm;
 import darak.community.web.dto.PasswordForm;
 import lombok.RequiredArgsConstructor;
@@ -16,8 +15,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
@@ -81,20 +78,4 @@ public class MemberController {
         return "redirect:/";
     }
 
-
-    @GetMapping("/members/new/confirmLoginId")
-    @ResponseBody
-    public ApiResponse<?> checkDuplicatedLoginId(@RequestParam String loginId) {
-
-        if (loginId.isEmpty()) {
-            return ApiResponse.error("아이디를 입력해주세요");
-        }
-
-        if (loginId.length() < 4 || loginId.length() > 20) {
-            return ApiResponse.error("아이디는 4자 이상, 20자 이하입니다");
-        }
-
-        memberService.validateDuplicateMember(loginId);
-        return ApiResponse.successWithNoData("사용 가능한 회원 ID 입니다.");
-    }
 }
