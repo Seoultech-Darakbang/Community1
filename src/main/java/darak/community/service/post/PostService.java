@@ -35,6 +35,8 @@ public interface PostService {
 
     long getTotalPostCount();
 
+    Page<PostContentDto> findPostsByBoardId(Long boardId, Pageable pageable);
+
     Page<PostWithAllDto> searchPostsByMemberIdAnd(Long memberId, PostSearch postSearch);
 
     Page<PostWithAllDto> findPostsByMemberIdAndLiked(Long memberId, Pageable pageable);

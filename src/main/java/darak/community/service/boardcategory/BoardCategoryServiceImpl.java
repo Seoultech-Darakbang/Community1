@@ -1,6 +1,7 @@
 package darak.community.service.boardcategory;
 
 import darak.community.core.auth.ServiceAuth;
+import darak.community.domain.board.Board;
 import darak.community.domain.board.BoardCategory;
 import darak.community.domain.member.MemberGrade;
 import darak.community.infra.repository.BoardCategoryRepository;
@@ -73,6 +74,16 @@ public class BoardCategoryServiceImpl implements BoardCategoryService {
     @Override
     public long getTotalCategoryCount() {
         return boardCategoryRepository.count();
+    }
+
+    @Override
+    public long getFirstBoardIdByCategoryId(Long categoryId) {
+        List<Board> boards = boardRepository.findByBoardCategoryId(categoryId);
+        Board board = boards.stream().sorted()
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 카테고리입니다."));
+
+        return board.getId();
     }
 
     @PostConstruct

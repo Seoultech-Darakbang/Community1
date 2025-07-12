@@ -4,7 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:text="${board != null ? board.name + ' - 다락방 커뮤니티' : '다락방 커뮤니티 - 게시글 목록'}">다락방 커뮤니티 - 게시글 목록</title>
+    <title th:text="${currentBoard != null ? currentBoard.name + ' - 다락방 커뮤니티' : '다락방 커뮤니티 - 게시글 목록'}">
+        다락방 커뮤니티 - 게시글 목록
+    </title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
     <script>
@@ -31,7 +33,9 @@
     <main>
         <div class="container max-w-6xl mx-auto px-6 py-6 flex flex-col md:flex-row">
             <!-- 좌측: 게시판 사이드바 -->
-            <div th:replace="~{fragments/boardSidebar :: boardSidebar(${category}, ${activeBoard}, ${boards})}"></div>
+            <div
+                th:replace="~{fragments/boardSidebar :: boardSidebarByCategory(${boardsGroupedByCategory}, ${currentBoard})}">
+            </div>
 
             <!-- 우측 메인 영역 -->
             <main class="w-full md:w-3/4 md:pl-6">
@@ -44,11 +48,12 @@
 
                 <!-- Section 1: 게시판 설명 -->
                 <section class="mb-6 p-4 border rounded shadow-lg dark:bg-gray-800 fade-in-section">
-                    <h2 class="text-2xl font-bold mb-2" th:text="${activeBoard != null ? activeBoard.name : '모집 공고'}">모집
-                        공고</h2>
-                    <p class="text-gray-700 dark:text-gray-300"
-                        th:text="${activeBoard != null ? activeBoard.description : '이 게시판은 다락방 동아리 신입 회원 및 지원 관련 모집 공고를 게시하는 곳입니다.'}">
-                        이 게시판은 다락방 동아리 신입 회원 및 지원 관련 모집 공고를 게시하는 곳입니다.
+                    <h2 class="text-2xl font-bold mb-2" th:text="${currentBoard != null ? currentBoard.name : '게시판'}">
+                        게시판
+                    </h2>
+                    <p class="text-gray-700 dark:text-gray-300" th:text="${currentBoard != null ? currentBoard.description
+                                 : '해당 게시판 설명이 없습니다.'}">
+                        해당 게시판 설명이 없습니다.
                     </p>
                 </section>
 
@@ -58,29 +63,29 @@
                     <article th:each="post : ${posts}"
                         class="p-4 border rounded hover:shadow-lg dark:border-gray-700 dark:bg-gray-800">
                         <h3 class="text-xl font-bold mb-2">
-                            <a th:href="@{'/community/boards/' + ${activeBoard.id} + '/posts/' + ${post.id}}">
+                            <a th:href="@{'/community/boards/' + ${currentBoard.boardId} + '/posts/' + ${post.postId}}">
                                 <i th:if="${post.postType.key == 'NOTICE'}"
                                     class="fa-solid fa-bell text-red-500 mr-1"></i>
                                 <i th:if="${post.postType.key == 'FAQ'}"
                                     class="fa-solid fa-circle-question text-blue-500 mr-1"></i>
-                                <span th:text="${post.title}">[모집 공고] 신입 회원 모집 안내</span>
+                                <span th:text="${post.title}">게시글 제목</span>
                             </a>
                         </h3>
                         <p class="mb-2 text-gray-600 dark:text-gray-300"
-                            th:text="${#strings.abbreviate(post.content, 100)}">
-                            다락방 동아리에서 신입 회원을 모집합니다. 열정적인 분들의 많은 지원 바랍니다...
-                        </p>
+                            th:text="${#strings.abbreviate(post.content, 100)}">게시글 요약</p>
+
                         <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">
-                            <span class="mr-4"><i class="fas fa-thumbs-up"></i> <span
-                                    th:text="${post.likeCount}">12</span></span>
-                            <span class="mr-4"><i class="fas fa-comments"></i> <span
-                                    th:text="${post.commentCount}">3</span></span>
-                            <span class="mr-4"><i class="fas fa-eye"></i> <span
-                                    th:text="${post.viewCount}">145</span></span>
-                            <span class="mr-4"><i class="fas fa-calendar"></i> <span
-                                    th:text="${#temporals.format(post.createdDate, 'yyyy-MM-dd')}">2023-10-01</span></span>
-                            <span><i class="fas fa-user"></i> <span
-                                    th:text="${post.anonymous ? '익명' : post.member.name}">관리팀</span></span>
+                            <span class="mr-4"><i class="fas fa-thumbs-up"></i>
+                                <span th:text="${post.heartCount}">0</span></span>
+                            <span class="mr-4"><i class="fas fa-comments"></i>
+                                <span th:text="${post.commentCount}">0</span></span>
+                            <span class="mr-4"><i class="fas fa-eye"></i>
+                                <span th:text="${post.readCount}">0</span></span>
+                            <span class="mr-4"><i class="fas fa-calendar"></i>
+                                <span
+                                    th:text="${#temporals.format(post.createdDate, 'yyyy-MM-dd')}">2023-01-01</span></span>
+                            <span><i class="fas fa-user"></i>
+                                <span th:text="${post.anonymous ? '익명' : post.authorName}">작성자</span></span>
                         </div>
                     </article>
 
@@ -92,17 +97,17 @@
                     <!-- 페이지네이션 -->
                     <div class="flex justify-center mt-8" th:if="${posts != null && !posts.isEmpty()}">
                         <nav class="inline-flex">
-                            <a th:href="@{'/community/boards/' + ${activeBoard.id} + '?page=' + ${currentPage - 1}}"
+                            <a th:href="@{'/community/boards/' + ${currentBoard.boardId} + '?page=' + ${currentPage - 1}}"
                                 th:class="${currentPage <= 1} ? 'px-3 py-1 border rounded-l text-gray-400 cursor-not-allowed' : 'px-3 py-1 border rounded-l hover:bg-gray-100 dark:hover:bg-gray-700'"
                                 th:classappend="${currentPage <= 1} ? 'pointer-events-none'"
                                 class="px-3 py-1 border rounded-l hover:bg-gray-100 dark:hover:bg-gray-700">이전</a>
 
                             <a th:each="pageNum : ${#numbers.sequence(startPage, endPage)}"
-                                th:href="@{'/community/boards/' + ${activeBoard.id} + '?page=' + ${pageNum}}"
+                                th:href="@{'/community/boards/' + ${currentBoard.boardId} + '?page=' + ${pageNum}}"
                                 th:class="${pageNum == currentPage} ? 'px-3 py-1 border-t border-b bg-blue-500 text-white' : 'px-3 py-1 border-t border-b hover:bg-gray-100 dark:hover:bg-gray-700'"
                                 th:text="${pageNum}">1</a>
 
-                            <a th:href="@{'/community/boards/' + ${activeBoard.id} + '?page=' + ${currentPage + 1}}"
+                            <a th:href="@{'/community/boards/' + ${currentBoard.boardId} + '?page=' + ${currentPage + 1}}"
                                 th:class="${currentPage >= totalPages} ? 'px-3 py-1 border rounded-r text-gray-400 cursor-not-allowed' : 'px-3 py-1 border rounded-r hover:bg-gray-100 dark:hover:bg-gray-700'"
                                 th:classappend="${currentPage >= totalPages} ? 'pointer-events-none'"
                                 class="px-3 py-1 border rounded-r hover:bg-gray-100 dark:hover:bg-gray-700">다음</a>
@@ -111,7 +116,7 @@
 
                     <!-- 글쓰기 버튼 -->
                     <div class="flex justify-end mt-4">
-                        <a th:href="@{'/community/boards/' + ${activeBoard.id} + '/posts'}"
+                        <a th:href="@{'/community/boards/' + ${currentBoard.boardId} + '/posts'}"
                             class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors">
                             <i class="fas fa-pen mr-1"></i> 글쓰기
                         </a>

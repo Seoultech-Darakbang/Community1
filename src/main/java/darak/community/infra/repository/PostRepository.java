@@ -421,4 +421,33 @@ public class PostRepository {
                 .setParameter("memberId", memberId)
                 .getSingleResult());
     }
+
+    public Page<PostContentDto> findPostsByBoardId(Long boardId, Pageable pageable) {
+        String jpql = """
+                select new darak.community.infra.repository.dto.PostContentDto(
+                            p.id, p.title, p.content, p.anonymous, p.postType,
+                            m.id, m.name, m.memberGrade,
+                            p.readCount, p.createdDate,
+                            (select count(c) from Comment c where c.post = p),
+                            false,
+                            (select count(ph) from PostHeart ph where ph.post.id = p.id)
+                        )
+                        from Post p
+                        join p.member m
+                        where p.board.id = :boardId
+                        order by p.createdDate desc
+                """;
+
+        List<PostContentDto> content = em.createQuery(jpql, PostContentDto.class)
+                .setParameter("boardId", boardId)
+                .setFirstResult((int) pageable.getOffset())
+                .setMaxResults(pageable.getPageSize())
+                .getResultList();
+
+        Long total = em.createQuery("select count(p) from Post p where p.board.id = :boardId", Long.class)
+                .setParameter("boardId", boardId)
+                .getSingleResult();
+
+        return new PageImpl<>(content, pageable, total);
+    }
 }

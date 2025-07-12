@@ -1,23 +1,17 @@
 package darak.community.web.controller.community.board;
 
-import darak.community.core.argumentresolver.Login;
-import darak.community.domain.board.Board;
-import darak.community.domain.board.BoardCategory;
-import darak.community.domain.member.Member;
-import darak.community.domain.post.Post;
-import darak.community.service.board.BoardCategoryService;
+import darak.community.infra.repository.dto.PostContentDto;
 import darak.community.service.board.BoardService;
+import darak.community.service.boardcategory.BoardCategoryService;
 import darak.community.service.post.PostService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -30,40 +24,20 @@ public class BoardController {
     private final BoardCategoryService boardCategoryService;
     private final PostService postService;
 
-    @ModelAttribute
-    public void addAttributes(@Login Member member, Model model) {
-        addBoardInformation(model);
-        model.addAttribute("member", member);
-    }
 
     @GetMapping("/community/categories/{categoryId}")
-    public String redirectFirstBoard(@Login Member member, @PathVariable Long categoryId, Model model) {
-        BoardCategory category = boardCategoryService.findById(categoryId);
-        if (category == null) {
-            return "redirect:/error/404";
-        }
-        return "redirect:/community/boards/" + category.getFirstBoardId();
+    public String redirectFirstBoard(@PathVariable Long categoryId) {
+        return "redirect:/community/boards/" + boardCategoryService.getFirstBoardIdByCategoryId(categoryId);
     }
 
     @GetMapping("/community/boards/{boardId}")
-    public String board(@Login Member member,
-                        @PathVariable Long boardId,
+    public String board(@PathVariable Long boardId,
                         @RequestParam(defaultValue = "1") int page,
                         @RequestParam(defaultValue = "10") int size,
                         Model model) {
 
-        Board board = boardService.findBoardAndCategoryWithBoardId(boardId);
-
-        if (board == null || board.getBoardCategory() == null) {
-            return "redirect:/error/404";
-        }
-
-        model.addAttribute("category", board.getBoardCategory());
-        model.addAttribute("activeBoard", board);
-        model.addAttribute("boards", board.getBoardCategory().getBoards());
-
-        Pageable pageable = PageRequest.of(page - 1, size, Sort.by("createdDate").descending());
-        Page<Post> postPage = postService.findByBoardIdPaged(board.getId(), pageable);
+        Page<PostContentDto> postPage = postService.findPostsByBoardId(boardId,
+                PageRequest.of(page - 1, size, Sort.by("createdDate").descending()));
 
         model.addAttribute("posts", postPage.getContent());
         model.addAttribute("currentPage", page);
@@ -72,10 +46,5 @@ public class BoardController {
         model.addAttribute("endPage", Math.min(postPage.getTotalPages(), page + 2));
 
         return "community/board/board";
-    }
-
-
-    private void addBoardInformation(Model model) {
-        model.addAttribute("boardCategories", boardCategoryService.findAll());
     }
 }

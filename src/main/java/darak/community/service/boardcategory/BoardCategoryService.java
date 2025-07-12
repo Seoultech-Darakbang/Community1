@@ -20,4 +20,6 @@ public interface BoardCategoryService {
     void deleteCategory(Long id);
 
     long getTotalCategoryCount();
+
+    long getFirstBoardIdByCategoryId(Long categoryId);
 }

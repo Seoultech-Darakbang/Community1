@@ -148,6 +148,11 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    public Page<PostContentDto> findPostsByBoardId(Long boardId, Pageable pageable) {
+        return postRepository.findPostsByBoardId(boardId, pageable);
+    }
+
+    @Override
     public Page<PostWithAllDto> searchPostsByMemberIdAnd(Long memberId, PostSearch postSearch) {
         Member member = findMemberBy(memberId);
         Pageable pageable = PageRequest.of(postSearch.getPage(), postSearch.getSize());
