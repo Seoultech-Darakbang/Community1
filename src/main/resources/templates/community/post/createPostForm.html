@@ -49,14 +49,15 @@
         <div class="container max-w-6xl mx-auto px-6 py-8">
             <div class="flex flex-col md:flex-row gap-6">
                 <!-- 좌측: 게시판 사이드바 (boardType과 activeBoard는 컨트롤러에서 전달) -->
-                <div th:replace="~{fragments/boardSidebar :: boardSidebar(${category}, ${activeBoard}, ${boards})}">
+                <div
+                    th:replace="~{fragments/boardSidebar :: boardSidebarByCategory(${boardsGroupedByCategory}, ${currentBoard})}">
                 </div>
 
                 <!-- 우측: 게시글 작성 폼 -->
                 <div class="w-full md:w-3/4">
                     <h1 class="text-3xl font-bold mb-6">게시글 작성</h1>
 
-                    <form th:action="@{'/community/boards/' + ${activeBoard.id} + '/posts'}"
+                    <form th:action="@{'/community/boards/' + ${currentBoard.boardId} + '/posts'}"
                         th:object="${postCURequestForm}" method="post">
 
                         <!-- 제목 입력 -->
@@ -73,7 +74,8 @@
                             <label class="block mb-2 font-semibold">게시글 유형</label>
 
                             <!-- MASTER나 ADMIN인 경우 -->
-                            <div th:if="${member.memberGrade == T(darak.community.domain.member.MemberGrade).MASTER || member.memberGrade == T(darak.community.domain.member.MemberGrade).ADMIN}"
+                            <div th:if="${loginMember.memberGrade == T(darak.community.domain.member.MemberGrade).MASTER or
+                                loginMember.memberGrade == T(darak.community.domain.member.MemberGrade).ADMIN}"
                                 class="flex flex-wrap gap-4">
                                 <div class="flex items-center">
                                     <input type="radio" th:field="*{postType}" id="normal" value="NORMAL" class="mr-2">
@@ -90,7 +92,8 @@
                             </div>
 
                             <!-- 일반 회원인 경우 -->
-                            <div th:unless="${member.memberGrade == T(darak.community.domain.member.MemberGrade).MASTER || member.memberGrade == T(darak.community.domain.member.MemberGrade).ADMIN}"
+                            <div th:unless="${loginMember.memberGrade == T(darak.community.domain.member.MemberGrade).MASTER or
+                                loginMember.memberGrade == T(darak.community.domain.member.MemberGrade).ADMIN}"
                                 class="flex flex-wrap gap-4">
                                 <div class="flex items-center">
                                     <input type="radio" th:field="*{postType}" id="normal" value="NORMAL" class="mr-2">
@@ -134,7 +137,7 @@
 
                         <!-- 버튼 영역 -->
                         <div class="flex justify-end space-x-2">
-                            <a th:href="@{'/community/boards/' + ${activeBoard.id}}"
+                            <a th:href="@{'/community/boards/' + ${currentBoard.boardId}}"
                                 class="px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded">취소</a>
                             <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded">등록</button>
                         </div>

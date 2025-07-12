@@ -1,16 +1,16 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 
-<aside th:fragment="boardSidebar(category, activeBoard, boards)" class="hidden md:block md:w-1/4 mb-6">
-    <div class="p-4 border rounded shadow-lg dark:bg-gray-800">
-        <div>
-            <h3 class="text-xl font-bold mb-4" th:text="${category.name}">
-                카테고리</h3>
-            <ul class="space-y-2">
-                <li th:each="board : ${boards}">
-                    <a th:href="@{'/community/boards/' + ${board.id}}"
-                        th:class="${activeBoard.id == board.id} ? 'block p-2 bg-blue-100 dark:bg-blue-900 font-bold' : 'block p-2 hover:bg-gray-200 dark:hover:bg-gray-700'"
-                        th:text="${board.name}">
+<aside th:fragment="boardSidebarByCategory(boardsGroupedByCategory, currentBoard)"
+    class="hidden md:block md:w-1/4 mb-6">
+    <div class="p-4 border rounded shadow-lg dark:bg-gray-800" th:if="${boardsGroupedByCategory != null}">
+        <div th:each="entry : ${boardsGroupedByCategory}">
+            <h3 class="text-lg font-bold mb-2" th:text="${entry.key.name}">카테고리</h3>
+            <ul class="space-y-2 mb-4">
+                <li th:each="board : ${entry.value}">
+                    <a th:href="@{'/community/boards/' + ${board.boardId}}" th:class="${currentBoard != null and currentBoard.boardId == board.boardId} ?
+                       'block p-2 bg-blue-100 dark:bg-blue-900 font-bold'
+                       : 'block p-2 hover:bg-gray-200 dark:hover:bg-gray-700'" th:text="${board.name}">
                         게시판 이름
                     </a>
                 </li>

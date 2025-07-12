@@ -23,7 +23,8 @@
 
             <div class="flex flex-col md:flex-row gap-6">
                 <!-- 좌측: 게시판 사이드바 -->
-                <div th:replace="~{fragments/boardSidebar :: boardSidebar(${category}, ${activeBoard}, ${boards})}">
+                <div
+                    th:replace="~{fragments/boardSidebar :: boardSidebarByCategory(${boardsGroupedByCategory}, ${currentBoard})}">
                 </div>
 
                 <!-- 우측: 게시글 내용 -->
@@ -38,15 +39,15 @@
                         </h1>
                         <div class="flex justify-between items-center text-gray-600 dark:text-gray-400">
                             <div>
-                                <span>작성자: <span th:text="${post.anonymous ? '익명' : post.member.name}">홍길동</span></span>
+                                <span>작성자: <span th:text="${post.anonymous ? '익명' : post.authorName}">홍길동</span></span>
                                 <span class="mx-2">|</span>
                                 <span th:text="${#temporals.format(post.createdDate, 'yyyy-MM-dd HH:mm')}">2025-01-01
                                     12:34</span>
                             </div>
                             <div>
-                                <span>조회수: <span th:text="${post.viewCount}">123</span></span>
+                                <span>조회수: <span th:text="${post.readCount}">123</span></span>
                                 <span class="mx-2">|</span>
-                                <span>좋아요: <span class="post-like-count" th:text="${post.likeCount}">45</span></span>
+                                <span>좋아요: <span class="post-like-count" th:text="${post.heartCount}">45</span></span>
                             </div>
                         </div>
                     </div>
@@ -60,25 +61,26 @@
                     <!-- 게시글 하단 버튼 -->
                     <div class="flex justify-between mb-8">
                         <div>
-                            <a th:href="@{'/community/boards/' + ${activeBoard.id}}"
+                            <a th:href="@{'/community/boards/' + ${currentBoard.boardId}}"
                                 class="px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded">목록으로</a>
                         </div>
                         <div class="space-x-2">
                             <button th:id="likeButton"
                                 th:class="${isLiked ? 'px-4 py-2 bg-red-500 text-white rounded' : 'px-4 py-2 bg-blue-500 text-white rounded'}"
-                                th:data-post-id="${post.id}" th:data-liked="${isLiked}">
+                                th:data-post-id="${post.postId}" th:data-liked="${isLiked}">
                                 <i class="fas fa-thumbs-up"></i> <span
                                     th:text="${isLiked ? '좋아요 취소' : '좋아요'}">좋아요</span>
                             </button>
                             <!-- 작성자만 수정 버튼 표시 -->
-                            <th:block th:if="${member.id == post.member.id}">
-                                <a th:href="@{'/community/boards/' + ${activeBoard.id} + '/posts/' + ${post.id} + '/edit'}"
+                            <th:block th:if="${loginMember.id == post.authorId}">
+                                <a th:href="@{'/community/boards/' + ${currentBoard.boardId} + '/posts/' + ${post.postId} + '/edit'}"
                                     class="px-4 py-2 bg-green-500 text-white rounded">수정</a>
                             </th:block>
                             <!-- 작성자 또는 관리자(ADMIN/MASTER)만 삭제 버튼 표시 -->
                             <th:block
-                                th:if="${member.id == post.member.id || member.memberGrade.name() == 'ADMIN' || member.memberGrade.name() == 'MASTER'}">
-                                <form th:action="@{'/community/boards/' + ${activeBoard.id} + '/posts/' + ${post.id}}"
+                                th:if="${loginMember.id == post.authorId || loginMember.memberGrade.name() == 'ADMIN' || loginMember.memberGrade.name() == 'MASTER'}">
+                                <form
+                                    th:action="@{'/community/boards/' + ${currentBoard.boardId} + '/posts/' + ${post.postId}}"
                                     th:method="DELETE" style="display: inline;"
                                     onsubmit="return confirm('정말로 이 게시글을 삭제하시겠습니까?')">
                                     <button type="submit" class="px-4 py-2 bg-red-500 text-white rounded">삭제</button>
@@ -98,13 +100,15 @@
                             <span th:text="${error}">오류가 발생했습니다.</span>
                         </div>
 
-                        <h3 class="text-xl font-bold mb-4">댓글 (<span th:text="${commentsPage.totalElements}">3</span>)
+                        <!-- 댓글 수 & 페이지 정보 -->
+                        <h3 class="text-xl font-bold mb-4">
+                            댓글 (<span th:text="${commentsPaged.totalElements}">0</span>)
                         </h3>
 
                         <!-- 댓글 작성 폼 -->
                         <div class="mb-6">
                             <form
-                                th:action="@{'/community/boards/' + ${activeBoard.id} + '/posts/' + ${post.id} + '/comments'}"
+                                th:action="@{'/community/boards/' + ${currentBoard.boardId} + '/posts/' + ${post.postId} + '/comments'}"
                                 method="post">
                                 <textarea name="content" class="w-full p-3 border rounded dark:bg-gray-700" rows="3"
                                     placeholder="댓글을 작성해주세요" required></textarea>
@@ -122,156 +126,52 @@
 
                         <!-- 댓글 목록 -->
                         <div class="space-y-4" id="commentList">
-                            <!-- 댓글이 없을 경우 메시지 표시 -->
-                            <div th:if="${commentsWithReplies == null || commentsWithReplies.isEmpty()}"
+                            <div th:if="${commentsPaged == null or commentsPaged.content.isEmpty()}"
                                 class="p-4 text-center text-gray-500">
                                 첫 번째 댓글을 작성해보세요!
                             </div>
 
-                            <!-- 댓글과 대댓글 구조화해서 표시 -->
-                            <div th:each="entry : ${commentsWithReplies}">
-                                <!-- 원댓글 -->
-                                <div th:with="comment=${entry.key}" th:id="'comment-' + ${comment.id}"
-                                    class="p-4 border rounded">
-                                    <div class="flex justify-between mb-2">
-                                        <div>
-                                            <span class="font-bold"
-                                                th:text="${comment.anonymous ? '익명' : comment.member.name}">댓글
-                                                작성자</span>
-                                            <span class="text-sm text-gray-600 dark:text-gray-400 ml-2"
-                                                th:text="${#temporals.format(comment.createdDate, 'yyyy-MM-dd HH:mm')}">
-                                                2025-01-01 13:00
-                                            </span>
-                                        </div>
-                                        <div class="space-x-2">
-                                            <button
-                                                th:class="${commentLikeStatusMap[comment.id] ? 'text-sm text-red-500 comment-like-button' : 'text-sm text-blue-500 comment-like-button'}"
-                                                th:data-comment-id="${comment.id}">
-                                                <span
-                                                    th:text="${commentLikeStatusMap[comment.id] ? '좋아요 취소' : '좋아요'}">좋아요</span>
-                                                (<span th:text="${comment.likeCount}">5</span>)
-                                            </button>
-                                            <!-- 대댓글 작성 버튼 -->
-                                            <button class="text-sm text-green-500 reply-button"
-                                                th:data-comment-id="${comment.id}">답글</button>
-                                            <!-- 작성자 또는 관리자만 삭제 버튼 표시 -->
-                                            <th:block
-                                                th:if="${member != null && (member.id == comment.member.id || member.memberGrade.name() == 'ADMIN' || member.memberGrade.name() == 'MASTER')}">
-                                                <form th:action="@{'/community/comments/' + ${comment.id}}"
-                                                    th:method="DELETE" style="display: inline;"
-                                                    onsubmit="return confirm('정말로 이 댓글을 삭제하시겠습니까?')">
-                                                    <input type="hidden" name="boardId" th:value="${activeBoard.id}">
-                                                    <input type="hidden" name="postId" th:value="${post.id}">
-                                                    <input type="hidden" name="commentPage"
-                                                        th:value="${currentCommentPage}">
-                                                    <button type="submit"
-                                                        class="text-sm text-red-500 hover:text-red-700">삭제</button>
-                                                </form>
-                                            </th:block>
-                                        </div>
+                            <div th:each="comment : ${commentsPaged.content}" th:id="'comment-' + ${comment.commentId}"
+                                class="p-4 border rounded">
+                                <div class="flex justify-between mb-2">
+                                    <div>
+                                        <span class="font-bold"
+                                            th:text="${comment.anonymous ? '익명' : comment.authorName}">작성자</span>
+                                        <span class="text-sm text-gray-600 dark:text-gray-400 ml-2"
+                                            th:text="${#temporals.format(comment.createdDate, 'yyyy-MM-dd HH:mm')}">2025-01-01
+                                            00:00</span>
                                     </div>
-                                    <p th:text="${comment.content}">댓글 내용입니다.</p>
-
-                                    <!-- 대댓글 작성 폼 (기본적으로 숨김) -->
-                                    <div th:id="'reply-form-' + ${comment.id}" class="mt-4 ml-8 hidden">
-                                        <form
-                                            th:action="@{'/community/boards/' + ${activeBoard.id} + '/posts/' + ${post.id} + '/comments/' + ${comment.id} + '/reply'}"
-                                            method="post">
-                                            <textarea name="content" class="w-full p-2 border rounded dark:bg-gray-700"
-                                                rows="2" placeholder="답글을 작성해주세요" required></textarea>
-                                            <div class="flex justify-between items-center mt-2">
-                                                <div class="flex items-center">
-                                                    <input type="checkbox" name="anonymous"
-                                                        th:id="'reply-anonymous-' + ${comment.id}" class="mr-2">
-                                                    <label th:for="'reply-anonymous-' + ${comment.id}"
-                                                        class="text-sm text-gray-600 dark:text-gray-400">익명으로 작성</label>
-                                                </div>
-                                                <div class="space-x-2">
-                                                    <button type="submit"
-                                                        class="px-3 py-1 bg-green-500 text-white rounded text-sm">답글
-                                                        작성</button>
-                                                    <button type="button"
-                                                        class="px-3 py-1 bg-gray-500 text-white rounded text-sm reply-cancel-button"
-                                                        th:data-comment-id="${comment.id}">취소</button>
-                                                </div>
-                                            </div>
-                                        </form>
-                                    </div>
-
-                                    <!-- 대댓글 목록 표시 -->
-                                    <div th:if="${entry.value != null && !entry.value.isEmpty()}"
-                                        class="ml-8 mt-4 space-y-2">
-                                        <div th:each="reply : ${entry.value}"
-                                            class="p-3 bg-gray-50 dark:bg-gray-800 border rounded">
-                                            <div class="flex justify-between mb-2">
-                                                <div>
-                                                    <span class="font-bold text-sm"
-                                                        th:text="${reply.anonymous ? '익명' : reply.member.name}">답글
-                                                        작성자</span>
-                                                    <span class="text-xs text-gray-500 ml-2"
-                                                        th:text="${#temporals.format(reply.createdDate, 'yyyy-MM-dd HH:mm')}">
-                                                        2025-01-01 13:30
-                                                    </span>
-                                                </div>
-                                                <div class="space-x-2">
-                                                    <button
-                                                        th:class="${commentLikeStatusMap[reply.id] ? 'text-xs text-red-500 comment-like-button' : 'text-xs text-blue-500 comment-like-button'}"
-                                                        th:data-comment-id="${reply.id}">
-                                                        <span
-                                                            th:text="${commentLikeStatusMap[reply.id] ? '좋아요 취소' : '좋아요'}">좋아요</span>
-                                                        (<span th:text="${reply.likeCount}">2</span>)
-                                                    </button>
-                                                    <!-- 대댓글 작성자 또는 관리자만 삭제 버튼 표시 -->
-                                                    <th:block
-                                                        th:if="${member != null && (member.id == reply.member.id || member.memberGrade.name() == 'ADMIN' || member.memberGrade.name() == 'MASTER')}">
-                                                        <form th:action="@{'/community/comments/' + ${reply.id}}"
-                                                            th:method="DELETE" style="display: inline;"
-                                                            onsubmit="return confirm('정말로 이 답글을 삭제하시겠습니까?')">
-                                                            <input type="hidden" name="boardId"
-                                                                th:value="${activeBoard.id}">
-                                                            <input type="hidden" name="postId" th:value="${post.id}">
-                                                            <input type="hidden" name="commentPage"
-                                                                th:value="${currentCommentPage}">
-                                                            <button type="submit"
-                                                                class="text-xs text-red-500 hover:text-red-700">삭제</button>
-                                                        </form>
-                                                    </th:block>
-                                                </div>
-                                            </div>
-                                            <p class="text-sm" th:text="${reply.content}">답글 내용입니다.</p>
-                                        </div>
-                                    </div>
+                                    <button th:class="${comment.myHeart ?
+                                        'text-sm text-red-500 comment-like-button'
+                                        : 'text-sm text-blue-500 comment-like-button'}"
+                                        th:data-comment-id="${comment.commentId}">
+                                        <span th:text="${comment.myHeart ? '좋아요 취소' : '좋아요'}">좋아요</span>
+                                        (<span th:text="${comment.heartCount}">0</span>)
+                                    </button>
                                 </div>
+                                <p th:text="${comment.content}">댓글 내용</p>
                             </div>
                         </div>
 
                         <!-- 댓글 페이징 -->
-                        <div th:if="${commentsPage.totalPages > 1}" class="flex justify-center mt-6">
+                        <div th:if="${commentsPaged.totalPages > 1}" class="flex justify-center mt-6">
                             <nav class="flex space-x-2">
-                                <!-- 이전 페이지 -->
-                                <a th:if="${commentsPage.hasPrevious()}"
-                                    th:href="@{'/community/boards/' + ${activeBoard.id} + '/posts/' + ${post.id} + '?commentPage=' + ${commentsPage.number - 1}}"
+                                <a th:if="${commentsPaged.hasPrevious()}"
+                                    th:href="@{|/community/boards/${currentBoard.boardId}/posts/${post.postId}?commentPage=${commentsPaged.number - 1}|}"
                                     class="px-3 py-2 bg-gray-200 dark:bg-gray-700 rounded hover:bg-gray-300 dark:hover:bg-gray-600">
                                     이전
                                 </a>
 
-                                <!-- 페이지 번호들 -->
-                                <th:block th:each="pageNumber : ${#numbers.sequence(0, commentsPage.totalPages - 1)}">
-                                    <a th:if="${pageNumber == commentsPage.number}"
-                                        th:href="@{'/community/boards/' + ${activeBoard.id} + '/posts/' + ${post.id} + '?commentPage=' + ${pageNumber}}"
-                                        class="px-3 py-2 bg-blue-500 text-white rounded">
-                                        <span th:text="${pageNumber + 1}">1</span>
-                                    </a>
-                                    <a th:if="${pageNumber != commentsPage.number}"
-                                        th:href="@{'/community/boards/' + ${activeBoard.id} + '/posts/' + ${post.id} + '?commentPage=' + ${pageNumber}}"
-                                        class="px-3 py-2 bg-gray-200 dark:bg-gray-700 rounded hover:bg-gray-300 dark:hover:bg-gray-600">
-                                        <span th:text="${pageNumber + 1}">1</span>
-                                    </a>
+                                <th:block th:each="pageNum : ${#numbers.sequence(0, commentsPaged.totalPages - 1)}">
+                                    <a th:href="@{|/community/boards/${currentBoard.boardId}/posts/${post.postId}?commentPage=${pageNum}|}"
+                                        th:class="${pageNum == commentsPaged.number} ?
+                                        'px-3 py-2 bg-blue-500 text-white rounded'
+                                        : 'px-3 py-2 bg-gray-200 dark:bg-gray-700 rounded hover:bg-gray-300 dark:hover:bg-gray-600'}"
+                                        th:text="${pageNum + 1}">1</a>
                                 </th:block>
 
-                                <!-- 다음 페이지 -->
-                                <a th:if="${commentsPage.hasNext()}"
-                                    th:href="@{'/community/boards/' + ${activeBoard.id} + '/posts/' + ${post.id} + '?commentPage=' + ${commentsPage.number + 1}}"
+                                <a th:if="${commentsPaged.hasNext()}"
+                                    th:href="@{|/community/boards/${currentBoard.boardId}/posts/${post.postId}?commentPage=${commentsPaged.number + 1}|}"
                                     class="px-3 py-2 bg-gray-200 dark:bg-gray-700 rounded hover:bg-gray-300 dark:hover:bg-gray-600">
                                     다음
                                 </a>
