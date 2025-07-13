@@ -18,16 +18,18 @@
             <a th:href="@{/}" href="/home" class="hover:text-blue-500 transition-colors">메인</a>
 
             <!-- 동적으로 카테고리와 게시판 목록 생성 -->
-            <div th:each="category : ${boardCategories}" class="relative group">
+            <div th:if="${boardsGroupedByCategory != null}" th:each="category : ${boardsGroupedByCategory.keySet()}"
+                class="relative group">
                 <a th:href="@{'/community/categories/' + ${category.id}}" th:text="${category.name}"
-                   class="hover:text-blue-500 group-hover:text-blue-500 transition-colors"></a>
+                    class="hover:text-blue-500 group-hover:text-blue-500 transition-colors"></a>
                 <div class="absolute left-0 top-full z-10 w-56
-        bg-white dark:bg-gray-800 rounded shadow-lg
-        invisible opacity-0 pointer-events-none
-        group-hover:visible group-hover:opacity-100 group-hover:pointer-events-auto
-        transition-opacity duration-200">
-                    <a th:each="board : ${category.boards}" th:href="@{'/community/boards/' + ${board.id}}"
-                       th:text="${board.name}" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"></a>
+bg-white dark:bg-gray-800 rounded shadow-lg
+invisible opacity-0 pointer-events-none
+group-hover:visible group-hover:opacity-100 group-hover:pointer-events-auto
+transition-opacity duration-200">
+                    <a th:each="board : ${boardsGroupedByCategory.get(category)}"
+                        th:href="@{'/community/boards/' + ${board.boardId}}" th:text="${board.name}"
+                        class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"></a>
                 </div>
             </div>
         </div>
@@ -35,8 +37,7 @@
         <!-- 우측: 로그인/로그아웃 및 다크모드 토글 -->
         <div class="w-1/4 flex justify-end items-center gap-x-4">
             <a th:href="@{/login}" href="/login" th:if="${loginMember == null}"
-               class="hover:text-blue-500 transition-colors"
-               id="loginBtn">
+                class="hover:text-blue-500 transition-colors" id="loginBtn">
                 <i class="fas fa-sign-in-alt"></i> 로그인</a>
 
             <form th:action="@{/logout}" action="/logout" th:if="${loginMember != null}" method="post">
@@ -45,11 +46,11 @@
                 </button>
             </form>
             <a href="/profile" th:if="${loginMember != null}" class="hover:text-blue-500 transition-colors"
-               id="profileBtn">
+                id="profileBtn">
                 <i class="fa fa-user"></i>
                 프로필</a>
             <button id="darkModeToggle"
-                    class="p-2 w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-700 focus:ring focus:ring-blue-500">
+                class="p-2 w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-700 focus:ring focus:ring-blue-500">
                 <i class="fas fa-moon text-gray-700"></i>
             </button>
         </div>

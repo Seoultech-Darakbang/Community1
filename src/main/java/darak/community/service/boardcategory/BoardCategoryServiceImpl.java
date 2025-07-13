@@ -9,14 +9,17 @@ import darak.community.infra.repository.BoardRepository;
 import darak.community.service.boardcategory.request.BoardCategoryCreateServiceRequest;
 import darak.community.service.boardcategory.request.BoardCategoryUpdateServiceRequest;
 import darak.community.service.boardcategory.response.BoardCategoryResponse;
-import jakarta.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -86,9 +89,10 @@ public class BoardCategoryServiceImpl implements BoardCategoryService {
         return board.getId();
     }
 
-    @PostConstruct
+    @EventListener(ApplicationReadyEvent.class)
     public void init() {
         refreshCache();
+        log.info("게시판 카테고리 캐시 초기화 완료. 총 {}개 카테고리", sortedBoardCategories.size());
     }
 
     private void refreshCache() {

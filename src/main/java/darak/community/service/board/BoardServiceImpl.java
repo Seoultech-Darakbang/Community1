@@ -17,12 +17,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -76,11 +78,14 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public Map<BoardCategoryResponse, List<BoardResponse>> findBoardsGroupedByCategory() {
-        return boardRepository.findAll().stream()
+        Map<BoardCategoryResponse, List<BoardResponse>> map = boardRepository.findAll().stream()
                 .collect(Collectors.groupingBy(
                         board -> BoardCategoryResponse.of(board.getBoardCategory()),
                         Collectors.mapping(BoardResponse::of, Collectors.toList())
                 ));
+        log.info("카테고리 개수: {}", map.size());
+        log.info("게시판 개수: {}", map.values().stream().mapToInt(List::size).sum());
+        return map;
     }
 
     @Override

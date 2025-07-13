@@ -1,6 +1,7 @@
 package darak.community.web.controller.community.board;
 
 import darak.community.infra.repository.dto.PostContentDto;
+import darak.community.service.board.BoardService;
 import darak.community.service.boardcategory.BoardCategoryService;
 import darak.community.service.post.PostService;
 import lombok.RequiredArgsConstructor;
@@ -21,13 +22,14 @@ public class BoardController {
 
     private final BoardCategoryService boardCategoryService;
     private final PostService postService;
+    private final BoardService boardService;
 
 
     @GetMapping("/community/categories/{categoryId}")
     public String redirectFirstBoard(@PathVariable Long categoryId) {
         return "redirect:/community/boards/" + boardCategoryService.getFirstBoardIdByCategoryId(categoryId);
     }
-
+    
     @GetMapping("/community/boards/{boardId}")
     public String board(@PathVariable Long boardId,
                         @RequestParam(defaultValue = "1") int page,
@@ -37,6 +39,7 @@ public class BoardController {
         Page<PostContentDto> postPage = postService.findPostsByBoardId(boardId,
                 PageRequest.of(page - 1, size, Sort.by("createdDate").descending()));
 
+        model.addAttribute("currentBoard", boardService.findBoardInfoBy(boardId));
         model.addAttribute("posts", postPage.getContent());
         model.addAttribute("currentPage", page);
         model.addAttribute("totalPages", postPage.getTotalPages());

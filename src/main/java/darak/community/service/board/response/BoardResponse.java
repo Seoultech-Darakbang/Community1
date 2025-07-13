@@ -1,6 +1,7 @@
 package darak.community.service.board.response;
 
 import darak.community.domain.board.Board;
+import darak.community.service.boardcategory.response.BoardCategoryResponse;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,12 +17,15 @@ public class BoardResponse {
 
     private Integer priority;
 
+    private BoardCategoryResponse boardCategory;
+
     @Builder(access = AccessLevel.PRIVATE)
-    private BoardResponse(Long boardId, String name, String description, Integer priority) {
+    private BoardResponse(Long boardId, String name, String description, Integer priority, BoardCategoryResponse boardCategory) {
         this.boardId = boardId;
         this.name = name;
         this.description = description;
         this.priority = priority;
+        this.boardCategory = boardCategory;
     }
 
     public static BoardResponse of(Board board) {
@@ -30,6 +34,7 @@ public class BoardResponse {
                 .name(board.getName())
                 .description(board.getDescription())
                 .priority(board.getPriority())
+                .boardCategory(BoardCategoryResponse.of(board.getBoardCategory()))
                 .build();
     }
 }
