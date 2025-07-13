@@ -22,6 +22,11 @@ public class WebAuthCheckInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
 
+        if (!(handler instanceof HandlerMethod)) {
+            log.debug("정적 리소스 요청입니다. 인증 체크를 건너뜁니다: {}", request.getRequestURI());
+            return true;
+        }
+
         HandlerMethod handlerMethod = (HandlerMethod) handler;
         ServiceAuth serviceAuth = getAuthAnnotation(handlerMethod);
 
