@@ -107,6 +107,8 @@ public class PostServiceImpl implements PostService {
         // TODO: 단방향 POST - HEART 매핑 vs 양방향 매핑 비교정리
         List<PostHeart> hearts = postHeartRepository.findByPostId(postId);
         hearts.forEach(postHeartRepository::delete);
+
+        postRepository.delete(post);
     }
 
     @Override
@@ -226,7 +228,7 @@ public class PostServiceImpl implements PostService {
 
     private void validateAuthor(Member member, Post post) {
         if (!isMemberAuthor(member, post)) {
-            throw new IllegalArgumentException("권한이 없습니다.");
+            throw new IllegalAccessError("권한이 없습니다.");
         }
     }
 

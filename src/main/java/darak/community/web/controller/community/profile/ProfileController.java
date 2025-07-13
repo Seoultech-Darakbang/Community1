@@ -77,6 +77,8 @@ public class ProfileController {
                 PostSearch.builder()
                         .keyword(keyword)
                         .boardName(boardName)
+                        .page(page)
+                        .size(size)
                         .build());
 
         model.addAttribute("posts", postWithMetaDtos);

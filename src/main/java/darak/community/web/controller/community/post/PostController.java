@@ -2,7 +2,6 @@ package darak.community.web.controller.community.post;
 
 import darak.community.core.argumentresolver.Login;
 import darak.community.core.session.dto.LoginMember;
-import darak.community.domain.member.Member;
 import darak.community.service.board.BoardService;
 import darak.community.service.board.response.BoardResponse;
 import darak.community.service.comment.CommentService;
@@ -102,7 +101,7 @@ public class PostController {
     }
 
     @PatchMapping("/community/boards/{boardId}/posts/{postId}/edit")
-    public String editPost(@Login Member member, @PathVariable Long boardId, @PathVariable Long postId,
+    public String editPost(@Login LoginMember loginMember, @PathVariable Long boardId, @PathVariable Long postId,
                            @ModelAttribute @Validated PostCURequestForm form, BindingResult bindingResult,
                            RedirectAttributes attributes, Model model) {
 
@@ -110,7 +109,7 @@ public class PostController {
             return "community/post/editPostForm";
         }
 
-        postService.editPost(form.toUpdateServiceRequest(postId, member.getId(), boardId));
+        postService.editPost(form.toUpdateServiceRequest(postId, loginMember.getId(), boardId));
         attributes.addAttribute("editStatus", true);
         return "redirect:/community/boards/" + boardId + "/posts/" + postId;
     }
