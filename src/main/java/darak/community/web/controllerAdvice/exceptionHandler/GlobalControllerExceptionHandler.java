@@ -5,7 +5,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-@ControllerAdvice(basePackages = "darak.community.controller")
+@ControllerAdvice(basePackages = "darak.community.web.controller")
 @Slf4j
 public class GlobalControllerExceptionHandler {
 
