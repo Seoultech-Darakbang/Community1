@@ -26,7 +26,7 @@ public class WebAuthCheckInterceptor implements HandlerInterceptor {
         ServiceAuth serviceAuth = getAuthAnnotation(handlerMethod);
 
         if (serviceAuth == null) {
-            log.info("AuthCheck 시도: ServiceAuth가 없습니다. 인증 없이 진행합니다.");
+            log.info("AuthCheck 시도: WebAuth가 없습니다. 인증 없이 진행합니다.");
             return true;
         }
 
