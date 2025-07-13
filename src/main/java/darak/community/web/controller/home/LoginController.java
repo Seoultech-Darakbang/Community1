@@ -51,6 +51,9 @@ public class LoginController {
             sessionManager.login(request.getSession(),
                     LoginMember.of(loginResponse.getMemberId(), loginResponse.getMemberGrade()));
             return "redirect:" + redirectURL;
+        } catch (IllegalArgumentException e) {
+            bindingResult.reject("member.login.fail", "존재하지 않는 회원입니다.");
+            return "login/loginForm";
         } catch (PasswordMismatchException e) {
             bindingResult.reject("member.password.fail", "ID 또는 비밀번호가 일치하지 않습니다");
             return "login/loginForm";

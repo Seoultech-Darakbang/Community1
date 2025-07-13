@@ -39,7 +39,8 @@ public class WebConfig implements WebMvcConfigurer {
                 .excludePathPatterns("/", "/login/home", "/login", "/logout", "/members/new",
                         "/members/new/confirmLoginId", "/css/**", "/js/**", "/img/**",
                         "/uploads/**", "/api/uploads/**", "/error",
-                        "/community/gifticons/*/claim", "/community/gifticons/use");
+                        "/community/gifticons/*/claim", "/community/gifticons/use",
+                        "/api/v1/members/new/confirmLoginId");
 
         registry.addInterceptor(userContextInterceptor)
                 .order(2)
