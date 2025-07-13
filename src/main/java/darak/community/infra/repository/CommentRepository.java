@@ -242,7 +242,7 @@ public class CommentRepository {
                     case when
                         (select count(ch) from CommentHeart ch where ch.comment.id = c.id and ch.member.id = :memberId) > 0
                         then true else false end,
-                    (select count(ch) from CommentHeart ch where ch.comment.id = c.id)
+                    cast((select count(ch) from CommentHeart ch where ch.comment.id = c.id) as int)
                 )
                 from Comment c
                 join c.member m
@@ -282,7 +282,7 @@ public class CommentRepository {
                     case when
                         (select count(ch) from CommentHeart ch where ch.comment.id = c.id and ch.member.id = :memberId) > 0
                         then true else false end,
-                    (select count(ch) from CommentHeart ch where ch.comment.id = c.id)
+                    cast((select count(ch) from CommentHeart ch where ch.comment.id = c.id) as int)
                 )
                 from Comment c
                 join c.member m
@@ -319,7 +319,7 @@ public class CommentRepository {
                     p.id, p.title, p.postType,
                     b.id, b.name, c.createdDate,
                     true,
-                    (select count(ch2) from CommentHeart ch2 where ch2.comment.id = c.id)
+                    cast((select count(ch2) from CommentHeart ch2 where ch2.comment.id = c.id) as int)
                 )
                 from CommentHeart ch
                 join ch.comment c
@@ -360,7 +360,7 @@ public class CommentRepository {
                     case when
                         (select count(ch) from CommentHeart ch where ch.comment.id = c.id and ch.member.id = :memberId) > 0
                         then true else false end,
-                    (select count(ch) from CommentHeart ch where ch.comment.id = c.id)
+                    cast((select count(ch) from CommentHeart ch where ch.comment.id = c.id) as int)
                 )
                 from Comment c
                 join c.member m

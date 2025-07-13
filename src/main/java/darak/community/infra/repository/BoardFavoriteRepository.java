@@ -54,11 +54,12 @@ public class BoardFavoriteRepository {
     }
 
     public boolean existsByMemberAndBoard(Member member, Board board) {
-        return em.createQuery("select bf from BoardFavorite bf "
+        Long count = em.createQuery("select count(bf) from BoardFavorite bf "
                         + "where bf.member = :member "
-                        + "and bf.board = :board", BoardFavorite.class)
+                        + "and bf.board = :board", Long.class)
                 .setParameter("member", member)
                 .setParameter("board", board)
-                .getSingleResult() != null;
+                .getSingleResult();
+        return count > 0;
     }
 }

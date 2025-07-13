@@ -105,9 +105,10 @@ public class PostRepository {
         return em.createQuery(
                         "select distinct p from Post p " +
                                 "join p.board b " +
-                                "join p.attachments a " +
-                                "where (lower(b.name) like '%갤러리%' or lower(b.name) like '%gallery%') " +
-                                "and a.fileType like 'image/%' " +
+                                "where exists (select 1 from Attachment a " +
+                                "              where a.post = p " +
+                                "              and a.uploadFile.fileType like 'image/%') " +
+                                "and (lower(b.name) like '%갤러리%' or lower(b.name) like '%gallery%') " +
                                 "order by p.createdDate desc", Post.class)
                 .setMaxResults(limit)
                 .getResultList();
@@ -222,7 +223,6 @@ public class PostRepository {
                 .setMaxResults(pageable.getPageSize())
                 .getResultList();
 
-        // Count query
         StringBuilder countQuery = new StringBuilder(
                 "select count(p) from Post p " +
                         "join p.board b " +
@@ -254,12 +254,12 @@ public class PostRepository {
 
     public Page<PostWithAllDto> findPostsWithMetaByBoardId(Long boardId, Pageable pageable) {
         String jpql = """
-                select new darak.community.infra.repository.dto.PostWithMetaDto(
+                select new darak.community.infra.repository.dto.PostWithAllDto(
                             p.id, p.title, p.content, p.anonymous, p.postType,
                             m.id, m.name, m.memberGrade, b.id, b.name,
                             p.readCount, p.createdDate,
-                            (select count(c) from Comment c
-                             where c.post = p),
+                            cast((select count(c) from Comment c
+                             where c.post = p) as int),
                             case when
                                  (select count(ph2) from PostHeart ph2
                                   where ph2.post = p
@@ -267,8 +267,8 @@ public class PostRepository {
                                  then true
                                  else false
                              end,
-                            (select count(ph) from PostHeart ph
-                             where ph.post = p)
+                            cast((select count(ph) from PostHeart ph
+                             where ph.post = p) as int)
                         )
                         from Post p
                         join p.member m
@@ -285,7 +285,7 @@ public class PostRepository {
         List<PostWithAllDto> content = em.createQuery(jpql, PostWithAllDto.class)
                 .setParameter("boardId", boardId)
                 .setParameter("memberId",
-                        pageable.getPageNumber()) // Assuming memberId is passed in pageable for context
+                        pageable.getPageNumber())
                 .setFirstResult((int) pageable.getOffset())
                 .setMaxResults(pageable.getPageSize())
                 .getResultList();
@@ -299,12 +299,12 @@ public class PostRepository {
 
     public Page<PostWithAllDto> findPostsWithMetaWrittenByMemberId(Long memberId, Pageable pageable) {
         String jpql = """
-                select new darak.community.infra.repository.dto.PostWithMetaDto(
+                select new darak.community.infra.repository.dto.PostWithAllDto(
                             p.id, p.title, p.content, p.anonymous, p.postType,
                             m.id, m.name, m.memberGrade, b.id, b.name,
                             p.readCount, p.createdDate,
-                            (select count(c) from Comment c
-                             where c.post = p),
+                            cast((select count(c) from Comment c
+                             where c.post = p) as int),
                             case when
                                  (select count(ph2) from PostHeart ph2
                                   where ph2.post = p
@@ -312,8 +312,8 @@ public class PostRepository {
                                  then true
                                  else false
                              end,
-                            (select count(ph) from PostHeart ph
-                             where ph.post = p)
+                            cast((select count(ph) from PostHeart ph
+                             where ph.post = p) as int)
                         )
                         from Post p
                         join p.member m
@@ -342,12 +342,12 @@ public class PostRepository {
 
     public Page<PostWithAllDto> findPostsWithMetaByMemberLiked(Long memberId, Pageable pageable) {
         String jpql = """
-                select new darak.community.infra.repository.dto.PostWithMetaDto(
+                select new darak.community.infra.repository.dto.PostWithAllDto(
                             p.id, p.title, p.content, p.anonymous, p.postType,
                             m.id, m.name, m.memberGrade, b.id, b.name,
                             p.readCount, p.createdDate,
-                            (select count(c) from Comment c
-                             where c.post = p),
+                            cast((select count(c) from Comment c
+                             where c.post = p) as int),
                             case when
                                  (select count(ph2) from PostHeart ph2
                                   where ph2.post = p
@@ -355,8 +355,8 @@ public class PostRepository {
                                  then true
                                  else false
                              end,
-                            (select count(ph) from PostHeart ph
-                             where ph.post = p)
+                            cast((select count(ph) from PostHeart ph
+                             where ph.post = p) as int)
                         )
                         from Post p
                         join p.member m
@@ -403,13 +403,13 @@ public class PostRepository {
                             p.id, p.title, p.content, p.anonymous, p.postType,
                             m.id, m.name, m.memberGrade,
                             p.readCount, p.createdDate,
-                            (select count(c) from Comment c where c.post = p),
+                            cast((select count(c) from Comment c where c.post = p) as int),
                             case when
                                  (select count(ph) from PostHeart ph where ph.post.id = p.id and ph.member.id = :memberId) > 0
                                  then true
                                  else false
                              end,
-                            (select count(ph) from PostHeart ph where ph.post.id = p.id)
+                            cast((select count(ph) from PostHeart ph where ph.post.id = p.id) as int)
                         )
                         from Post p
                         join p.member m
@@ -428,9 +428,9 @@ public class PostRepository {
                             p.id, p.title, p.content, p.anonymous, p.postType,
                             m.id, m.name, m.memberGrade,
                             p.readCount, p.createdDate,
-                            (select count(c) from Comment c where c.post = p),
+                            cast((select count(c) from Comment c where c.post = p) as int),
                             false,
-                            (select count(ph) from PostHeart ph where ph.post.id = p.id)
+                            cast((select count(ph) from PostHeart ph where ph.post.id = p.id) as int)
                         )
                         from Post p
                         join p.member m

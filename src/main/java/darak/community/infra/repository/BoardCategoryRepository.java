@@ -23,7 +23,7 @@ public class BoardCategoryRepository {
 
     public List<BoardCategory> findAll() {
         return em.createQuery(
-                        "select distinct bc from BoardCategory bc left join fetch bc.boards", BoardCategory.class)
+                        "select distinct bc from BoardCategory bc", BoardCategory.class)
                 .getResultList();
     }
 
