@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: layout(~{::title}, ~{::main})}">
+
+<head>
+  <title>다락방 커뮤니티 - 프로필 수정</title>
+</head>
+
+<body>
+  <main>
+    <div class="container max-w-6xl mx-auto px-6 py-8">
+      <div class="flex flex-col md:flex-row gap-6">
+        <!-- 좌측: 프로필 사이드바 -->
+        <div th:replace="~{fragments/profileSidebar :: profileSidebar('edit')}"></div>
+
+        <!-- 우측: 프로필 수정 폼 -->
+        <div class="w-full md:w-3/4">
+          <h1 class="text-3xl font-bold mb-6">프로필 수정</h1>
+
+          <!-- 성공/에러 메시지 -->
+          <div th:if="${message}" class="mb-4 p-4 bg-green-100 border border-green-400 text-green-700 rounded">
+            <span th:text="${message}"></span>
+          </div>
+
+          <div th:if="${error}" class="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+            <span th:text="${error}"></span>
+          </div>
+
+          <!-- 프로필 수정 폼 -->
+          <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+            <form method="post" action="/profile/edit">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- 로그인 ID (수정 불가) -->
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">로그인 ID</label>
+                  <input type="text" th:value="${member.loginId}" disabled
+                    class="w-full p-3 border border-gray-300 rounded-md bg-gray-100 dark:bg-gray-600 dark:border-gray-500">
+                  <p class="text-xs text-gray-500 mt-1">로그인 ID는 변경할 수 없습니다.</p>
+                </div>
+
+                <!-- 이름 (수정 불가) -->
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">이름</label>
+                  <input type="text" th:value="${member.name}" disabled
+                    class="w-full p-3 border border-gray-300 rounded-md bg-gray-100 dark:bg-gray-600 dark:border-gray-500">
+                  <p class="text-xs text-gray-500 mt-1">이름은 변경할 수 없습니다.</p>
+                </div>
+
+                <!-- 이메일 -->
+                <div>
+                  <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">이메일</label>
+                  <input type="email" id="email" name="email" th:value="${member.email}" required
+                    class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                </div>
+
+                <!-- 전화번호 -->
+                <div>
+                  <label for="phone"
+                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">전화번호</label>
+                  <input type="tel" id="phone" name="phone" th:value="${member.phone}"
+                    class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                </div>
+
+                <!-- 생년월일 (수정 불가) -->
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">생년월일</label>
+                  <input type="date" th:value="${member.birth}" disabled
+                    class="w-full p-3 border border-gray-300 rounded-md bg-gray-100 dark:bg-gray-600 dark:border-gray-500">
+                  <p class="text-xs text-gray-500 mt-1">생년월일은 변경할 수 없습니다.</p>
+                </div>
+
+                <!-- 회원 등급 (수정 불가) -->
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">회원 등급</label>
+                  <input type="text" th:value="${member.memberGrade.name()}" disabled
+                    class="w-full p-3 border border-gray-300 rounded-md bg-gray-100 dark:bg-gray-600 dark:border-gray-500">
+                  <p class="text-xs text-gray-500 mt-1">회원 등급은 관리자만 변경할 수 있습니다.</p>
+                </div>
+              </div>
+
+              <!-- 버튼 영역 -->
+              <div class="flex justify-end space-x-4 mt-6">
+                <a href="/profile"
+                  class="px-6 py-3 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition-colors">
+                  취소
+                </a>
+                <button type="submit"
+                  class="px-6 py-3 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors">
+                  수정하기
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- 비밀번호 변경 섹션 -->
+          <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mt-6">
+            <h2 class="text-xl font-semibold mb-4">비밀번호 변경</h2>
+            <form method="post" action="/profile/change-password">
+              <div class="space-y-4">
+                <div>
+                  <label for="oldPassword" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">현재
+                    비밀번호</label>
+                  <input type="password" id="oldPassword" name="oldPassword" required
+                    class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                </div>
+
+                <div>
+                  <label for="newPassword" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">새
+                    비밀번호</label>
+                  <input type="password" id="newPassword" name="newPassword" required
+                    class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                </div>
+
+                <div>
+                  <label for="newPasswordConfirm"
+                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">새
+                    비밀번호 확인</label>
+                  <input type="password" id="newPasswordConfirm" name="newPasswordConfirm" required
+                    class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                </div>
+              </div>
+
+              <div class="flex justify-end mt-4">
+                <button type="submit"
+                  class="px-6 py-3 bg-red-500 text-white rounded-md hover:bg-red-600 transition-colors">
+                  비밀번호 변경
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</body>
+
+</html>

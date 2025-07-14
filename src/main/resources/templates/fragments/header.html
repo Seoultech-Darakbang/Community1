@@ -2,67 +2,70 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 
 <header th:fragment="header" class="sticky top-0 bg-opacity-90 backdrop-blur-lg">
-  <!-- PC 네비게이션 (md 이상) -->
-  <nav class="relative container max-w-6xl mx-auto px-6 py-3 hidden md:flex items-center justify-between">
-    <!-- 좌측: 로고 및 홈 링크 -->
-    <div class="w-1/4 flex items-center space-x-4">
-      <a th:href="@{/community}" href="/home" class="flex items-center space-x-2">
-        <img src="/img/logo.png" alt="다락방 로고" class="w-10 h-10">
-        <span class="text-xl font-bold">다락방 커뮤니티</span>
-      </a>
-    </div>
-
-    <!-- 중앙: 메인 네비게이션 -->
-    <div class="absolute left-1/2 transform -translate-x-1/2 flex space-x-6 whitespace-nowrap">
-      <!-- 메인 -->
-      <a th:href="@{/}" href="/home" class="hover:text-blue-500 transition-colors">메인</a>
-
-      <!-- 동적으로 카테고리와 게시판 목록 생성 -->
-      <div th:each="category : ${boardCategories}" class="relative group">
-        <a th:href="@{'/community/' + ${category.name.toLowerCase()}}"
-          th:text="${#messages.msg('board.category.' + category.name)}"
-          class="hover:text-blue-500 transition-colors"></a>
-        <div
-          class="absolute left-0 mt-2 w-56 bg-white dark:bg-gray-800 rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity">
-          <a th:each="board : ${category.boards}"
-            th:href="@{'/community/' + ${category.name.toLowerCase()} + '/' + ${board.name.toLowerCase()}}"
-            th:text="${#messages.msg('board.' + board.name)}"
-            class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"></a>
+    <!-- PC 네비게이션 (md 이상) -->
+    <nav class="relative container max-w-6xl mx-auto px-6 py-3 hidden md:flex items-center justify-between">
+        <!-- 좌측: 로고 및 홈 링크 -->
+        <div class="w-1/4 flex items-center space-x-4">
+            <a th:href="@{/community}" href="/home" class="flex items-center space-x-2">
+                <img src="/img/logo.png" alt="다락방 로고" class="w-10 h-10">
+                <span class="text-xl font-bold">다락방 커뮤니티</span>
+            </a>
         </div>
-      </div>
-    </div>
 
-    <!-- 우측: 로그인/로그아웃 및 다크모드 토글 -->
-    <div class="w-1/4 flex justify-end items-center gap-x-4">
-      <a th:href="@{/login}" href="/login" th:if="${member == null}" class="hover:text-blue-500 transition-colors"
-        id="loginBtn">
-        <i class="fas fa-sign-in-alt"></i> 로그인</a>
+        <!-- 중앙: 메인 네비게이션 -->
+        <div class="absolute left-1/2 transform -translate-x-1/2 flex space-x-6 whitespace-nowrap">
+            <!-- 메인 -->
+            <a th:href="@{/}" href="/home" class="hover:text-blue-500 transition-colors">메인</a>
 
-      <form th:action="@{/logout}" action="/logout" th:if="${member != null}" method="post">
-        <button class="hover:text-blue-500 transition-colors" id="logoutBtn">
-          <i class="fas fa-sign-out-alt"></i> 로그아웃
+            <!-- 동적으로 카테고리와 게시판 목록 생성 -->
+            <div th:if="${boardsGroupedByCategory != null}" th:each="category : ${boardsGroupedByCategory.keySet()}"
+                class="relative group">
+                <a th:href="@{'/community/categories/' + ${category.id}}" th:text="${category.name}"
+                    class="hover:text-blue-500 group-hover:text-blue-500 transition-colors"></a>
+                <div class="absolute left-0 top-full z-10 w-56
+bg-white dark:bg-gray-800 rounded shadow-lg
+invisible opacity-0 pointer-events-none
+group-hover:visible group-hover:opacity-100 group-hover:pointer-events-auto
+transition-opacity duration-200">
+                    <a th:each="board : ${boardsGroupedByCategory.get(category)}"
+                        th:href="@{'/community/boards/' + ${board.boardId}}" th:text="${board.name}"
+                        class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700"></a>
+                </div>
+            </div>
+        </div>
+
+        <!-- 우측: 로그인/로그아웃 및 다크모드 토글 -->
+        <div class="w-1/4 flex justify-end items-center gap-x-4">
+            <a th:href="@{/login}" href="/login" th:if="${loginMember == null}"
+                class="hover:text-blue-500 transition-colors" id="loginBtn">
+                <i class="fas fa-sign-in-alt"></i> 로그인</a>
+
+            <form th:action="@{/logout}" action="/logout" th:if="${loginMember != null}" method="post">
+                <button class="hover:text-blue-500 transition-colors" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i> 로그아웃
+                </button>
+            </form>
+            <a href="/profile" th:if="${loginMember != null}" class="hover:text-blue-500 transition-colors"
+                id="profileBtn">
+                <i class="fa fa-user"></i>
+                프로필</a>
+            <button id="darkModeToggle"
+                class="p-2 w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-700 focus:ring focus:ring-blue-500">
+                <i class="fas fa-moon text-gray-700"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- 모바일 네비게이션 (md 미만) -->
+    <nav class="container mx-auto px-6 py-3 md:hidden flex items-center justify-between">
+        <a th:href="@{/community}" href="/community" class="flex items-center space-x-4">
+            <img src="/img/logo.png" alt="다락방 로고" class="w-10 h-10">
+            <h1 class="text-2xl font-bold">다락방</h1>
+        </a>
+        <button id="menuToggle" class="p-2 text-gray-700 dark:text-white">
+            <i class="fas fa-bars text-2xl"></i>
         </button>
-      </form>
-      <a href="/profile" th:if="${member != null}" class="hover:text-blue-500 transition-colors" id="profileBtn">
-        <i class="fa fa-user"></i>
-        프로필</a>
-      <button id="darkModeToggle"
-        class="p-2 w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-700 focus:ring focus:ring-blue-500">
-        <i class="fas fa-moon text-gray-700"></i>
-      </button>
-    </div>
-  </nav>
-
-  <!-- 모바일 네비게이션 (md 미만) -->
-  <nav class="container mx-auto px-6 py-3 md:hidden flex items-center justify-between">
-    <div class="flex items-center space-x-4">
-      <img src="/img/logo.png" alt="다락방 로고" class="w-10 h-10">
-      <h1 class="text-2xl font-bold">다락방</h1>
-    </div>
-    <button id="menuToggle" class="p-2 text-gray-700 dark:text-white">
-      <i class="fas fa-bars text-2xl"></i>
-    </button>
-  </nav>
+    </nav>
 </header>
 
 </html>

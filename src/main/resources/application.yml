@@ -1,21 +1,57 @@
 spring:
-  datasource:
-    url: jdbc:h2:tcp://localhost/~/community
-    username: sa
-    password:
-    driver-class-name: org.h2.Driver
   messages:
     basename: messages, errors
+  mvc:
+    hiddenmethod:
+      filter:
+        enabled: true
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 5MB
+      enabled: true
 
-  jpa:
-    hibernate:
-      ddl-auto: update
-    properties:
-      hibernate:
-        format_sql: true
-#        show_sql: true
+# 파일 업로드 설정
+app:
+  upload:
+    dir: ${user.home}/darak-uploads/ # 사용자 홈 디렉터리에 업로드 폴더 생성
 
-logging:
-  level:
-    org.hibernate.SQL: debug
-    org.hibernate.type: trace
+server:
+  servlet:
+    session:
+      tracking-modes: cookie
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, prometheus, metrics
+      base-path: /actuator
+  endpoint:
+    health:
+      show-details: always
+      show-components: always
+    prometheus:
+      cache:
+        time-to-live: 1s
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+      percentiles:
+        http.server.requests: 0.5, 0.95, 0.99
+    tags:
+      application: darak-community
+      environment: cloudtype
+
+---
+spring:
+  profiles:
+    active: dev
+---
+spring:
+  profiles:
+    active: local

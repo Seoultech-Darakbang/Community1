@@ -1,6 +1,6 @@
 package darak.community.domain.member;
 
-import darak.community.exception.PasswordFailedExceededException;
+import darak.community.core.exception.PasswordFailedExceededException;
 import jakarta.persistence.Embeddable;
 import java.time.LocalDateTime;
 import lombok.Builder;
@@ -27,7 +27,7 @@ public class MemberPassword {
         this.failedCount = 0;
     }
 
-    public boolean isMatched(final String rawPassword) throws PasswordFailedExceededException {
+    public boolean isMatched(final String rawPassword) {
         checkFailedCount();
         final boolean matches = isMatches(rawPassword);
         updateFailedCount(matches);
@@ -38,7 +38,7 @@ public class MemberPassword {
         return LocalDateTime.now().isAfter(expirationDate);
     }
 
-    private void checkFailedCount() throws PasswordFailedExceededException {
+    private void checkFailedCount() {
         if (failedCount >= MAX_FAILED_COUNT) {
             throw new PasswordFailedExceededException();
         }

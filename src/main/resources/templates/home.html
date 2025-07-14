@@ -71,7 +71,7 @@
 
 <body class="dark:bg-gray-900 dark:text-white bg-white text-black min-h-screen transition-colors duration-300">
 <!-- 헤더 및 네비게이션 -->
-<header class="sticky top-0 bg-opacity-90 backdrop-blur-lg">
+<header class="sticky top-0 bg-opacity-90 backdrop-blur-lg z-50">
     <!-- 데스크탑 네비게이션 (md 이상) -->
     <nav class="container max-w-6xl mx-auto px-6 py-3 hidden md:grid grid-cols-3 items-center">
         <!-- 왼쪽: 로고 -->
@@ -94,21 +94,21 @@
                class="hover:text-blue-500 transition-colors flex items-center gap-1">
                 <i class="fas fa-users"></i> 커뮤니티
             </a>
-            <a th:href="@{/login}" th:if="${member == null}" href="/login"
+            <a th:href="@{/login}" th:if="${loginMember == null}" href="/login"
                class="hover:text-blue-500 transition-colors flex items-center gap-1">
                 <i class="fas fa-sign-in-alt"></i> 로그인
             </a>
-            <a th:href="@{/members/new}" th:if="${member == null}" href="/signup"
+            <a th:href="@{/members/new}" th:if="${loginMember == null}" href="/signup"
                class="hover:text-blue-500 transition-colors flex items-center gap-1">
                 <i class="fas fa-user-plus"></i> 회원가입
             </a>
-            <form th:action="@{/logout}" th:if="${member != null}" method="post">
+            <form th:action="@{/logout}" th:if="${loginMember != null}" method="post">
                 <button class="hover:text-blue-500 transition-colors flex items-center gap-1" type="submit">
                     <i class="fas fa-sign-out-alt"></i> 로그아웃
                 </button>
             </form>
             <button id="darkModeToggle"
-                    class="p-2 w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-700 focus:ring focus:ring-blue-500">
+                    class="p-2 w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-700 focus:ring focus:ring-blue-500 relative z-10">
                 <i class="fas fa-moon text-gray-700"></i>
             </button>
         </div>
@@ -116,10 +116,10 @@
     <!-- 모바일 네비게이션 (md 미만) -->
     <nav class="container mx-auto px-6 py-3 md:hidden flex items-center justify-between">
         <div class="flex items-center space-x-4">
-            <img src="https://via.placeholder.com/40" alt="다락방 로고" class="w-10 h-10">
+            <img src="/img/logo.png" alt="다락방 로고" class="w-10 h-10">
             <h1 class="text-2xl font-bold">다락방</h1>
         </div>
-        <button id="menuToggle" class="p-2 text-gray-700 dark:text-white">
+        <button id="menuToggle" class="p-2 text-gray-700 dark:text-white relative z-10">
             <i class="fas fa-bars text-2xl"></i>
         </button>
     </nav>
@@ -127,7 +127,7 @@
 
 <!-- 모바일 메뉴 -->
 <aside id="mobileMenu"
-       class="fixed right-0 inset-y-0 w-64 dark:bg-gray-800 bg-white shadow-lg translate-x-full transition-transform duration-300 z-20">
+       class="fixed right-0 inset-y-0 w-64 dark:bg-gray-800 bg-white shadow-lg translate-x-full transition-transform duration-300 z-40">
     <button id="closeMenu" class="p-2 m-4 text-gray-700 dark:text-white">
         <i class="fas fa-times text-2xl"></i>
     </button>
@@ -143,21 +143,21 @@
            class="hover:text-blue-500 transition-colors flex items-center gap-2">
             <i class="fas fa-users"></i> 커뮤니티
         </a>
-        <a th:href="@{/login}" href="/login" th:if="${member == null}"
+        <a th:href="@{/login}" href="/login" th:if="${loginMember == null}"
            class="hover:text-blue-500 transition-colors flex items-center gap-2">
             <i class="fas fa-sign-in-alt"></i> 로그인
         </a>
-        <a th:href="@{/members/new}" th:if="${member == null}" href="/signup"
+        <a th:href="@{/members/new}" th:if="${loginMember == null}" href="/signup"
            class="hover:text-blue-500 transition-colors flex items-center gap-2">
             <i class="fas fa-user-plus"></i> 회원가입
         </a>
-        <form th:action="@{/logout}" th:if="${member != null}" method="post">
+        <form th:action="@{/logout}" th:if="${loginMember != null}" method="post">
             <button class="hover:text-blue-500 transition-colors flex items-center gap-2" type="submit">
                 <i class="fas fa-sign-out-alt"></i> 로그아웃
             </button>
         </form>
         <button id="darkModeToggleMobile"
-                class="p-2 w-full rounded-full bg-gray-200 dark:bg-gray-700 focus:ring focus:ring-blue-500">
+                class="p-2 w-full rounded-full bg-gray-200 dark:bg-gray-700 focus:ring focus:ring-blue-500 relative z-10">
             <i class="fas fa-moon text-gray-700 dark:text-yellow-400"></i>
         </button>
     </nav>
@@ -170,10 +170,12 @@
         <div class="overflow-hidden relative h-screen">
             <!-- 슬라이드 1: 모집 이미지 -->
             <div class="absolute inset-0 slide opacity-100 transition-opacity duration-1000" id="slide1">
-                <img src="/img/main/recruit/2025_1_darak_recruit.jpeg" class="w-full h-full object-cover" alt="모집 이미지">
+                <img src="/img/main/recruit/2025_1_darak_recruit.jpeg" class="w-full h-full object-cover"
+                     alt="모집 이미지">
                 <div class="absolute inset-0 bg-black bg-opacity-40 flex flex-col justify-center items-center">
                     <h2 class="text-white text-5xl font-bold mb-6">신입 기수 모집 중(~3/7)</h2>
-                    <button class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-lg"
+                    <button
+                            class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-lg"
                             onclick="location.href='https://forms.gle/JaRoTBtnVqS3zJ9i6?fbclid=PAZXh0bgNhZW0CMTEAAaas2mjwiDcNlLJ2Qqdj6Duf3cEziuf5uTY8tRSnSZ8aebNJVmVG3tXgreQ_aem_xBU_HWYATXg6SZJ4rZlM-g'">
                         35기
                         지원
@@ -194,8 +196,7 @@
                     <img src="/img/main/activity/mt/2024_2_darak_mt.jpeg" class="w-full h-full object-cover"
                          alt="활동 이미지1">
                     <img src="/img/main/activity/hackathon/2024_2_ec_darak_hackathon.jpeg"
-                         class="w-full h-full object-cover"
-                         alt="활동 이미지2">
+                         class="w-full h-full object-cover" alt="활동 이미지2">
                 </div>
                 <div class="absolute inset-0 bg-black bg-opacity-40 flex flex-col justify-center items-center">
                     <h2 class="text-white text-5xl font-bold mb-6">다양한 활동</h2>
@@ -236,7 +237,8 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
                         <div class="order-2 md:order-1">
                             <h3 class="text-3xl font-bold mb-4">스터디</h3>
-                            <p class="text-lg mb-6">다락방에서는 다양한 주제의 스터디를 진행합니다. 프로그래밍 언어, CS, 알고리즘, 등의 전공 과목 뿐만 아니라 백엔드,
+                            <p class="text-lg mb-6">다락방에서는 다양한 주제의 스터디를 진행합니다. 프로그래밍 언어, CS, 알고리즘, 등의 전공 과목 뿐만 아니라
+                                백엔드,
                                 프론트엔드, AI 등 관심
                                 있는 분야에 대해 함께 공부하고 성장할 수
                                 있습니다.</p>
@@ -260,7 +262,8 @@
                         </div>
                         <div>
                             <h3 class="text-3xl font-bold mb-4">붕짜</h3>
-                            <p class="text-lg mb-6">벛꽃 나무 아래 낭만적인 봄, 단풍이 맺고 화창한 가을, 붕어방에서 다락방 친구들과 낭만있게 짜장면을 먹어봐요!</p>
+                            <p class="text-lg mb-6">벛꽃 나무 아래 낭만적인 봄, 단풍이 맺고 화창한 가을, 붕어방에서 다락방 친구들과 낭만있게 짜장면을 먹어봐요!
+                            </p>
                             <a href="#"
                                class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors inline-block">자세히
                                 보기</a>
@@ -273,7 +276,8 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
                         <div class="order-2 md:order-1">
                             <h3 class="text-3xl font-bold mb-4">오운완 챌린지</h3>
-                            <p class="text-lg mb-6">건강한 개발자가 되기 위한 다락방의 운동 챌린지입니다. 매일 운동 인증을 통해 서로 동기부여하고, 건강한 습관을 형성할 수
+                            <p class="text-lg mb-6">건강한 개발자가 되기 위한 다락방의 운동 챌린지입니다. 매일 운동 인증을 통해 서로 동기부여하고, 건강한 습관을
+                                형성할 수
                                 있도록 돕습니다.
                             </p>
                             <a href="#"
@@ -311,7 +315,8 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
                         <div class="order-2 md:order-1">
                             <h3 class="text-3xl font-bold mb-4">MT</h3>
-                            <p class="text-lg mb-6">다락방 회원들이 함께 떠나는 1박 2일 여행입니다. 학업과 일상에서 벗어나 자연 속에서 휴식을 취하고, 회원들 간의 친목을
+                            <p class="text-lg mb-6">다락방 회원들이 함께 떠나는 1박 2일 여행입니다. 학업과 일상에서 벗어나 자연 속에서 휴식을 취하고, 회원들 간의
+                                친목을
                                 다지는 소중한
                                 시간입니다.</p>
                             <a href="#"
@@ -334,7 +339,8 @@
                         </div>
                         <div>
                             <h3 class="text-3xl font-bold mb-4">멘토 - 멘티</h3>
-                            <p class="text-lg mb-6">선배와 후배가 연결되어 학업, 진로, 취업 등 다양한 분야에서 조언과 도움을 주고받는 프로그램입니다. 실질적인 경험과
+                            <p class="text-lg mb-6">선배와 후배가 연결되어 학업, 진로, 취업 등 다양한 분야에서 조언과 도움을 주고받는 프로그램입니다. 실질적인
+                                경험과
                                 지식을 공유하며 함께
                                 성장할 수 있습니다.</p>
                             <a href="#"
@@ -363,7 +369,8 @@
                     <div class="space-y-4">
                         <!-- FAQ 아이템 1 -->
                         <div class="faq-item border-b border-gray-200 dark:border-gray-700 pb-4">
-                            <button class="faq-question w-full text-left font-medium py-2 flex justify-between items-center">
+                            <button
+                                    class="faq-question w-full text-left font-medium py-2 flex justify-between items-center">
                                 <span>다락방은 어떤 동아리인가요?</span>
                                 <i class="fas fa-chevron-down text-blue-500 transition-transform duration-300"></i>
                             </button>
@@ -375,7 +382,8 @@
 
                         <!-- FAQ 아이템 2 -->
                         <div class="faq-item border-b border-gray-200 dark:border-gray-700 pb-4">
-                            <button class="faq-question w-full text-left font-medium py-2 flex justify-between items-center">
+                            <button
+                                    class="faq-question w-full text-left font-medium py-2 flex justify-between items-center">
                                 <span>신입 회원은 어떻게 모집하나요?</span>
                                 <i class="fas fa-chevron-down text-blue-500 transition-transform duration-300"></i>
                             </button>
@@ -387,7 +395,8 @@
 
                         <!-- FAQ 아이템 3 -->
                         <div class="faq-item border-b border-gray-200 dark:border-gray-700 pb-4">
-                            <button class="faq-question w-full text-left font-medium py-2 flex justify-between items-center">
+                            <button
+                                    class="faq-question w-full text-left font-medium py-2 flex justify-between items-center">
                                 <span>어떤 활동을 하나요?</span>
                                 <i class="fas fa-chevron-down text-blue-500 transition-transform duration-300"></i>
                             </button>
@@ -399,7 +408,8 @@
 
                         <!-- FAQ 아이템 4 -->
                         <div class="faq-item border-b border-gray-200 dark:border-gray-700 pb-4">
-                            <button class="faq-question w-full text-left font-medium py-2 flex justify-between items-center">
+                            <button
+                                    class="faq-question w-full text-left font-medium py-2 flex justify-between items-center">
                                 <span>활동 시간은 어떻게 되나요?</span>
                                 <i class="fas fa-chevron-down text-blue-500 transition-transform duration-300"></i>
                             </button>
@@ -420,12 +430,14 @@
                     <div class="space-y-4">
                         <!-- 후기 아이템 1 -->
                         <div class="review-item border-b border-gray-200 dark:border-gray-700 pb-4">
-                            <button class="review-toggle w-full text-left font-medium py-2 flex justify-between items-center">
+                            <button
+                                    class="review-toggle w-full text-left font-medium py-2 flex justify-between items-center">
                                 <span>컴공과 3학년 김OO님의 후기</span>
                                 <i class="fas fa-chevron-down text-blue-500 transition-transform duration-300"></i>
                             </button>
                             <div class="review-content hidden mt-2 pl-4 text-gray-600 dark:text-gray-400">
-                                <p>"다락방에서 진행한 스프링 스터디를 통해 백엔드 개발에 대한 이해도가 크게 향상되었습니다. 함께 공부하는 동료들이 있어 어려운 내용도 쉽게 극복할 수
+                                <p>"다락방에서 진행한 스프링 스터디를 통해 백엔드 개발에 대한 이해도가 크게 향상되었습니다. 함께 공부하는 동료들이 있어 어려운 내용도 쉽게 극복할
+                                    수
                                     있었고, 실제 프로젝트까지
                                     완성할 수 있었습니다."</p>
                             </div>
@@ -433,7 +445,8 @@
 
                         <!-- 후기 아이템 2 -->
                         <div class="review-item border-b border-gray-200 dark:border-gray-700 pb-4">
-                            <button class="review-toggle w-full text-left font-medium py-2 flex justify-between items-center">
+                            <button
+                                    class="review-toggle w-full text-left font-medium py-2 flex justify-between items-center">
                                 <span>컴공과 2학년 이OO님의 후기</span>
                                 <i class="fas fa-chevron-down text-blue-500 transition-transform duration-300"></i>
                             </button>
@@ -445,7 +458,8 @@
 
                         <!-- 후기 아이템 3 -->
                         <div class="review-item border-b border-gray-200 dark:border-gray-700 pb-4">
-                            <button class="review-toggle w-full text-left font-medium py-2 flex justify-between items-center">
+                            <button
+                                    class="review-toggle w-full text-left font-medium py-2 flex justify-between items-center">
                                 <span>컴공과 4학년 박OO님의 후기</span>
                                 <i class="fas fa-chevron-down text-blue-500 transition-transform duration-300"></i>
                             </button>
@@ -457,12 +471,14 @@
 
                         <!-- 후기 아이템 4 -->
                         <div class="review-item border-b border-gray-200 dark:border-gray-700 pb-4">
-                            <button class="review-toggle w-full text-left font-medium py-2 flex justify-between items-center">
+                            <button
+                                    class="review-toggle w-full text-left font-medium py-2 flex justify-between items-center">
                                 <span>컴공과 1학년 최OO님의 후기</span>
                                 <i class="fas fa-chevron-down text-blue-500 transition-transform duration-300"></i>
                             </button>
                             <div class="review-content hidden mt-2 pl-4 text-gray-600 dark:text-gray-400">
-                                <p>"프로그래밍을 처음 접했지만, 다락방의 기초 스터디를 통해 차근차근 배울 수 있었습니다. 선배들이 친절하게 도와주셔서 빠르게 성장할 수 있었고, 학과
+                                <p>"프로그래밍을 처음 접했지만, 다락방의 기초 스터디를 통해 차근차근 배울 수 있었습니다. 선배들이 친절하게 도와주셔서 빠르게 성장할 수 있었고,
+                                    학과
                                     공부에도 큰 도움이
                                     되었습니다."</p>
                             </div>
@@ -594,9 +610,16 @@
             updateDarkModeIcons();
         }
 
-        // 다크모드 토글 이벤트 리스너 등록
-        document.getElementById('darkModeToggle').addEventListener('click', toggleDarkMode);
-        document.getElementById('darkModeToggleMobile').addEventListener('click', toggleDarkMode);
+        // 다크모드 토글 이벤트 리스너 등록 (안전한 방식으로 수정)
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const darkModeToggleMobile = document.getElementById('darkModeToggleMobile');
+
+        if (darkModeToggle) {
+            darkModeToggle.addEventListener('click', toggleDarkMode);
+        }
+        if (darkModeToggleMobile) {
+            darkModeToggleMobile.addEventListener('click', toggleDarkMode);
+        }
 
         // 모바일 메뉴 토글 처리
         const mobileMenu = document.getElementById('mobileMenu');

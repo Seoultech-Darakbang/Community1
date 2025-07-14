@@ -1,9 +1,11 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <th:block th:replace="~{template/fragments/layoutFragment :: head}"/>
     <link th:href="@{/css/basic-form.css}" rel="stylesheet">
 </head>
+
 <body class="bg-gray-50">
 <div th:insert="~{template/fragments/loginFragment::logoHeader}"></div>
 <div class="container max-w-4xl mx-auto px-6 py-8">
@@ -20,8 +22,7 @@
             <div class="flex flex-row">
                 <input type="text" id="loginId" th:field="*{loginId}"
                        class="mt-1 block w-4/5 mr-6 border border-gray-300 rounded-md shadow-sm p-2"
-                       th:errorclass="field-error"
-                       th:placeholder="#{placeholder.create.member.loginId('4', '20')}">
+                       th:errorclass="field-error" th:placeholder="#{placeholder.create.member.loginId('4', '20')}">
                 <button type="button" id="duplicateCheckBtn"
                         class="w-1/5 bg-gray-500 hover:bg-gray-600 text-white text-sm px-4 rounded"
                         th:text="#{button.member.checkLoginId}">ID 중복 검사
@@ -34,12 +35,12 @@
                    th:text="#{label.login.password}">비밀번호</label>
             <input type="password" id="password" th:field="*{password}"
                    class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-                   th:errorclass="field-error"
-                   th:placeholder="#{placeholder.create.member.password('6', '40')}">
+                   th:errorclass="field-error" th:placeholder="#{placeholder.create.member.password('6', '40')}">
             <div class="text-red-600 text-sm" th:errors="*{password}"></div>
         </div>
         <div>
-            <label for="name" class="block text-sm font-medium text-gray-700" th:text="#{label.member.name}">이름</label>
+            <label for="name" class="block text-sm font-medium text-gray-700"
+                   th:text="#{label.member.name}">이름</label>
             <input type="text" id="name" th:field="*{name}"
                    class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
                    th:errorclass="field-error">
@@ -50,8 +51,7 @@
                    th:text="#{label.member.phone}">전화번호</label>
             <input type="tel" id="phone" th:field="*{phone}"
                    class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-                   th:errorclass="field-error"
-                   th:placeholder="#{placeholder.create.member.phone}">
+                   th:errorclass="field-error" th:placeholder="#{placeholder.create.member.phone}">
             <div class="text-red-600 text-sm" th:errors="*{phone}"></div>
         </div>
         <div>
@@ -73,14 +73,16 @@
         <hr class="my-4 border-gray-300">
         <div class="flex space-x-4">
             <div class="w-1/2">
-                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded text-lg"
+                <button type="submit"
+                        class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded text-lg"
                         th:text="#{button.member.join}">가입 완료
                 </button>
             </div>
             <div class="w-1/2">
-                <button type="button" class="w-full bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded text-lg"
-                        th:onclick="|location.href='@{/}'|"
-                        onclick="location.href='loginHome.html'" th:text="#{button.cancel}">취소
+                <button type="button"
+                        class="w-full bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded text-lg"
+                        th:onclick="|location.href='@{/}'|" onclick="location.href='loginHome.html'"
+                        th:text="#{button.cancel}">취소
                 </button>
             </div>
         </div>
@@ -97,25 +99,28 @@
             return;
         }
 
-        fetch('/members/new/confirmLoginId?loginId=' + encodeURIComponent(loginId), {
+        fetch('/api/v1/members/new/confirmLoginId?loginId=' + encodeURIComponent(loginId), {
             method: 'GET'
         })
             .then(response => response.json())
             .then(result => {
-                // 서버 응답 형식은 ResponseDto<T>로 { code, msg, data }를 포함합니다.
+                // 서버 응답 형식은 ApiResponse<T>로 { success, message, data }를 포함합니다.
                 const feedbackElement = document.getElementById('loginIdFeedback');
-                if (result.code === 1) {
+                if (result.success === true) {
                     // 사용 가능한 아이디일 경우
-                    feedbackElement.textContent = result.msg;
+                    feedbackElement.textContent = result.message;
                     feedbackElement.style.color = 'green';
                 } else {
                     // 중복된 아이디인 경우
-                    feedbackElement.textContent = result.msg;
+                    feedbackElement.textContent = result.message;
                     feedbackElement.style.color = 'red';
                 }
             })
             .catch(error => {
                 console.error('AJAX 요청 중 오류 발생:', error);
+                const feedbackElement = document.getElementById('loginIdFeedback');
+                feedbackElement.textContent = '서버 요청 중 오류가 발생했습니다.';
+                feedbackElement.style.color = 'red';
             });
     }
 
@@ -131,4 +136,5 @@
     });
 </script>
 </body>
+
 </html>

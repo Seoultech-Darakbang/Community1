@@ -1,0 +1,37 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        format_sql: false
+        show_sql: false
+    database-platform: org.hibernate.dialect.H2Dialect
+    show-sql: false
+  sql:
+    init:
+      mode: never
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 5MB
+      enabled: true
+
+logging:
+  level:
+    org.hibernate.SQL: warn
+    org.hibernate.type: warn
+    darak.community: debug
+    org.springframework.web: warn
+    org.springframework.beans: warn
+    org.springframework.context: warn
+
+# 테스트용 파일 업로드 설정
+app:
+  upload:
+    dir: /tmp/test-uploads/

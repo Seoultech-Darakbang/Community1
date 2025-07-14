@@ -1,168 +1,209 @@
 package darak.community.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.BDDMockito.doNothing;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.verify;
 
-import darak.community.domain.LoginResult;
 import darak.community.domain.member.Member;
+import darak.community.domain.member.MemberGrade;
 import darak.community.dto.MemberUpdateDTO;
-import darak.community.repository.MemberRepository;
+import darak.community.infra.repository.MemberRepository;
+import darak.community.service.member.MemberServiceImpl;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.Optional;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.transaction.annotation.Transactional;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-@ExtendWith(SpringExtension.class)
-@SpringBootTest
-@Transactional
+@ExtendWith(MockitoExtension.class)
+@DisplayName("MemberService 테스트")
 class MemberServiceImplTest {
-    @Autowired
-    MemberRepository memberRepository;
-    @Autowired
-    MemberServiceImpl memberServiceImpl;
+
+    @Mock
+    private MemberRepository memberRepository;
+
+    @InjectMocks
+    private MemberServiceImpl memberService;
 
     @Test
-    void 회원가입() throws Exception {
+    @DisplayName("회원 가입 성공")
+    void join_Success() {
         // given
-        Member member = getMember();
+        Member member = createTestMember();
+        given(memberRepository.findByLoginId(member.getLoginId())).willReturn(Optional.empty());
+        doNothing().when(memberRepository).save(member);
+
         // when
-        Long savedId = memberServiceImpl.join(member);
+        Long result = memberService.join(member);
+
         // then
-        assertEquals(member, memberRepository.findById(savedId).get());
-        // 생성일 검사
-        assertEquals(LocalDate.now().getDayOfMonth(),
-                memberRepository.findById(savedId).get().getCreatedDate().getDayOfMonth());
+        assertThat(result).isEqualTo(member.getId());
+        verify(memberRepository).findByLoginId(member.getLoginId());
+        verify(memberRepository).save(member);
     }
 
-    private Member getMember() {
-        Member member = Member.builder()
-                .name("준서")
-                .password("qwe123")
-                .email("qwe123@abc.com")
-                .phone("01012345678")
-                .birth(LocalDate.of(2001, 10, 13))
+    @Test
+    @DisplayName("회원 가입 실패 - 중복된 아이디")
+    void join_Fail_DuplicateLoginId() {
+        // given
+        Member member = createTestMember();
+        given(memberRepository.findByLoginId(member.getLoginId())).willReturn(Optional.of(member));
+
+        // when & then
+        assertThatThrownBy(() -> memberService.join(member))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("이미 존재하는 회원입니다");
+    }
+
+    @Test
+    @DisplayName("ID로 회원 조회 성공")
+    void findById_Success() {
+        // given
+        Long memberId = 1L;
+        Member member = createTestMember();
+        given(memberRepository.findById(memberId)).willReturn(Optional.of(member));
+
+        // when
+        Member result = memberService.findById(memberId);
+
+        // then
+        assertThat(result).isNotNull();
+        assertThat(result.getLoginId()).isEqualTo("testuser");
+    }
+
+    @Test
+    @DisplayName("ID로 회원 조회 실패 - 존재하지 않는 회원")
+    void findById_Fail_NotFound() {
+        // given
+        Long memberId = 999L;
+        given(memberRepository.findById(memberId)).willReturn(Optional.empty());
+
+        // when & then
+        assertThatThrownBy(() -> memberService.findById(memberId))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("존재하지 않는 회원입니다.");
+    }
+
+    @Test
+    @DisplayName("로그인 ID로 회원 조회 성공")
+    void findByLoginId_Success() {
+        // given
+        String loginId = "testuser";
+        Member member = createTestMember();
+        given(memberRepository.findByLoginId(loginId)).willReturn(Optional.of(member));
+
+        // when
+        Member result = memberService.findByLoginId(loginId);
+
+        // then
+        assertThat(result).isNotNull();
+        assertThat(result.getLoginId()).isEqualTo(loginId);
+    }
+
+    @Test
+    @DisplayName("이름으로 회원 조회")
+    void findByName() {
+        // given
+        String name = "테스트 사용자";
+        List<Member> members = Arrays.asList(createTestMember(), createTestMember());
+        given(memberRepository.findByName(name)).willReturn(members);
+
+        // when
+        List<Member> result = memberService.findByName(name);
+
+        // then
+        assertThat(result).hasSize(2);
+    }
+
+    @Test
+    @DisplayName("중복 회원 검사 - 중복 없음")
+    void validateDuplicateMember_Success() {
+        // given
+        String loginId = "newuser";
+        given(memberRepository.findByLoginId(loginId)).willReturn(Optional.empty());
+
+        // when & then
+        assertThatCode(() -> memberService.validateDuplicateMember(loginId))
+                .doesNotThrowAnyException();
+    }
+
+    @Test
+    @DisplayName("중복 회원 검사 - 중복 있음")
+    void validateDuplicateMember_Fail() {
+        // given
+        String loginId = "existinguser";
+        given(memberRepository.findByLoginId(loginId)).willReturn(Optional.of(createTestMember()));
+
+        // when & then
+        assertThatThrownBy(() -> memberService.validateDuplicateMember(loginId))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("이미 존재하는 회원입니다");
+    }
+
+    @Test
+    @DisplayName("회원 정보 수정")
+    void update() {
+        // given
+        MemberUpdateDTO updateDTO = new MemberUpdateDTO();
+        updateDTO.setId(1L);
+        updateDTO.setName("새로운 이름");
+        updateDTO.setPhone("010-9999-9999");
+        updateDTO.setEmail("newemail@example.com");
+
+        Member existingMember = createTestMember();
+        given(memberRepository.findById(1L)).willReturn(Optional.of(existingMember));
+        given(memberRepository.findByLoginId("새로운 이름")).willReturn(Optional.empty());
+
+        // when & then
+        assertThatCode(() -> memberService.update(updateDTO))
+                .doesNotThrowAnyException();
+    }
+
+    @Test
+    @DisplayName("회원 삭제")
+    void remove() {
+        // given
+        Long memberId = 1L;
+        Member member = createTestMember();
+        given(memberRepository.findById(memberId)).willReturn(Optional.of(member));
+        doNothing().when(memberRepository).withdraw(member);
+
+        // when & then
+        assertThatCode(() -> memberService.remove(memberId))
+                .doesNotThrowAnyException();
+        verify(memberRepository).withdraw(member);
+    }
+    
+
+    private Member createTestMember() {
+        return Member.builder()
+                .loginId("testuser")
+                .name("테스트 사용자")
+                .password("password123")
+                .phone("010-1234-5678")
+                .birth(LocalDate.of(1990, 1, 1))
+                .email("test@example.com")
+                .grade(MemberGrade.MEMBER)
                 .build();
-        return member;
     }
 
-    @Test
-    void 중복_회원_검증() throws Exception {
-        // given
-        Member member1 = Member.builder().name("member1").build();
-        Member member2 = Member.builder().name("member1").build();
-
-        memberServiceImpl.join(member1);
-        // when
-        assertThrows(IllegalStateException.class, () -> memberServiceImpl.join(member2));
-    }
-
-    @Test
-    void 회원_정보_수정() throws Exception {
-        // given
-        Member member1 = Member.builder().name("member1").phone("01012345678").build();
-        memberServiceImpl.join(member1);
-        // when
-        MemberUpdateDTO memberUpdateDTO = new MemberUpdateDTO();
-        memberUpdateDTO.setId(member1.getId());
-        memberUpdateDTO.setName(member1.getName());
-        memberUpdateDTO.setPhone("01098765432");
-
-        memberServiceImpl.update(memberUpdateDTO);
-        // then
-        assertTrue(memberRepository.findById(member1.getId()).get().isMatchedPhone(memberUpdateDTO.getPhone()));
-
-        assertEquals(LocalDateTime.now().getDayOfMonth(), member1.getLastModifiedDate().getDayOfMonth());
-    }
-
-    @Test
-    void 회원_정보_수정_중복() throws Exception {
-        // given
-        Member member1 = Member.builder().name("member1").phone("12345678").build();
-        Member member2 = Member.builder().name("member2").phone("11111111").build();
-        memberServiceImpl.join(member1);
-        memberServiceImpl.join(member2);
-
-        MemberUpdateDTO memberUpdateDTO = new MemberUpdateDTO();
-        memberUpdateDTO.setId(member1.getId());
-        memberUpdateDTO.setName("member2");
-        // when
-        assertThrows(IllegalStateException.class, () -> memberServiceImpl.update(memberUpdateDTO));
-        // then
-    }
-
-    @Test
-    void 회원_삭제() throws Exception {
-        // given
-        Member member = getMember();
-        memberServiceImpl.join(member);
-        // when
-        memberServiceImpl.remove(member.getId());
-        // then
-        assertTrue(memberRepository.findById(member.getId()).isEmpty());
-    }
-
-    @Test
-    void 로그인_존재하지않는_회원() throws Exception {
-        // given
-        Member member = Member.builder().name("admin").password("qwe123").build();
-        memberServiceImpl.join(member);
-        // when
-        assertEquals(memberServiceImpl.login("admin2", "asdf"), LoginResult.NON_EXIST);
-    }
-
-    @Test
-    void 로그인_실패() throws Exception {
-        // given
-        Member member = Member.builder().name("admin").password("qwe123").build();
-        memberServiceImpl.join(member);
-        // when
-        assertEquals(memberServiceImpl.login("admin", "asdf"), LoginResult.FAILED);
-    }
-
-    @Test
-    void 로그인_성공() throws Exception {
-        // given
-        Member member = Member.builder().name("admin").password("qwe123").build();
-        memberServiceImpl.join(member);
-        // when
-        assertEquals(memberServiceImpl.login("admin", "qwe123"), LoginResult.SUCCESS);
-
-    }
-
-    @Test
-    void 회원_이름_찾기() throws Exception {
-        // given
-        Member member1 = Member.builder()
-                .name("admin")
-                .password("qwe123")
-                .birth(LocalDate.of(2001, 10, 13))
-                .phone("12345678")
+    private Member createTestMember2() {
+        return Member.builder()
+                .loginId("testuser2")
+                .name("테스트 사용자2")
+                .password("password123")
+                .phone("010-1234-5678")
+                .birth(LocalDate.of(1990, 1, 1))
+                .email("test2@example.com")
+                .grade(MemberGrade.MEMBER)
                 .build();
-        memberServiceImpl.join(member1);
-
-        Member member2 = Member.builder()
-                .name("admin2")
-                .password("qwe123")
-                .birth(LocalDate.of(2001, 10, 13))
-                .phone("12345678")
-                .build();
-        memberServiceImpl.join(member2);
-
-        // when
-        List<String> nameList = memberServiceImpl.findMemberNames(LocalDate.of(2001, 10, 13), "12345678");
-
-        // then
-        assertEquals(2, nameList.size());
-        assertThrows(NoSuchElementException.class,
-                () -> memberServiceImpl.findMemberNames(LocalDate.of(2001, 10, 13), "123"));
-        assertThrows(NoSuchElementException.class,
-                () -> memberServiceImpl.findMemberNames(LocalDate.of(2001, 10, 14), "12345678"));
     }
 }

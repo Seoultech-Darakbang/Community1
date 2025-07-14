@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+<aside th:fragment="adminSidebar(active)" class="w-64 bg-gray-800 text-white min-h-screen">
+  <div class="p-6">
+    <h2 class="text-xl font-bold mb-6 flex items-center">
+      <i class="fas fa-shield-alt mr-2 text-red-400"></i>
+      관리자 패널
+    </h2>
+
+    <nav class="space-y-2">
+      <!-- 대시보드 -->
+      <a href="/admin"
+        th:class="${active == 'dashboard'} ? 'flex items-center px-4 py-3 bg-red-600 rounded-lg text-white' : 'flex items-center px-4 py-3 hover:bg-gray-700 rounded-lg transition-colors'">
+        <i class="fas fa-chart-bar mr-3"></i>
+        대시보드
+      </a>
+
+      <!-- 카테고리 관리 -->
+      <a href="/admin/categories"
+        th:class="${active == 'categories'} ? 'flex items-center px-4 py-3 bg-red-600 rounded-lg text-white' : 'flex items-center px-4 py-3 hover:bg-gray-700 rounded-lg transition-colors'">
+        <i class="fas fa-folder mr-3"></i>
+        카테고리 관리
+      </a>
+
+      <!-- 게시판 관리 -->
+      <a href="/admin/boards"
+        th:class="${active == 'boards'} ? 'flex items-center px-4 py-3 bg-red-600 rounded-lg text-white' : 'flex items-center px-4 py-3 hover:bg-gray-700 rounded-lg transition-colors'">
+        <i class="fas fa-clipboard-list mr-3"></i>
+        게시판 관리
+      </a>
+
+      <!-- 회원 관리 -->
+      <a href="/admin/members"
+        th:class="${active == 'members'} ? 'flex items-center px-4 py-3 bg-red-600 rounded-lg text-white' : 'flex items-center px-4 py-3 hover:bg-gray-700 rounded-lg transition-colors'">
+        <i class="fas fa-users mr-3"></i>
+        회원 관리
+      </a>
+
+      <!-- 기프티콘 관리 -->
+      <a href="/admin/gifticons"
+        th:class="${active == 'gifticons'} ? 'flex items-center px-4 py-3 bg-purple-600 rounded-lg text-white' : 'flex items-center px-4 py-3 hover:bg-gray-700 rounded-lg transition-colors'">
+        <i class="fas fa-gift mr-3"></i>
+        기프티콘 관리
+      </a>
+
+      <!-- 구분선 -->
+      <hr class="border-gray-600 my-4">
+
+      <!-- 커뮤니티로 돌아가기 -->
+      <a href="/community" class="flex items-center px-4 py-3 hover:bg-gray-700 rounded-lg transition-colors">
+        <i class="fas fa-arrow-left mr-3"></i>
+        커뮤니티로 돌아가기
+      </a>
+
+      <!-- 홈으로 돌아가기 -->
+      <a href="/" class="flex items-center px-4 py-3 hover:bg-gray-700 rounded-lg transition-colors">
+        <i class="fas fa-home mr-3"></i>
+        메인 홈
+      </a>
+    </nav>
+  </div>
+</aside>
+
+</html>

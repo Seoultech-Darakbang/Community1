@@ -1,25 +1,36 @@
 package darak.community.domain.member;
 
+import darak.community.core.exception.PasswordFailedExceededException;
+import darak.community.core.exception.PasswordMismatchException;
 import darak.community.domain.BaseEntity;
-import darak.community.exception.PasswordFailedExceededException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import java.time.LocalDate;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+// TODO: Profile VO 분리 작업 필요
+// TODO: MemberGrade Enum 분리 작업 필요
+// TODO: 일급 컬렉션으로 Phone, Email, Birth 등 분리 작업 필요
+//
 @Entity
 @Getter
 @NoArgsConstructor
 public class Member extends BaseEntity {
+    private static final Logger log = LoggerFactory.getLogger(Member.class);
+
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_id")
     private Long id;
 
@@ -39,59 +50,59 @@ public class Member extends BaseEntity {
 
     private String email;
 
-    // Builder 패턴의 단점 : 필수값을 놓칠 수 있음
-    // -> NonNull을 붙여준다.
-    @Builder
-    public Member(String loginId, String name, String password, String phone, LocalDate birth, String email) {
+    @Builder(access = AccessLevel.PRIVATE)
+    private Member(String loginId, String name, String password, String phone, LocalDate birth, String email,
+                   MemberGrade grade) {
         this.loginId = loginId;
         this.name = name;
         this.password = new MemberPassword(password);
         this.phone = phone;
         this.birth = birth;
         this.email = email;
+        this.memberGrade = grade;
+    }
+
+    public static Member guestMember(String loginId, String name, String password, String phone, LocalDate birth,
+                                     String email) {
+        return new Member(loginId, name, password, phone, birth, email, MemberGrade.GUEST);
     }
 
     // 회원 정보 수정 메서드
-    public void updateMember(Member editInfoMember) {
-        updatePassword(editInfoMember);
-        updateName(editInfoMember);
-        updatePhone(editInfoMember);
-        updateBirth(editInfoMember);
-        updateEmail(editInfoMember);
+    public void updateMember(String name, String phone, LocalDate birth, String email) {
+        updateName(name);
+        updatePhone(phone);
+        updateBirth(birth);
+        updateEmail(email);
     }
 
-    private void updateEmail(Member editInfoMember) {
-        if (editInfoMember.email != null) {
-            this.email = editInfoMember.email;
+    private void updateBirth(LocalDate birth) {
+        if (birth != null) {
+            this.birth = birth;
         }
     }
 
-    private void updateBirth(Member editInfoMember) {
-        if (editInfoMember.birth != null) {
-            this.birth = editInfoMember.birth;
+    private void updateName(String name) {
+        if (name != null && !name.trim().isEmpty()) {
+            this.name = name;
         }
     }
 
-    private void updatePhone(Member editInfoMember) {
-        if (editInfoMember.phone != null) {
-            this.phone = editInfoMember.phone;
+    private void updateEmail(String email) {
+        if (email != null && !email.trim().isEmpty()) {
+            this.email = email;
         }
     }
 
-    private void updateName(Member editInfoMember) {
-        if (editInfoMember.name != null) {
-            this.name = editInfoMember.name;
+    private void updatePhone(String phone) {
+        if (phone != null && !phone.trim().isEmpty()) {
+            this.phone = phone;
         }
     }
 
-    private void updatePassword(Member editInfoMember) {
-        if (editInfoMember.password != null) {
-            this.password = editInfoMember.password;
+    public void validatePassword(final String rawPassword) {
+        if (!password.isMatched(rawPassword)) {
+            throw new PasswordMismatchException("비밀번호가 일치하지 않습니다.");
         }
-    }
-
-    public boolean isMatchedPassword(final String rawPassword) throws PasswordFailedExceededException {
-        return password.isMatched(rawPassword);
     }
 
     public void changePassword(final String newPassword, final String oldPassword)
@@ -107,4 +118,11 @@ public class Member extends BaseEntity {
         return password.isPasswordExpired();
     }
 
+    public boolean isAtLeastThan(MemberGrade target) {
+        return this.memberGrade.isAtLeastThan(target);
+    }
+
+    public void changeMemberGrade(MemberGrade memberGrade) {
+        this.memberGrade = memberGrade;
+    }
 }

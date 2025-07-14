@@ -1,12 +1,49 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org" th:fragment="layout(title, content)">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" th:fragment="layout(title, content)" class="no-js"
+  style="background: white; color: black;">
+<script>
+  // HTML 요소가 렌더링되기 전에 즉시 실행됨
+  (function () {
+    if (localStorage.theme === 'dark') {
+      document.documentElement.classList.add('dark');
+      document.documentElement.style.background = '#111827'; // bg-gray-900
+      document.documentElement.style.color = '#ffffff';
+    }
+    document.documentElement.classList.remove('no-js');
+  })();
+</script>
 
-<head>
+<head th:fragment="head(title)">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title th:replace="${title}">다락방 커뮤니티</title>
+  <style>
+    /* 초기 렌더링 시 플래시 방지용 스타일 */
+    html.dark {
+      background-color: #111827 !important;
+      color: #ffffff !important;
+    }
+
+    html.dark body {
+      background-color: #111827 !important;
+      color: #ffffff !important;
+    }
+  </style>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+  <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css">
+  <link rel="stylesheet"
+    href="https://uicdn.toast.com/editor-plugin-code-syntax-highlight/latest/toastui-editor-plugin-code-syntax-highlight.min.css">
+  <style>
+    html.dark #editor .toastui-editor-defaultUI,
+    html.dark #editor .toastui-editor-md-container,
+    html.dark #editor .toastui-editor-ww-container,
+    html.dark #editor .toastui-editor-contents {
+      background-color: #ffffff !important;
+      color: #000000 !important;
+    }
+  </style>
+
   <script>
     tailwind.config = {
       darkMode: 'class'
@@ -23,6 +60,13 @@
     .fade-in-section.visible {
       opacity: 1;
       transform: none;
+    }
+
+    /* 모바일 메뉴가 PC에서 보이지 않도록 함 */
+    @media (min-width: 1024px) {
+      #mobileMenu {
+        display: none !important;
+      }
     }
   </style>
 </head>
@@ -42,6 +86,9 @@
 
   <!-- 공통 스크립트 포함 -->
   <div th:replace="~{fragments/scripts :: scripts}"></div>
+
+  <!-- 페이지별 스크립트를 위한 블록 -->
+  <div id="page-scripts"></div>
 </body>
 
 </html>

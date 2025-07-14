@@ -3,6 +3,15 @@
 
 <div th:fragment="scripts">
   <script>
+    // 페이지 로드 전에 다크 모드 적용 (깜빡임 방지)
+    (function () {
+      if (localStorage.theme === 'dark') {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    })();
+
     function updateDarkModeIcons() {
       const desktopIcon = document.getElementById('darkModeToggle')?.querySelector('i');
       const mobileIcon = document.getElementById('darkModeToggleMobile')?.querySelector('i');
@@ -16,11 +25,6 @@
     }
 
     function initialTheme() {
-      if (localStorage.theme === 'dark') {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-      }
       updateDarkModeIcons();
     }
 
@@ -41,10 +45,20 @@
     // 모바일 메뉴 토글 처리
     const mobileMenu = document.getElementById('mobileMenu');
     document.getElementById('menuToggle')?.addEventListener('click', () => {
-      mobileMenu.classList.toggle('translate-x-full');
+      mobileMenu.classList.remove('hidden');
+      // 다음 프레임에서 transform 애니메이션이 적용되도록 설정
+      requestAnimationFrame(() => {
+        mobileMenu.classList.add('transition-transform', 'duration-300');
+        mobileMenu.classList.toggle('translate-x-full');
+      });
     });
     document.getElementById('closeMenu')?.addEventListener('click', () => {
-      mobileMenu.classList.add('translate-x-full');
+      mobileMenu.classList.add('transition-transform', 'duration-300', 'translate-x-full');
+      // 애니메이션이 완료된 후 hidden 클래스 추가
+      setTimeout(() => {
+        mobileMenu.classList.add('hidden');
+        mobileMenu.classList.remove('transition-transform', 'duration-300');
+      }, 300);
     });
 
     // 섹션 애니메이션 처리
@@ -67,6 +81,132 @@
     });
 
     initialTheme();
+  </script>
+
+  <!-- Toast UI Editor JS 추가 -->
+  <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
+  <script
+    src="https://uicdn.toast.com/editor-plugin-code-syntax-highlight/latest/toastui-editor-plugin-code-syntax-highlight.min.js"></script>
+
+  <!-- Toast UI Editor 초기화 및 폼 submit 훅 -->
+  <script th:inline="javascript">
+    document.addEventListener('DOMContentLoaded', () => {
+      const editorEl = document.getElementById('editor');
+      if (!editorEl) return;           // #editor가 없는 페이지(예: 보기 화면) 방어
+
+      // 전역에서 접근 가능하도록 let/var 또는 window.editor 사용
+      window.editor = new toastui.Editor({
+        el: editorEl,
+        height: '500px',
+        initialEditType: 'wysiwyg',
+        previewStyle: 'vertical',
+        language: 'ko',
+        initialValue: /*[[${form != null ? #strings.escapeJavaScript(form.content) : ''}]]*/ '',
+        hideModeSwitch: false,
+        usageStatistics: false,
+        toolbarItems: [
+          ['heading', 'bold', 'italic', 'strike'],
+          ['hr'],
+          ['ul', 'ol', 'task', 'indent', 'outdent'],
+          ['code', 'codeblock'],
+          ['table', 'link', 'image'],
+          ['scrollSync']
+        ],
+        plugins: [toastui.Editor.plugin.codeSyntaxHighlight],
+        hooks: {
+          addImageBlobHook: async (blob, cb) => {
+            try {
+              // 로딩 표시
+              const loadingToast = showToast('이미지 업로드 중...', 'info');
+
+              const fd = new FormData();
+              fd.append('file', blob, blob.name || 'pasted-image.png');
+
+              const res = await fetch('/api/uploads/images', {
+                method: 'POST',
+                body: fd
+              });
+
+              if (!res.ok) {
+                const errorData = await res.json();
+                throw new Error(errorData.error || '이미지 업로드에 실패했습니다.');
+              }
+
+              const data = await res.json();
+
+              // 성공 시 이미지 URL 콜백
+              cb(data.url, blob.name || 'pasted-image.png');
+
+              // 성공 토스트
+              hideToast(loadingToast);
+              showToast('이미지가 성공적으로 업로드되었습니다.', 'success');
+
+            } catch (e) {
+              console.error('이미지 업로드 오류:', e);
+              showToast(e.message || '이미지 업로드에 실패했습니다.', 'error');
+            }
+          }
+        }
+      });
+
+      // 폼 전송 직전에 markdown ⇢ hidden input (에디터가 속한 폼 대상)
+      const formEl = editorEl.closest('form');
+      if (formEl) {
+        formEl.addEventListener('submit', () => {
+          document.getElementById('hiddenContent').value = window.editor.getMarkdown();
+        });
+      }
+    });
+
+    // 토스트 메시지 함수들
+    function showToast(message, type = 'info') {
+      const toast = document.createElement('div');
+      toast.className = `fixed top-4 right-4 px-6 py-3 rounded-lg text-white z-50 ${getToastBgColor(type)}`;
+      toast.textContent = message;
+
+      document.body.appendChild(toast);
+
+      // 애니메이션
+      setTimeout(() => toast.style.opacity = '1', 10);
+
+      // 자동 제거 (에러가 아닌 경우)
+      if (type !== 'error') {
+        setTimeout(() => hideToast(toast), 3000);
+      }
+
+      return toast;
+    }
+
+    function hideToast(toast) {
+      if (toast && toast.parentNode) {
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 300);
+      }
+    }
+
+    function getToastBgColor(type) {
+      switch (type) {
+        case 'success': return 'bg-green-500';
+        case 'error': return 'bg-red-500';
+        case 'warning': return 'bg-yellow-500';
+        default: return 'bg-blue-500';
+      }
+    }
+  </script>
+
+  <!-- Toast UI Viewer 초기화: post가 있을 때만 렌더링 -->
+  <script th:if="${post != null}" th:inline="javascript">
+    document.addEventListener('DOMContentLoaded', function () {
+      if (document.querySelector('#viewer')) {
+        toastui.Editor.factory({
+          el: document.getElementById('viewer'),
+          viewer: true,
+          initialValue: /*[[${post.content}]]*/ '',
+          plugins: [toastui.Editor.plugin.codeSyntaxHighlight],
+          height: 'auto'
+        });
+      }
+    });
   </script>
 </div>
 

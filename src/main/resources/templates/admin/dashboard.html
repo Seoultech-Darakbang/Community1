@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: layout(~{::title}, ~{::main})}">
+
+<head>
+  <title>관리자 대시보드 - 다락방 커뮤니티</title>
+</head>
+
+<body>
+  <main class="flex">
+    <!-- 사이드바 -->
+    <div th:replace="~{fragments/adminSidebar :: adminSidebar('dashboard')}"></div>
+
+    <!-- 메인 컨텐츠 -->
+    <div class="flex-1 p-8 bg-gray-50 dark:bg-gray-900">
+      <div class="max-w-7xl mx-auto">
+        <!-- 헤더 -->
+        <div class="mb-8">
+          <h1 class="text-3xl font-bold text-gray-900 dark:text-white">관리자 대시보드</h1>
+          <p class="mt-2 text-gray-600 dark:text-gray-400">커뮤니티 전체 현황을 확인할 수 있습니다.</p>
+        </div>
+
+        <!-- 통계 카드들 -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
+          <!-- 총 회원 수 -->
+          <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+            <div class="flex items-center">
+              <div class="p-3 rounded-full bg-blue-100 dark:bg-blue-900">
+                <i class="fas fa-users text-blue-600 dark:text-blue-400 text-xl"></i>
+              </div>
+              <div class="ml-4">
+                <p class="text-sm font-medium text-gray-600 dark:text-gray-400">총 회원 수</p>
+                <p class="text-2xl font-bold text-gray-900 dark:text-white" th:text="${totalMembers}">0</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- 총 게시글 수 -->
+          <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+            <div class="flex items-center">
+              <div class="p-3 rounded-full bg-green-100 dark:bg-green-900">
+                <i class="fas fa-file-alt text-green-600 dark:text-green-400 text-xl"></i>
+              </div>
+              <div class="ml-4">
+                <p class="text-sm font-medium text-gray-600 dark:text-gray-400">총 게시글 수</p>
+                <p class="text-2xl font-bold text-gray-900 dark:text-white" th:text="${totalPosts}">0</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- 총 댓글 수 -->
+          <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+            <div class="flex items-center">
+              <div class="p-3 rounded-full bg-yellow-100 dark:bg-yellow-900">
+                <i class="fas fa-comments text-yellow-600 dark:text-yellow-400 text-xl"></i>
+              </div>
+              <div class="ml-4">
+                <p class="text-sm font-medium text-gray-600 dark:text-gray-400">총 댓글 수</p>
+                <p class="text-2xl font-bold text-gray-900 dark:text-white" th:text="${totalComments}">0</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- 총 카테고리 수 -->
+          <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+            <div class="flex items-center">
+              <div class="p-3 rounded-full bg-purple-100 dark:bg-purple-900">
+                <i class="fas fa-folder text-purple-600 dark:text-purple-400 text-xl"></i>
+              </div>
+              <div class="ml-4">
+                <p class="text-sm font-medium text-gray-600 dark:text-gray-400">총 카테고리 수</p>
+                <p class="text-2xl font-bold text-gray-900 dark:text-white" th:text="${totalCategories}">0</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- 총 게시판 수 -->
+          <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+            <div class="flex items-center">
+              <div class="p-3 rounded-full bg-red-100 dark:bg-red-900">
+                <i class="fas fa-clipboard-list text-red-600 dark:text-red-400 text-xl"></i>
+              </div>
+              <div class="ml-4">
+                <p class="text-sm font-medium text-gray-600 dark:text-gray-400">총 게시판 수</p>
+                <p class="text-2xl font-bold text-gray-900 dark:text-white" th:text="${totalBoards}">0</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 빠른 액션 -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+          <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4">빠른 액션</h2>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <a href="/admin/categories/new"
+              class="flex items-center p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+              <i class="fas fa-plus-circle text-blue-500 text-2xl mr-4"></i>
+              <div>
+                <h3 class="font-medium text-gray-900 dark:text-white">새 카테고리 추가</h3>
+                <p class="text-sm text-gray-600 dark:text-gray-400">새로운 게시판 카테고리를 생성합니다</p>
+              </div>
+            </a>
+
+            <a href="/admin/boards/new"
+              class="flex items-center p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+              <i class="fas fa-plus-circle text-green-500 text-2xl mr-4"></i>
+              <div>
+                <h3 class="font-medium text-gray-900 dark:text-white">새 게시판 추가</h3>
+                <p class="text-sm text-gray-600 dark:text-gray-400">새로운 게시판을 생성합니다</p>
+              </div>
+            </a>
+
+            <a href="/admin/members"
+              class="flex items-center p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+              <i class="fas fa-users-cog text-purple-500 text-2xl mr-4"></i>
+              <div>
+                <h3 class="font-medium text-gray-900 dark:text-white">회원 관리</h3>
+                <p class="text-sm text-gray-600 dark:text-gray-400">회원 등급 및 정보를 관리합니다</p>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</body>
+
+</html>
