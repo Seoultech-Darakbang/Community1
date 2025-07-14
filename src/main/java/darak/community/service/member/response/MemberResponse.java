@@ -3,6 +3,7 @@ package darak.community.service.member.response;
 import darak.community.domain.member.Member;
 import darak.community.domain.member.MemberGrade;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -23,9 +24,11 @@ public class MemberResponse {
 
     private String email;
 
+    private LocalDateTime createdDate;
+
     @Builder
     private MemberResponse(Long id, String loginId, String name, MemberGrade memberGrade, String phone,
-                           LocalDate birth, String email) {
+                           LocalDate birth, String email, LocalDateTime createdDate) {
         this.id = id;
         this.loginId = loginId;
         this.name = name;
@@ -33,6 +36,7 @@ public class MemberResponse {
         this.phone = phone;
         this.birth = birth;
         this.email = email;
+        this.createdDate = createdDate;
     }
 
     public static MemberResponse of(Member member) {
@@ -44,6 +48,7 @@ public class MemberResponse {
                 .phone(member.getPhone())
                 .birth(member.getBirth())
                 .email(member.getEmail())
+                .createdDate(member.getCreatedDate())
                 .build();
     }
 }
