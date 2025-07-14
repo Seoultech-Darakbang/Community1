@@ -1,17 +1,7 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org" th:fragment="layout(title, content)" class="no-js"
   style="background: white; color: black;">
-<script>
-  // HTML 요소가 렌더링되기 전에 즉시 실행됨
-  (function () {
-    if (localStorage.theme === 'dark') {
-      document.documentElement.classList.add('dark');
-      document.documentElement.style.background = '#111827'; // bg-gray-900
-      document.documentElement.style.color = '#ffffff';
-    }
-    document.documentElement.classList.remove('no-js');
-  })();
-</script>
+<script src="/js/layout.js"></script>
 
 <head th:fragment="head(title)">
   <meta charset="UTF-8">
@@ -44,11 +34,7 @@
     }
   </style>
 
-  <script>
-    tailwind.config = {
-      darkMode: 'class'
-    };
-  </script>
+  <script src="/js/layout.js"></script>
   <style>
     /* 스크롤 시 섹션 페이드인 애니메이션 */
     .fade-in-section {

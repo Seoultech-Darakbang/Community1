@@ -99,18 +99,7 @@
       </div>
     </div>
 
-    <!-- 삭제 함수를 main 내부로 옮깁니다 -->
-    <script>
-      function deleteCategory(categoryId) {
-        if (confirm('정말로 이 카테고리를 삭제하시겠습니까?')) {
-          const form = document.createElement('form');
-          form.method = 'POST';
-          form.action = `/admin/categories/${categoryId}/delete`;
-          document.body.appendChild(form);
-          form.submit();
-        }
-      }
-    </script>
+    <script src="/js/adminCategoriesList.js"></script>
   </main>
 </body>
 
