@@ -51,6 +51,12 @@ public class BoardCategoryServiceImpl implements BoardCategoryService {
     @ServiceAuth(MemberGrade.ADMIN)
     public void deleteCategory(Long id) {
         BoardCategory boardCategory = findBoardCategoryBy(id);
+        
+        List<Board> boards = boardRepository.findByBoardCategoryId(id);
+        if (!boards.isEmpty()) {
+            throw new IllegalArgumentException("해당 카테고리에 속한 게시판이 있어 삭제할 수 없습니다.");
+        }
+        
         boardCategoryRepository.delete(boardCategory);
         refreshCache();
     }
@@ -58,20 +64,26 @@ public class BoardCategoryServiceImpl implements BoardCategoryService {
     @Override
     public List<BoardCategoryResponse> findAll() {
         return sortedBoardCategories.stream()
-                .map(BoardCategoryResponse::of)
+                .map(category -> {
+                    int boardCount = boardRepository.findByBoardCategoryId(category.getId()).size();
+                    return BoardCategoryResponse.of(category, boardCount);
+                })
                 .toList();
     }
 
     @Override
-    public BoardCategoryResponse findById(Long boardId) {
-        return BoardCategoryResponse.of(findBoardCategoryBy(boardId));
+    public BoardCategoryResponse findById(Long boardCategoryId) {
+        BoardCategory boardCategory = findBoardCategoryBy(boardCategoryId);
+        int boardCount = boardRepository.findByBoardCategoryId(boardCategoryId).size();
+        return BoardCategoryResponse.of(boardCategory, boardCount);
     }
 
     @Override
     public BoardCategoryResponse findByName(String name) {
         BoardCategory boardCategory = boardCategoryRepository.findByName(name)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 카테고리입니다."));
-        return BoardCategoryResponse.of(boardCategory);
+        int boardCount = boardRepository.findByBoardCategoryId(boardCategory.getId()).size();
+        return BoardCategoryResponse.of(boardCategory, boardCount);
     }
 
     @Override
@@ -84,7 +96,7 @@ public class BoardCategoryServiceImpl implements BoardCategoryService {
         List<Board> boards = boardRepository.findByBoardCategoryId(categoryId);
         Board board = boards.stream().sorted()
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 카테고리입니다."));
+                .orElseThrow(() -> new IllegalArgumentException("해당 카테고리에 속하는 게시판이 존재하지 않습니다."));
 
         return board.getId();
     }
@@ -103,6 +115,6 @@ public class BoardCategoryServiceImpl implements BoardCategoryService {
 
     private BoardCategory findBoardCategoryBy(Long boardCategoryId) {
         return boardCategoryRepository.findById(boardCategoryId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시판입니다."));
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 카테고리입니다."));
     }
 }

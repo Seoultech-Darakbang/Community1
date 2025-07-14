@@ -37,7 +37,16 @@ public class BoardCategory implements Comparable<BoardCategory> {
 
     @Override
     public int compareTo(BoardCategory o) {
-        return this.priority - o.priority;
+        if (this.priority == null && o.priority == null) {
+            return 0;
+        }
+        if (this.priority == null) {
+            return 1;
+        }
+        if (o.priority == null) {
+            return -1;
+        }
+        return this.priority.compareTo(o.priority);
     }
 
 

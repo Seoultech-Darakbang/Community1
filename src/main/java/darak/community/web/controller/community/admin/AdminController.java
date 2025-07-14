@@ -5,6 +5,7 @@ import darak.community.domain.member.MemberGrade;
 import darak.community.service.board.BoardService;
 import darak.community.service.board.request.BoardCreateServiceRequest;
 import darak.community.service.board.request.BoardUpdateServiceRequest;
+import darak.community.service.board.response.BoardAdminResponse;
 import darak.community.service.boardcategory.BoardCategoryService;
 import darak.community.service.boardcategory.request.BoardCategoryCreateServiceRequest;
 import darak.community.service.boardcategory.request.BoardCategoryUpdateServiceRequest;
@@ -12,7 +13,6 @@ import darak.community.service.comment.CommentService;
 import darak.community.service.member.MemberService;
 import darak.community.service.member.response.MemberResponse;
 import darak.community.service.post.PostService;
-import darak.community.service.board.response.BoardAdminResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -54,8 +54,7 @@ public class AdminController {
 
     @GetMapping("/categories")
     public String categoryList(Model model) {
-//        model.addAttribute("categories", categories);
-        // 카테고리 정보는 ControllerAdvice의 전역 ModelAttribute로 추가!
+        model.addAttribute("categories", boardCategoryService.findAll());
         model.addAttribute("active", "categories");
         return "admin/categories/list";
     }
@@ -81,7 +80,8 @@ public class AdminController {
 
     @GetMapping("/categories/{id}/edit")
     public String categoryEditForm(@PathVariable Long id, Model model) {
-        // 카테고리 정보는 ControllerAdvice의 전역 ModelAttribute로 추가!
+        model.addAttribute("category", boardCategoryService.findById(id));
+        model.addAttribute("boards", boardService.findBoardsBy(id));
         model.addAttribute("active", "categories");
         return "admin/categories/edit";
     }
@@ -135,7 +135,7 @@ public class AdminController {
 
     @GetMapping("/boards/new")
     public String boardCreateForm(Model model) {
-        model.addAttribute("categories", boardCategoryService.findAll());   // 카테고리 목록 주입
+        model.addAttribute("categories", boardCategoryService.findAll());
         model.addAttribute("active", "boards");
         return "admin/boards/form";
     }
@@ -162,7 +162,7 @@ public class AdminController {
 
     @GetMapping("/boards/{id}/edit")
     public String boardEditForm(@PathVariable Long id, Model model) {
-        model.addAttribute("board", boardService.findBoardAdminInfoBy(id)); // DTO 교체
+        model.addAttribute("board", boardService.findBoardAdminInfoBy(id));
         model.addAttribute("categories", boardCategoryService.findAll());
         model.addAttribute("active", "boards");
         return "admin/boards/edit";
