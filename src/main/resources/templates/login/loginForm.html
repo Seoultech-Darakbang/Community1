@@ -1,99 +1,99 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <head>
-    <th:block th:replace="~{template/fragments/layoutFragment :: head}"/>
+    <th:block th:replace="~{template/fragments/layoutFragment :: head}" />
     <link th:href="@{/css/basic-form.css}" rel="stylesheet">
     <title th:text="#{title}">다락방 커뮤니티</title>
 </head>
+
 <body class="bg-gray-50">
-<!-- 로고 컴포넌트 -->
-<div th:insert="~{template/fragments/loginFragment::logoHeader}"></div>
+    <!-- 로고 컴포넌트 -->
+    <div th:insert="~{template/fragments/loginFragment::logoHeader}"></div>
 
-<!-- 로그인 폼과 서드 파티 로그인 버튼 영역 -->
-<div class="container mx-auto max-w-md px-4 py-8">
-    <!-- 로그인 폼 제목 -->
-    <div class="text-center mb-6">
-        <h2 class="text-2xl font-bold" th:text="#{title.member.login}">로그인</h2>
-    </div>
-    <!-- 회원 가입 성공 메시지 (있을 경우) -->
-    <h2 th:if="${param.memberJoinStatus}" class="text-center text-green-600 mb-4" th:text="'회원 가입 성공'"></h2>
-    <!-- 로그인 폼 -->
-    <form th:action th:object="${loginForm}" method="post" class="space-y-6">
-        <div th:if="${#fields.hasGlobalErrors()}" class="mb-4">
-            <p class="text-red-600" th:each="err : ${#fields.globalErrors()}" th:text="${err}">전체 오류 메시지</p>
+    <!-- 로그인 폼과 서드 파티 로그인 버튼 영역 -->
+    <div class="container mx-auto max-w-md px-4 py-8">
+        <!-- 로그인 폼 제목 -->
+        <div class="text-center mb-6">
+            <h2 class="text-2xl font-bold" th:text="#{title.member.login}">로그인</h2>
         </div>
-        <div>
-            <label for="loginId" class="block text-sm font-medium text-gray-700" th:text="#{label.login.id}">로그인
-                ID</label>
-            <input type="text" id="loginId" th:field="*{loginId}"
-                   class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-                   th:errorclass="field-error">
-            <div class="text-red-600 text-sm" th:errors="*{loginId}"></div>
-        </div>
-        <div>
-            <label for="password" class="block text-sm font-medium text-gray-700"
-                   th:text="#{label.login.password}">비밀번호</label>
-            <input type="password" id="password" th:field="*{password}"
-                   class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
-                   th:errorclass="field-error">
-            <div class="text-red-600 text-sm" th:errors="*{password}"></div>
-        </div>
-        <hr class="my-4 border-gray-300">
-        <!-- 로그인 폼 버튼들 -->
-        <div class="flex space-x-4">
-            <div class="w-1/2">
-                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded text-lg"
+        <!-- 회원 가입 성공 메시지 (있을 경우) -->
+        <h2 th:if="${param.memberJoinStatus}" class="text-center text-green-600 mb-4" th:text="'회원 가입 성공'"></h2>
+        <!-- 로그인 폼 -->
+        <form th:action th:object="${loginForm}" method="post" class="space-y-6">
+            <div th:if="${#fields.hasGlobalErrors()}" class="mb-4">
+                <p class="text-red-600" th:each="err : ${#fields.globalErrors()}" th:text="${err}">전체 오류 메시지</p>
+            </div>
+            <div>
+                <label for="loginId" class="block text-sm font-medium text-gray-700" th:text="#{label.login.id}">로그인
+                    ID</label>
+                <input type="text" id="loginId" th:field="*{loginId}"
+                    class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                    th:errorclass="field-error">
+                <div class="text-red-600 text-sm" th:errors="*{loginId}"></div>
+            </div>
+            <div>
+                <label for="password" class="block text-sm font-medium text-gray-700"
+                    th:text="#{label.login.password}">비밀번호</label>
+                <input type="password" id="password" th:field="*{password}"
+                    class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                    th:errorclass="field-error">
+                <div class="text-red-600 text-sm" th:errors="*{password}"></div>
+            </div>
+            <hr class="my-4 border-gray-300">
+            <!-- 로그인 폼 버튼들 -->
+            <div class="flex space-x-4">
+                <div class="w-1/2">
+                    <button type="submit"
+                        class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded text-lg"
                         th:text="#{button.loginForm.login}">로그인
-                </button>
+                    </button>
+                </div>
+                <div class="w-1/2">
+                    <button type="button"
+                        class="w-full bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded text-lg"
+                        th:onclick="|location.href='@{/}'|" th:text="#{button.cancel}">취소
+                    </button>
+                </div>
             </div>
-            <div class="w-1/2">
-                <button type="button" class="w-full bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded text-lg"
-                        th:onclick="|location.href='@{/}'|"
-                        th:text="#{button.cancel}">취소
-                </button>
-            </div>
-        </div>
-    </form>
+        </form>
 
-    <!-- 서드 파티 로그인 버튼 영역 + 회원 가입 버튼-->
-    <div class="mt-8">
-        <div class="flex flex-col space-y-4">
-            <!-- 카카오 로그인 -->
-            <button type="button"
-                    class="flex justify-center items-center space-x-2 bg-yellow-400 hover:bg-yellow-500 text-black py-3 px-6 rounded-lg shadow transition duration-200"
-                    th:onclick="|location.href='@{/kakao-login}'|"
-                    aria-label="카카오 로그인">
-                <span th:text="#{button.login.kakao}" class="font-semibold">카카오 로그인</span>
-            </button>
-            <!-- 네이버 로그인 -->
-            <button type="button"
-                    class="flex justify-center items-center space-x-2 bg-green-600 hover:bg-green-700 text-white py-3 px-6 rounded-lg shadow transition duration-200"
-                    th:onclick="|location.href='@{/naver-login}'|"
-                    aria-label="네이버 로그인">
-                <span th:text="#{button.login.naver}" class="font-semibold">네이버 로그인</span>
-            </button>
-            <!-- 깃허브 로그인 -->
-            <button type="button"
-                    class="flex justify-center items-center space-x-2 bg-gray-800 hover:bg-gray-900 text-white py-3 px-6 rounded-lg shadow transition duration-200"
-                    th:onclick="|location.href='@{/github-login}'|"
-                    aria-label="깃허브 로그인">
-                <span th:text="#{button.login.github}" class="font-semibold">깃허브 로그인</span>
-            </button>
-            <!-- 구글 로그인 -->
-            <button type="button"
-                    class="flex justify-center items-center space-x-2 bg-red-600 hover:bg-red-700 text-white py-3 px-6 rounded-lg shadow transition duration-200"
-                    th:onclick="|location.href='@{/google-login}'|"
-                    aria-label="구글 로그인">
-                <span th:text="#{button.login.google}" class="font-semibold">구글 로그인</span>
-            </button>
-            <button type="button"
+        <!-- 서드 파티 로그인 버튼 영역 + 회원 가입 버튼-->
+        <div class="mt-8">
+            <div class="flex flex-col space-y-4">
+                <!-- 카카오 로그인 -->
+                <button type="button"
+                    class="flex justify-center items-center space-x-2 bg-yellow-400 text-black py-3 px-6 rounded-lg shadow transition duration-200 opacity-50 cursor-not-allowed"
+                    disabled aria-label="카카오 로그인 (비활성화)">
+                    <span th:text="#{button.login.kakao}" class="font-semibold">카카오 로그인</span>
+                </button>
+                <!-- 네이버 로그인 -->
+                <button type="button"
+                    class="flex justify-center items-center space-x-2 bg-green-600 text-white py-3 px-6 rounded-lg shadow transition duration-200 opacity-50 cursor-not-allowed"
+                    disabled aria-label="네이버 로그인 (비활성화)">
+                    <span th:text="#{button.login.naver}" class="font-semibold">네이버 로그인</span>
+                </button>
+                <!-- 깃허브 로그인 -->
+                <button type="button"
+                    class="flex justify-center items-center space-x-2 bg-gray-800 text-white py-3 px-6 rounded-lg shadow transition duration-200 opacity-50 cursor-not-allowed"
+                    disabled aria-label="깃허브 로그인 (비활성화)">
+                    <span th:text="#{button.login.github}" class="font-semibold">깃허브 로그인</span>
+                </button>
+                <!-- 구글 로그인 -->
+                <button type="button"
+                    class="flex justify-center items-center space-x-2 bg-red-600 text-white py-3 px-6 rounded-lg shadow transition duration-200 opacity-50 cursor-not-allowed"
+                    disabled aria-label="구글 로그인 (비활성화)">
+                    <span th:text="#{button.login.google}" class="font-semibold">구글 로그인</span>
+                </button>
+                <!-- 회원가입 버튼은 활성화 상태 유지 -->
+                <button type="button"
                     class="flex justify-center items-center space-x-2 bg-indigo-600 hover:bg-indigo-700 text-white py-3 px-6 rounded-lg shadow transition duration-200"
-                    th:onclick="|location.href='@{/members/new}'|"
-                    aria-label="회원가입">
-                <span th:text="#{button.member.join}" class="font-semibold">회원가입</span>
-            </button>
+                    th:onclick="|location.href='@{/members/new}'|" aria-label="회원가입">
+                    <span th:text="#{button.member.join}" class="font-semibold">회원가입</span>
+                </button>
+            </div>
         </div>
     </div>
-</div>
 </body>
+
 </html>
