@@ -42,7 +42,7 @@
             </div>
 
             <!-- 활성 기프티콘 목록 -->
-            <div id="activeGifticons" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 fade-in-section">
+            <div id="activeGifticons" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 <div th:each="gifticon : ${gifticons}"
                     class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
 
@@ -306,12 +306,12 @@
                 .then(response => response.json())
                 .then(data => {
                     console.log('Response data:', data);
-                    if (data.id) {
+                    if (data.success && data.data && data.data.id) {
                         showListAlert('success', '기프티콘을 성공적으로 수령했습니다!', function () {
                             location.reload();
                         });
                     } else {
-                        showListAlert('error', data);
+                        showListAlert('error', data.message || '기프티콘 수령에 실패했습니다.');
                         button.disabled = false;
                         button.innerHTML = '<i class="fas fa-hand-paper mr-2"></i>선착순 수령하기';
                     }

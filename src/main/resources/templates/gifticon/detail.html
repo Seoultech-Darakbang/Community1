@@ -215,12 +215,12 @@
                 })
                 .then(data => {
                     console.log('Response data:', data);
-                    if (data.id) {
+                    if (data.success && data.data && data.data.id) {
                         showGifticonAlert('success', '기프티콘을 성공적으로 수령했습니다!', function () {
                             window.location.href = '/community/gifticons/my';
                         });
                     } else {
-                        showGifticonAlert('error', data);
+                        showGifticonAlert('error', data.message || '기프티콘 수령에 실패했습니다.');
                         button.disabled = false;
                         button.innerHTML = '<i class="fas fa-gift mr-2"></i>지금 바로 수령하기';
                     }
