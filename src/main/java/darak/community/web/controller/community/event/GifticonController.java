@@ -20,7 +20,7 @@ public class GifticonController {
 
     @GetMapping
     public String gifticonList(@Login LoginMember loginMember, Model model) {
-        model.addAttribute("gifticons", gifticonService.findActiveGifticonsAll());
+        model.addAttribute("gifticons", gifticonService.findActiveGifticonsForMember(loginMember.getId()));
         model.addAttribute("myClaims", gifticonService.getMemberClaims(loginMember.getId()));
         return "gifticon/list";
     }

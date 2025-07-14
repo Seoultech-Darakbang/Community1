@@ -12,6 +12,7 @@ import darak.community.infra.repository.MemberRepository;
 import darak.community.service.event.gifticon.request.GifticonCreateServiceRequest;
 import darak.community.service.event.gifticon.response.GifticonClaimResponse;
 import darak.community.service.event.gifticon.response.GifticonResponse;
+import darak.community.domain.gifticon.ClaimStatus;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -76,6 +77,29 @@ public class GifticonServiceImpl implements GifticonService {
         return gifticonRepository.findActiveGifticons(GifticonStatus.ACTIVE, LocalDateTime.now())
                 .stream()
                 .map(GifticonResponse::of)
+                .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<GifticonResponse> findActiveGifticonsForMember(Long memberId) {
+        Member member = findMemberBy(memberId);
+        List<Gifticon> activeGifticons = gifticonRepository.findActiveGifticons(GifticonStatus.ACTIVE, LocalDateTime.now());
+        
+        List<GifticonClaim> memberClaims = gifticonClaimRepository.findByMemberOrderByCreatedDateDesc(member);
+        
+        return activeGifticons.stream()
+                .map(gifticon -> {
+                    GifticonClaim userClaim = memberClaims.stream()
+                            .filter(claim -> claim.getGifticon().getId().equals(gifticon.getId()))
+                            .findFirst()
+                            .orElse(null);
+                    
+                    boolean isClaimedByUser = userClaim != null;
+                    ClaimStatus userClaimStatus = isClaimedByUser ? userClaim.getStatus() : null;
+                    
+                    return GifticonResponse.of(gifticon, isClaimedByUser, userClaimStatus);
+                })
                 .toList();
     }
 

@@ -17,6 +17,8 @@ public interface GifticonService {
 
     List<GifticonResponse> findActiveGifticonsAll();
 
+    List<GifticonResponse> findActiveGifticonsForMember(Long memberId);
+
     List<GifticonResponse> findActiveGifticonsLimit(int limit);
 
     Page<GifticonResponse> getAllGifticons(Pageable pageable);

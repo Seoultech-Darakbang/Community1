@@ -56,7 +56,19 @@
 
                         <!-- 상태 배지 -->
                         <div class="absolute top-4 left-4">
-                            <span th:if="${gifticon.status.name() == 'ACTIVE' && gifticon.canClaim}"
+                            <!-- 이미 수령한 경우 -->
+                            <span th:if="${gifticon.isClaimedByUser && gifticon.userClaimStatus.name() == 'CLAIMED'}"
+                                class="bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
+                                수령 완료
+                            </span>
+                            <span th:if="${gifticon.isClaimedByUser && gifticon.userClaimStatus.name() == 'USED'}"
+                                class="bg-gray-600 text-white px-3 py-1 rounded-full text-sm font-semibold">
+                                사용 완료
+                            </span>
+
+                            <!-- 수령하지 않은 경우의 상태 -->
+                            <span
+                                th:if="${!gifticon.isClaimedByUser && gifticon.status.name() == 'ACTIVE' && gifticon.canClaim}"
                                 class="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
                                 수령 가능
                             </span>
@@ -106,18 +118,36 @@
                         </div>
 
                         <!-- 수령 버튼 -->
-                        <button th:if="${gifticon.canClaim && loginMember != null}"
+                        <!-- 수령 가능한 경우 -->
+                        <button th:if="${gifticon.canUserClaim() && loginMember != null}"
                             class="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-3 rounded-lg font-semibold hover:from-purple-700 hover:to-pink-700 transition-all duration-300 transform hover:scale-105 claim-btn"
                             th:data-gifticon-id="${gifticon.id}">
                             <i class="fas fa-hand-paper mr-2"></i>선착순 수령하기
                         </button>
 
-                        <button th:if="${!gifticon.canClaim}"
+                        <!-- 이미 수령한 경우 -->
+                        <div th:if="${gifticon.isClaimedByUser && gifticon.userClaimStatus.name() == 'CLAIMED'}"
+                            class="w-full bg-blue-500 text-white py-3 rounded-lg font-semibold text-center">
+                            <i class="fas fa-check-circle mr-2"></i>수령 완료
+                        </div>
+
+                        <div th:if="${gifticon.isClaimedByUser && gifticon.userClaimStatus.name() == 'USED'}"
+                            class="w-full bg-gray-500 text-white py-3 rounded-lg font-semibold text-center">
+                            <i class="fas fa-check-double mr-2"></i>사용 완료
+                        </div>
+
+                        <!-- 수령 불가능한 경우 -->
+                        <button th:if="${!gifticon.canUserClaim() && !gifticon.isClaimedByUser}"
                             class="w-full bg-gray-400 text-white py-3 rounded-lg font-semibold cursor-not-allowed"
                             disabled>
-                            <i class="fas fa-times mr-2"></i>수령 불가
+                            <i class="fas fa-times mr-2"></i>
+                            <span th:if="${gifticon.status.name() == 'SOLD_OUT'}">품절</span>
+                            <span th:if="${gifticon.status.name() == 'WAITING'}">대기중</span>
+                            <span th:if="${gifticon.status.name() == 'CLOSED'}">종료됨</span>
+                            <span th:if="${gifticon.status.name() == 'ACTIVE' && !gifticon.canClaim}">수령 불가</span>
                         </button>
 
+                        <!-- 로그인하지 않은 경우 -->
                         <a th:if="${loginMember == null}" href="/login"
                             class="block w-full bg-blue-600 text-white py-3 rounded-lg font-semibold text-center hover:bg-blue-700 transition-all duration-300">
                             <i class="fas fa-sign-in-alt mr-2"></i>로그인 후 수령
@@ -337,12 +367,15 @@
             button.disabled = true;
             button.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>처리 중...';
 
-            fetch(`/api/v1/community/gifticons/use`, {
+            // URL 파라미터로 전송
+            const url = new URL('/api/v1/community/gifticons/use', window.location.origin);
+            url.searchParams.append('gifticonCode', gifticonCode);
+
+            fetch(url, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ gifticonCode: gifticonCode })
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                }
             })
                 .then(response => response.json())
                 .then(data => {
