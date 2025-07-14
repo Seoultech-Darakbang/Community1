@@ -188,7 +188,8 @@
 
                 // 애니메이션 효과
                 document.addEventListener('DOMContentLoaded', function () {
-                    const cards = document.querySelectorAll('.transform');
+                    // 섹션 내부(.transform)만 선택 → 헤더 transform 유지
+                    const cards = document.querySelectorAll('section .transform');
                     cards.forEach((card, index) => {
                         card.style.opacity = '0';
                         card.style.transform = 'translateY(20px)';
@@ -200,6 +201,7 @@
                         }, index * 100);
                     });
                 });
+
             </script>
         </div>
     </section>

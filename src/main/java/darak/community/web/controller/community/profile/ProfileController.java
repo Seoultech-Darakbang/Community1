@@ -59,8 +59,11 @@ public class ProfileController {
     public String memberProfile(@PathVariable Long memberId, Model model) {
 
         ProfileResponse profileResponse = profileService.getProfileBy(memberId);
+        ProfileStatsResponse profileStats = profileService.getProfileStats(memberId);
+
         model.addAttribute("profile", profileResponse);
         model.addAttribute("active", "profile");
+        model.addAttribute("stats", profileStats);
 
         return "community/profile/memberProfile";
     }
